@@ -16,3 +16,11 @@ p {line-height: 2}
     border-radius: 10px;
     cursor: pointer;
 }
+
+.tdbody {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  -o-text-overflow: ellipsis;
+  max-width: 20em;
+  }

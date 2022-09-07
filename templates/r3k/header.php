@@ -11,7 +11,7 @@ $(function(){
 </script>
 <!-- Navbar (sticky bottom) -->
 
-<div class="sticky-top">
+<header class="sticky-top">
   
   <div class="w3-bar w3-white w3-center w3-padding w3-opacity-min w3-hover-opacity-off">
   <div class="row">
@@ -36,4 +36,4 @@ $(function(){
     }
     ?>
   </div>
-</div>
+</header>

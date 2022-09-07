@@ -1,40 +1,26 @@
 <?php
 //require "../bootstrap.php";
 use Src\TableGateways\RequestsGateway;
+
+
 if(!$userLogin->checkLogin())
 {
     header("Location: $rootpath/login.php");
     exit();
 }
+include  "../$templatePath/head.php";
 ?>
-<link rel="stylesheet" href="<?php echo $rootpath."/".$templatePath ?>/css/style.css">
-<link rel="stylesheet" href="<?php echo $rootpath."/".$templatePath ?>/js/script.js">
 
-<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/dataTables.bootstrap4.min.css">
-
-<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap4.min.js"></script>
-
-
-<style>
-    .tdbody {
-overflow: hidden;
-white-space: nowrap;
-text-overflow: ellipsis;
--o-text-overflow: ellipsis;
-max-width: 20em;
-}
-</style>
+<body class="w3-display-container w3-wide bgimg w3-grayscale-min ">
+<?php include "../$templatePath/header.php"; ?>
 <script>
     $(document).ready(function () {
     $('#example').DataTable();
 });
 </script>
-<?php
-include "../$templatePath/header.php";
-?>
+<!-- content -->
+    <div class='bg-white opacity-90' > 
+        <center> <h2>List of active orders</h2> </center>
 <table id="example" class="table table-striped table-bordered" style="width:100%">
         <thead>
             <tr>
@@ -74,3 +60,11 @@ echo
             </tr>
         </tfoot>
     </table>
+<!--End content -->
+</div> 
+    
+<?php
+//include  __DIR__.'/footer.php';
+?>
+</body>
+</html>

@@ -3,8 +3,7 @@
 ?>
 <?php
 include  $templatePath.'/head.php';
-?>
-<?php
+
 include  $templatePath.'/header.php';
 ?>
 <!-- Header / Home-->
