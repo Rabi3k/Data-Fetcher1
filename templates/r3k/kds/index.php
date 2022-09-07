@@ -6,6 +6,7 @@ if(!$userLogin->checkLogin())
     header("Location: $rootpath/login.php");
     exit();
 }
+$PageTitle = "KDS System";
 include "../$templatePath/head.php";
 ?>
 

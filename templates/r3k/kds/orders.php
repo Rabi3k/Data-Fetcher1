@@ -8,6 +8,7 @@ if(!$userLogin->checkLogin())
     header("Location: $rootpath/login.php");
     exit();
 }
+$PageTitle = "Orders";
 include  "../$templatePath/head.php";
 ?>
 

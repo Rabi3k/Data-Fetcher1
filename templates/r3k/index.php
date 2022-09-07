@@ -2,6 +2,7 @@
 
 ?>
 <?php
+$PageTitle = "KDS System";
 include  $templatePath.'/head.php';
 
 include  $templatePath.'/header.php';
