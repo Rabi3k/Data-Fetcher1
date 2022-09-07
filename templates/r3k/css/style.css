@@ -1,0 +1,18 @@
+body,h1,h2{font-family: "Raleway", sans-serif}
+body, html {max-height: 100vh;overflow:auto;}
+p {line-height: 2}
+.bgimg {
+  min-height: 100vh;
+  background-position: center;
+  background-size: cover;
+}
+.bgimg {background-image: url("../img/background.jpg")}
+.opacity-90{opacity: 90%;}
+.btPrint {
+    left: 50%;
+    position: absolute;
+    padding: 0em;
+    border: 1px solid gray;
+    border-radius: 10px;
+    cursor: pointer;
+}
