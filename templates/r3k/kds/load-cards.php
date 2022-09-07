@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <?php
 use Src\TableGateways\RequestsGateway;
 $requestGateway = new RequestsGateway($dbConnection);
@@ -30,73 +31,59 @@ foreach($data as $row)
     {
         $bgClass='bg-warning';
     }
-    
-    $pvalue = (object) [
-        'title' => $row["id"],
-        'values' => [
-            "<p>Id: ".$row["id"]."<br/>
-        Name: ".$row["client_first_name"]." ".$row["client_last_name"]."</p>",
-        ]
-    ];
-    $printValue = json_encode($pvalue);
-echo
-"
-<div id='accordion_".$row["id"]."' class='card opacity-90 $bgClass'>
-    <input type='hidden' id='bgClass' value='$bgClass'/>
-    <input type='hidden' id='OrderDate' value='$jDate'/>
-    <input type='hidden' id='printValue' value='$printValue'/>
-    <span class='btPrint bg-secondary text-light' id='print_".$row["id"]."'><i class='fa fa-print' aria-hidden='true'></i></span>
+?>
+<div id='accordion_<?php echo $row["id"] ?>' class='card opacity-90 <?php echo $bgClass ?>'>
+    <input type='hidden' id='bgClass' value='<?php echo $bgClass ?>'/>
+    <!-- <input type='hidden' id='OrderDate' value='$jDate'/> -->
+    <!-- <input type='hidden' id='printValue' value='$printValue'/> -->
+    <button class='btPrint bg-secondary text-light' id='print_<?php echo $row["id"] ?>' onclick='<?php echo "PrintElem(".$row["id"].")" ?>'><i class='fa fa-print' aria-hidden='true'></i></button>
 
-    <div class='card-header row ' data-toggle='collapse' data-target='#collapse_".$row["id"]."' aria-expanded='true' aria-controls='collapseOne'>
+    <div class='card-header row ' data-toggle='' data-target='#collapse_<?php echo $row["id"] ?>' aria-expanded='true' aria-controls='collapse_<?php echo $row["id"] ?>'>
             <div class='col-6'>
-                <p>Id: ".$row["id"]."<br/>
-                Name: ".$row["client_first_name"]." ".$row["client_last_name"]."</p>
+                <span>Id: <?php echo $row["id"] ?><br/>
+                Name: <?php echo $row["client_first_name"]." ".$row["client_last_name"]; ?></span>
             </div>
             <div class='col-6 text-right'>
-                <p>Shipment: ".$row["type"]."<br/>
-                Payment: ".$row["payment"]."</p>
+                <p>Shipment: <?php echo $row["type"] ?><br/>
+                Payment: <?php echo $row["payment"] ?></p>
             </div>
-            <div class='col-12'>Til: $oDate</div>
+            <div class='col-12'>Til: <?php echo $oDate ?></div>
     </div>
-    <div id='collapse_".$row["id"]."' class='collapse card-body text-center' aria-labelledby='headingOne' data-parent='#accordion_".$row["id"]."'>
-        <ul class='list-group text-white'>";
-        foreach($row["items"] as $item)
-        {
+    <div id='collapse_<?php echo $row["id"] ?>' class=' card-body text-center' aria-labelledby='headingOne' data-parent='#accordion_<?php echo $row["id"] ?>'>
+        <ul class='list-group text-white'>
+        <?php foreach($row["items"] as $item){ 
             if($item["type"] === "item")
-            {
-                echo "
+            { ?>
                 <li class='list-group-item card-text list-group-item-secondary d-flex justify-content-between align-items-start'>
-                    <div class='ms-2 me-auto fw-bold'>".$item["name"]."</div>
+                    <div class='ms-2 me-auto fw-bold'><?php echo $item["name"] ?></div>
                     
-                    <span class='badge bg-secondary text-white rounded-pill'>".$item["quantity"]."</span>
+                    <span class='badge bg-secondary text-white rounded-pill'><?php echo $item["quantity"] ?></span>
                 </li>
                 <div class='container'>
                 
-                    <ul class='list-group'>";
-                    if($item["instructions"])
-                    {
-                        echo  "
+                    <ul class='list-group'>
+                    <?php if($item["instructions"])
+                    { ?>
+                       
                         <li class='list-group-item list-group-item-danger d-flex justify-content-between align-items-start'>
-                            <div class='ms-2 me-auto fw-bold'>".$item["instructions"]."</div>
+                            <div class='ms-2 me-auto fw-bold'><?php echo $item["instructions"] ?></div>
                         </li>";
-                    }
+                <?php } 
                     foreach($item["options"] as $option)
-                    {
-                        // Group: ".$option["group_name"]." <br/> Value: ".$option["name"]." <br/> quantity: ".$option["quantity"]."
-                        echo "
+                    {?>
+                        
                         <li class='list-group-item list-group-item-primary d-flex justify-content-between align-items-start'>
-                            <div class='ms-2 me-auto fw-bold'>".$option["group_name"]."</div>
-                            <div class='ms-2 me-auto fw-bold'>".$option["name"]."</div>
+                            <div class='ms-2 me-auto fw-bold'><?php echo $option["group_name"] ?></div>
+                            <div class='ms-2 me-auto fw-bold'><?php echo $option["name"] ?></div>
                             <span class='badge bg-secondary text-white rounded-pill'>".$option["quantity"]."</span>
                            
                         </li>";
-                    }
+                <?php } ?>
 
-                echo "</ul></div>";
-            }
-        }
-        echo "</ul>";
-        echo "</div>
-</div>";
-}
-?>
+                </ul></div>
+                <?php } ?>
+            <?php } ?>
+      </ul>
+    </div>
+</div>
+<?php } ?>

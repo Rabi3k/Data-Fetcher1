@@ -8,6 +8,7 @@ function updateTime(){
 $(function(){
   setInterval(updateTime, 1000);
 });
+
 </script>
 <!-- Navbar (sticky bottom) -->
 

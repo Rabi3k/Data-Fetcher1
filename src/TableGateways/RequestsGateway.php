@@ -44,7 +44,7 @@ class RequestsGateway {
             {
                 $order = json_decode($request["body"],true);
                 $found_key = array_filter($orders,function($e) use (&$order){
-                    return $e["id"] === $order["id"];
+                    return $e["id"] === $order["id"] || $e["status"] ==='accepted';
                 });
                 if(!$found_key)
                 {

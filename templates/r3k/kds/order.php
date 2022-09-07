@@ -71,8 +71,8 @@ $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https"
                         <span class="itemtext "><?php echo $option["name"] ?></span><br/>
                     <?php } ?>
                 </div></div>
-                    <div class="tableitem col-4"><p class="itemtext"><?php echo $item["quantity"] ?></p></div>
-                    <div class="tableitem col-4"><p class="itemtext"><?php echo $item["price"] ?></p></div>
+                    <div class="tableitem col-4"><span class="itemtext"><?php echo $item["quantity"] ?></span></div>
+                    <div class="tableitem col-4"><span class="itemtext"><?php echo $item["price"] ?></span></div>
                         
                 </div>
                 <?php } }?>
@@ -82,8 +82,8 @@ $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https"
                 ?>
                 <div class="row service">
                     <div class="col-4"></div>
-                    <div class="Rate col-4"><h4><?php echo $item["name"] ?></h4></div>
-                    <div class="Rate col-4"><h4><?php echo $item["cart_discount_rate"]; ?></h4></div>
+                    <div class="Rate col-4 text-right"><h6><?php echo $item["name"] ?></h6></div>
+                    <div class="Rate col-4"><h6><?php echo $item["cart_discount_rate"]; ?></h6></div>
                 </div>
                 <?php } }?>
                 <?php foreach($data["items"] as $item){ 
@@ -91,19 +91,19 @@ $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https"
                 ?>
                 <div class="row service">
                     <div class="col-4"></div>
-                    <div class="Rate col-4"><h4><?php echo $item["name"] ?></h4></div>
-                    <div class="payment col-4"><h4><?php echo $item["price"]." ".$data["currency"]; ?></h4></div>
+                    <div class="Rate col-4 text-right"><h6><?php echo $item["name"] ?></h6></div>
+                    <div class="payment col-4"><h6><?php echo $item["price"]." ".$data["currency"]; ?></h6></div>
                 </div>
                 <?php } }?>
                 
                 <div class="row service"><!--Tax-->
                     <div class="col-4"></div>
-                    <div class="Rate col-4"><h4><?php echo $data["tax_name"]; ?></h4></div>
-                    <div class="payment col-4"><h4><?php echo $data["tax_value"]." ".$data["currency"]; ?></h4></div>
+                    <div class="Rate col-4 text-right"><h6><?php echo $data["tax_name"]; ?></h6></div>
+                    <div class="payment col-4"><h6><?php echo $data["tax_value"]." ".$data["currency"]; ?></h6></div>
                 </div>
                 <div class="row tabletitle"><!--Total-->
                     <div class="col-4"></div>
-                    <div class="Rate col-4"><h4>Total</h4></div>
+                    <div class="Rate col-4 text-right"><h4>Total</h4></div>
                     <div class="payment col-4"><h4><?php echo $data["total_price"]." ".$data["currency"]; ?></h4></div>
                 </div>
             </div>

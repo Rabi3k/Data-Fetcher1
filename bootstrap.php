@@ -22,4 +22,3 @@ ini_set('session.referer_check', 'TRUE');
 //print($_SERVER['HTTP_REFERER']);
 session_start();
 $_SESSION['Root_Path'] = $rootpath;
-
