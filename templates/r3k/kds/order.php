@@ -22,7 +22,7 @@ if(!$data)
 }
 $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 ?>
-<div id="invoice-POS">
+<div id="invoice-POS" class="bg-white">
     
     <center id="top">
       <div class="logo"></div>
