@@ -13,18 +13,22 @@ class UserLoginGateway {
     }
     function ValidateLogin($username,$password)
     {
-        $user = $this->GetUser($username,$password)[0];
-        var_dump($user) ;
-        if($user && isset($user) && ($user['user_name']===$username || $user['email']===$username ))
+        $users = $this->GetUser($username,$password);
+        if( count($users)>0)
         {
-           // echo 'Passed';
-            $_SESSION["loggedin"] = true;
-            $_SESSION["UserId"] = $id;
-            $_SESSION["username"] = $user['user_name'];
-               // header("Location: /kds");
-            $this->user= $user;
-            return true;
+            $user = $users[0];
+            if($user['user_name']===$username || $user['email']===$username )
+            {
+            // echo 'Passed';
+                $_SESSION["loggedin"] = true;
+                $_SESSION["UserId"] = $id;
+                $_SESSION["username"] = $user['user_name'];
+                // header("Location: /kds");
+                $this->user= $user;
+                return true;
+            }
         }
+        
         return false;
    
     }
@@ -47,7 +51,7 @@ class UserLoginGateway {
         try {
             $sth = $this->db->prepare($statement);
             $sth->execute(array('password' => $password, 'username' => $username));
-            $result = $sth->fetchAll();
+            $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
             return $result;
         } catch (\PDOException $e) {
             exit($e->getMessage());
