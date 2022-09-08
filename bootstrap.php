@@ -17,8 +17,9 @@ $template = getenv('Template_Name');
 $templatePath = "templates/$template";
 
 $rootpath=getenv('Rootpath');
+if (session_status() === PHP_SESSION_NONE) {
+    ini_set('session.referer_check', 'TRUE');
+    session_start();
+}
 
-ini_set('session.referer_check', 'TRUE');
-//print($_SERVER['HTTP_REFERER']);
-session_start();
 $_SESSION['Root_Path'] = $rootpath;
