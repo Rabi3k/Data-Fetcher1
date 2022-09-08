@@ -39,7 +39,7 @@ class UserLoginGateway {
     {
        /* $username = \mysql_escape_string($username);
         $password = \mysql_escape_string($password);*/
-        $statement = "SELECT * FROM $this->tblName WHERE user_name='$username' AND `password` = PASSWORD($password);";
+        $statement = "SELECT * FROM $this->tblName WHERE user_name='$username' AND `password` = PASSWORD('$password');";
 
         try {
             $statement = $this->db->query($statement);
