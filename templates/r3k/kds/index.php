@@ -21,25 +21,31 @@ include "../$templatePath/header.php";
 
 function myFunction () {
     //console.log('Executed!');
-$.ajax({
-  type: 'post',
-  url: 'load-cards.php',
-  success: function (response) {
-   // We get the element having id of display_info and put the response inside it
-      $('#orderCards').html(response);
-      eval(document.getElementById("orderCards").innerHTML);
-  }
-  });
+
+var NyActiveOrdersIds=[] ;
+ $.getJSON('../api/nyorders').then(r=>
+ {
+    let toRemove = ActiveOrderIds.filter(x => !r.includes(x));
+ let toAdd = r.filter(x => !ActiveOrderIds.includes(x));
+ if(toRemove && toRemove.length>0){
+    toRemove.forEach(x=>{$('#accordion_'+x).remove(); });
+ }
+ 
+ if(toAdd && toAdd.length>0){
+    toAdd.forEach(x=>{$.get('create-card.php?id='+x,function(resp){$('#orderCards').append(resp)})});
+ }
+ ActiveOrderIds = r;
+ });
+ 
+ 
 }
 
-var interval = setInterval( function(){myFunction();},1000);
+var interval = setInterval( function(){myFunction();},3*1000);
 </script>
 
 
 <div class="card-columns" id="orderCards">
 <?php
-
-
 include "load-cards.php";
 ?>
 

@@ -11,11 +11,11 @@ class OrderController {
 
     private $requestsGateway;
 
-    public function __construct($db, $requestMethod, $orderId)
+    public function __construct($db, $requestMethod, $orderId=null)
     {
         $this->db = $db;
         $this->requestMethod = $requestMethod;
-        $this->orderId = $orderId;
+        $this->orderId = $orderId??null;
 
         $this->requestsGateway = new RequestsGateway($db);
     }
@@ -48,6 +48,17 @@ class OrderController {
         $result = $this->requestsGateway->RetriveAllOrders();
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] = json_encode($result);
+        return $response;
+    }
+    public function getActiveOrderIds()
+    {
+        $sDate =(new \DateTime('midnight',new \DateTimeZone('Europe/Copenhagen')));
+        $eDate =(new \DateTime('tomorrow midnight',new \DateTimeZone('Europe/Copenhagen')));
+        $data = $this->requestsGateway->RetriveAllOrdersByDate($sDate,$eDate);
+        $idOrders = array_column($data, 'id');
+        $response['status_code_header'] = 'HTTP/1.1 200 OK';
+        $response['body'] = json_encode($data);
+        echo json_encode($idOrders);
         return $response;
     }
     private function getAllOrdersByDate($startDate,$endDate)

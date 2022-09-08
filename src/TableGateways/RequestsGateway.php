@@ -25,11 +25,20 @@ class RequestsGateway {
     }
     public function findAllActive()
     {
-        $statement = "SELECT * FROM $this->tblName group by `order_id` HAVING MAX(executed)=0;";
+        $statement = "SELECT 
+            Max(id) as 'id',
+            Max(private_key) as 'private_key',
+            Max(order_id) as 'order_id',
+            Max(body) as 'body',
+            Max(created_date) as 'created_date',
+            Max(executed) as 'executed'
+        FROM $this->tblName group by order_id having (executed)=0;";
 
         try {
             $statement = $this->db->query($statement);
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+           // echo \json_encode($result);
+
             return $result;
         } catch (\PDOException $e) {
             exit($e->getMessage());
@@ -39,15 +48,19 @@ class RequestsGateway {
     {
        $result = $this->findAllActive();
        $orders = array();
+       //echo "<span class='card'>".\json_encode($result)."<br/></span>";
         try {
             foreach($result as $request)
             {
                 $order = json_decode($request["body"],true);
+                //echo "<span class='card'>".\json_encode($order)."<br/></span>";
                 $found_key = array_filter($orders,function($e) use (&$order){
-                    return $e["id"] === $order["id"] || $e["status"] ==='accepted';
+                   // echo "<span class='card'>".\json_encode($order)."<br/></span>";
+                    return $e["id"] === $order["id"] || $order["status"] !=='accepted';
                 });
                 if(!$found_key)
                 {
+                    //echo "<span class='card'>".\json_encode($order)."<br/></span>";
                     array_push($orders,$order);
                 }
             }
@@ -68,7 +81,7 @@ class RequestsGateway {
             $found_orders = array_filter($orders,function($e) use (&$sDate,&$eDate){
                 $oDate = new \DateTime($e["fulfill_at"]);
                 $oDate->setTimezone( new \DateTimeZone($e["restaurant_timezone"]));
-               // echo "<span class='card'>".$sDate->format('m-d h:i') ."=>". $oDate->format('m-d h:i') ."&&". $eDate->format('m-d h:i') ."=>". $oDate->format('m-d h:i')."<br/></span>";
+                //echo "<span class='card'>".$sDate->format('m-d H:i') ."=>". $oDate->format('m-d H:i') ."&&". $eDate->format('m-d H:i') ."=>". $oDate->format('m-d H:i')."<br/></span>";
                 return ($sDate <= $oDate && $eDate >=$oDate);
                 });
             return  $found_orders;

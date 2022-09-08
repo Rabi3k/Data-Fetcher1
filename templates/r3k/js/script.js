@@ -1,3 +1,4 @@
+var ActiveOrderIds =[];
 
 function PrintElem(id)
 {

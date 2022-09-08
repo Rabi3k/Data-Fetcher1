@@ -13,6 +13,7 @@ $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $uri = explode( '/', $uri );
 
 $query = explode( '/',strtolower($_SERVER['QUERY_STRING']));
+$requestMethod = $_SERVER["REQUEST_METHOD"];
 switch($query[0])
 {
     case 'request':
@@ -21,7 +22,6 @@ switch($query[0])
             $reqId = (int) $query[1];
         }
 
-        $requestMethod = $_SERVER["REQUEST_METHOD"];
 
         // pass the request method and user ID to the PersonController and process the HTTP request:
         $controller = new RequestController($dbConnection, $requestMethod, $reqId);
@@ -33,12 +33,14 @@ switch($query[0])
             $orderId = (int) $query[1];
         }
 
-        $requestMethod = $_SERVER["REQUEST_METHOD"];
-
         // pass the request method and user ID to the PersonController and process the HTTP request:
         $controller = new OrderController($dbConnection, $requestMethod, $orderId);
         $controller->processRequest();
         break;
+    case 'nyorders':
+        $controller = new OrderController($dbConnection, $requestMethod, null);
+        $controller->getActiveOrderIds();
+            break;
     default:
         header("HTTP/1.1 404 Not Found");
         exit();
