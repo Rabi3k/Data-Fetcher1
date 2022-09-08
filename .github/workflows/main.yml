@@ -14,3 +14,9 @@ jobs:
         server: ftp.kbs-leb.com
         username: Portal@portal.kbs-leb.com
         password: ${{ secrets.ftp_password }}
+        exclude: |
+          **/.git*
+          **/.git*/**
+          **/.vscode*/**
+          **/node_modules/**
+          
