@@ -40,15 +40,15 @@ class UserLoginGateway {
     }
     function GetUser($username,$password)
     {
-       /* $username = \mysql_escape_string($username);
-        $password = \mysql_escape_string($password);*/
+        $username = strtolower($username);
+        /*$password = \mysql_escape_string($password);*/
         $statement = "SELECT * FROM $this->tblName WHERE (LOWER(user_name)=:username AND `password` = PASSWORD(:password))
 
         OR (LOWER(email)=:username AND `password` = PASSWORD(:password));";
 
         try {
             $sth = $this->db->prepare($statement);
-            $sth->execute(array('password' => $password, 'username' => strtolower($username)));
+            $sth->execute(array('password' => $password, 'username' => $username));
             $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
             return $result;
         } catch (\PDOException $e) {
