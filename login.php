@@ -9,10 +9,6 @@ if(isset($_POST['uname']) && isset($_POST['password']))
     //show error message;
     $errorMessage = true;
   }
-  else
-  {
-    echo 'Passed';
-  }
 }
 if($userLogin->checkLogin())
 {

@@ -19,11 +19,9 @@ class UserLoginGateway {
             $user = $users[0];
             if($user['user_name']===$username || $user['email']===$username )
             {
-            // echo 'Passed';
                 $_SESSION["loggedin"] = true;
-                $_SESSION["UserId"] = $id;
+                $_SESSION["UserId"] = $user['id'];
                 $_SESSION["username"] = $user['user_name'];
-                // header("Location: /kds");
                 $this->user= $user;
                 return true;
             }
