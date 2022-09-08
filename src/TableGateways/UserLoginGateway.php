@@ -13,12 +13,12 @@ class UserLoginGateway {
     }
     function ValidateLogin($username,$password)
     {
-        $user = $this->GetUser($username,$password);
-        if($user && isset($user[0]) && ($user[0]['user_name']===$username || $user[0]['email']===$username ))
+        $user = $this->GetUser($username,$password)[0];
+        if($user && isset($user) && ($user['user_name']===$username || $user['email']===$username ))
         {
-            echo 'Passed';
+           // echo 'Passed';
             $_SESSION["loggedin"] = true;
-            //$_SESSION["id"] = $id;
+            $_SESSION["UserId"] = $id;
             $_SESSION["username"] = $user['user_name'];
                // header("Location: /kds");
             $this->user= $user;
