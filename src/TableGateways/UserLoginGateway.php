@@ -14,6 +14,7 @@ class UserLoginGateway {
     function ValidateLogin($username,$password)
     {
         $user = $this->GetUser($username,$password)[0];
+        var_dump($user) ;
         if($user && isset($user) && ($user['user_name']===$username || $user['email']===$username ))
         {
            // echo 'Passed';
