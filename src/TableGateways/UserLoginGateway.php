@@ -14,12 +14,12 @@ class UserLoginGateway {
     function ValidateLogin($username,$password)
     {
         $user = $this->GetUser($username,$password);
-        if($user && isset($user[0]) && $user[0]['user_name']===$username)
+        if($user && isset($user[0]) && ($user[0]['user_name']===$username || $user[0]['email']===$username ))
         {
             echo 'Passed';
             $_SESSION["loggedin"] = true;
             //$_SESSION["id"] = $id;
-            $_SESSION["username"] = $username;
+            $_SESSION["username"] = $user['user_name'];
                // header("Location: /kds");
             $this->user= $user;
             return true;
@@ -39,11 +39,14 @@ class UserLoginGateway {
     {
        /* $username = \mysql_escape_string($username);
         $password = \mysql_escape_string($password);*/
-        $statement = "SELECT * FROM $this->tblName WHERE user_name='$username' AND `password` = PASSWORD('$password');";
+        $statement = "SELECT * FROM $this->tblName WHERE (LOWER(user_name)=LOWER(:username) AND `password` = PASSWORD(:password))
+
+        OR (LOWER(email)=LOWER(:username) AND `password` = PASSWORD(:password));";
 
         try {
-            $statement = $this->db->query($statement);
-            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $sth = $this->db->prepare($statement);
+            $sth->execute(array('password' => $password, 'username' => $username));
+            $result = $sth->fetchAll();
             return $result;
         } catch (\PDOException $e) {
             exit($e->getMessage());
