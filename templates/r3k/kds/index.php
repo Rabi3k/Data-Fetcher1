@@ -19,26 +19,6 @@ include "../$templatePath/header.php";
 <script type='text/javascript'>
 
 
-function myFunction () {
-    //console.log('Executed!');
-
-var NyActiveOrdersIds=[] ;
- $.getJSON('../api/nyorders').then(r=>
- {
-    let toRemove = ActiveOrderIds.filter(x => !r.includes(x));
- let toAdd = r.filter(x => !ActiveOrderIds.includes(x));
- if(toRemove && toRemove.length>0){
-    toRemove.forEach(x=>{$('#accordion_'+x).remove(); });
- }
- 
- if(toAdd && toAdd.length>0){
-    toAdd.forEach(x=>{$.get('create-card.php?id='+x,function(resp){$('#orderCards').append(resp)})});
- }
- ActiveOrderIds = r;
- });
- 
- 
-}
 
 var interval = setInterval( function(){myFunction();},3*1000);
 </script>

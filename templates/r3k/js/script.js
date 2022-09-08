@@ -13,3 +13,32 @@ function PrintElem(id)
         }, "1000");
         return true;
 }
+
+function updateTime(){
+    $('#time').html(Date(timestamp));
+    timestamp++;
+  }
+  $(function(){
+    setInterval(updateTime, 1000);
+  });
+
+  
+function myFunction () {
+    //console.log('Executed!');
+
+ $.getJSON('../api/nyorders').then(r=>
+ {
+    let toRemove = ActiveOrderIds.filter(x => !r.includes(x));
+ let toAdd = r.filter(x => !ActiveOrderIds.includes(x));
+ if(toRemove && toRemove.length>0){
+    toRemove.forEach(x=>{$('#accordion_'+x).remove(); });
+ }
+ 
+ if(toAdd && toAdd.length>0){
+    toAdd.forEach(x=>{$.get('create-card.php?id='+x,function(resp){$('#orderCards').append(resp)})});
+ }
+ ActiveOrderIds = r;
+ });
+ 
+ 
+}

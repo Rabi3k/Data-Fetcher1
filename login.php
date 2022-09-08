@@ -1,9 +1,19 @@
 <?php
 
 require "bootstrap.php";
-if(isset($_POST['uname']) && isset($_POST['password'])) {
-  $userLogin->ValidateLogin($_POST['uname']);
-    }
+$errorMessage = false;
+if(isset($_POST['uname']) && isset($_POST['password'])) 
+{
+  if(!$userLogin->ValidateLogin($_POST['uname'],$_POST['password']))
+  {
+    //show error message;
+    $errorMessage = true;
+  }
+  else
+  {
+    echo 'Passed';
+  }
+}
 if($userLogin->checkLogin())
 {
   $path = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
@@ -43,7 +53,7 @@ background: linear-gradient(to right, rgba(106, 17, 203, 1), rgba(37, 117, 252, 
                     <p class="text-white-50 mb-5">Please enter your login and password!</p>
 
                     <div class="form-outline form-white mb-4">
-                        <input type="email" id="uname" name="uname" class="form-control form-control-lg" <?php echo !isset($_POST['uname']) ? '123' : 'value='.$_POST['uname']; ?> />
+                        <input type="text" id="uname" name="uname" class="form-control form-control-lg" <?php echo !isset($_POST['uname']) ? '123' : 'value='.$_POST['uname']; ?> />
                         <label class="form-label" for="uname">Email</label>
                     </div>
 
