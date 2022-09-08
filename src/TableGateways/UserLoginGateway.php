@@ -42,13 +42,13 @@ class UserLoginGateway {
     {
        /* $username = \mysql_escape_string($username);
         $password = \mysql_escape_string($password);*/
-        $statement = "SELECT * FROM $this->tblName WHERE (LOWER(user_name)=LOWER(:username) AND `password` = PASSWORD(:password))
+        $statement = "SELECT * FROM $this->tblName WHERE (LOWER(user_name)=:username AND `password` = PASSWORD(:password))
 
-        OR (LOWER(email)=LOWER(:username) AND `password` = PASSWORD(:password));";
+        OR (LOWER(email)=:username AND `password` = PASSWORD(:password));";
 
         try {
             $sth = $this->db->prepare($statement);
-            $sth->execute(array('password' => $password, 'username' => $username));
+            $sth->execute(array('password' => $password, 'username' => strtolower($username)));
             $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
             return $result;
         } catch (\PDOException $e) {
