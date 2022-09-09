@@ -12,8 +12,8 @@ if(!isset($row))
 }
 $OrderDate = new \DateTime($row["fulfill_at"]??$row["updated_at"]);
     $OrderDate->setTimezone( new \DateTimeZone($row["restaurant_timezone"]));
-    $jDate=$OrderDate->format('Y/m/d h:i:s');
-    $oDate= $OrderDate->format('l-M-y  h:i:s');
+    $jDate=$OrderDate->format('Y/m/d H:i:s');
+    $oDate= $OrderDate->format('l-M-y  H:i:s');
 
     
     $todayW = (new \DateTime())->setTimestamp(strtotime("-10 minutes"));

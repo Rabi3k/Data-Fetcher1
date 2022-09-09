@@ -26,14 +26,16 @@ function updateTime(){
 function myFunction () {
     //console.log('Executed!');
     var now = new Date();
-    var later = new Date(now.getMinutes()+10);
+    var later = new Date()
+    later.setMinutes(now.getMinutes()+10);
 
    
     $("input[name='OrderDate']").each(function(){
-      if(now < new Date($(this).val())){
+      var oDate = new Date($(this).val());
+      if(now > oDate){
           $($(this).parent()).toggleClass('bg-danger text-white');
       }
-      else if(later < new Date($(this).val())){
+      else if(later > oDate){
          $($(this).parent()).toggleClass('bg-warning');
      }
 
