@@ -25,6 +25,19 @@ function updateTime(){
   
 function myFunction () {
     //console.log('Executed!');
+    var now = new Date();
+    var later = new Date();
+    later.setMinutes(now.getMinutes()+10);
+    $("input[name='OrderDate']").each(function(){
+      if(now > new Date($(this).val())){
+          $($(this).parent()).toggleClass('bg-danger text-white');
+      }
+      else if(now > new Date($(this).val())){
+         $($(this).parent()).toggleClass('bg-warning');
+     }
+
+          })
+
 
  $.getJSON('../api/nyorders').then(r=>
  {
@@ -35,7 +48,10 @@ function myFunction () {
  }
  
  if(toAdd && toAdd.length>0){
-    toAdd.forEach(x=>{$.get('create-card.php?id='+x,function(resp){$('#orderCards').append(resp)})});
+    toAdd.forEach(x=>{
+      $.get('create-card.php?id='+x,function(resp){$('#orderCards').append(resp)});
+      playSound();
+   });
  }
  ActiveOrderIds = r;
  });

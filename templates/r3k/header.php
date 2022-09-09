@@ -5,30 +5,30 @@
 </script>
 <!-- Navbar (sticky bottom) -->
 
-<header class="sticky-top">
+<header class="sticky-top bg-custom opacity-min p2">
   
-  <div class="w3-bar w3-white w3-center w3-padding w3-opacity-min w3-hover-opacity-off">
-  <div class="row">
-  <div class="col-12">
-    <p id ='time' class="text-center">     
-    </p></div></div>
-    <a href="<?php echo $rootpath?>/" style="width:25%" class="w3-bar-item w3-button">Home</a>
-    <a href="https://funneat.dk/" style="width:25%" class="w3-bar-item w3-button" target="_blank">Fun'N Eat</a>
-    <a href="<?php echo $rootpath?>/kds" style="width:25%" class="w3-bar-item w3-button">KDS System</a>
-    <?php
-    if (!$_SESSION || !isset($_SESSION['loggedin']) || $_SESSION["loggedin"] === false ) 
-    {
-    ?>
-    <a href="<?php echo $rootpath?>/login.php" style="width:25%" class="w3-bar-item w3-button w3-hover-black">login</a>
-    <?php
-    }
-    else
-    {
-    ?>
-    <a href="<?php echo $rootpath?>/logout.php" style="width:25%" class="w3-bar-item w3-button w3-hover-black">logout</a>
-    <?php
-    }
-    ?>
-  </div>
+  <div class="container"><div class="row">
+    <div class="col-12">
+      <p id ='time' class="text-center"></p>
+    </div>
+  </div></div>
+  <ul class="nav justify-content-center ">
+
+  <li class="nav-item">
+    <a class="nav-link" href="<?php echo $rootpath?>/" >Home</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="https://funneat.dk/" target="_blank">Fun'N Eat</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="<?php echo $rootpath?>/kds">KDS System</a>
+  </li>
+  <li class="nav-item">
+  <?php if(!$userLogin->checkLogin()) { ?>
+    <a class="nav-link"  href="<?php echo $rootpath?>/login.php">login</a>
+    <?php } else { ?>
+    <a class="nav-link"  href="<?php echo $rootpath?>/logout.php">logout</a>
+  <?php } ?>
+  </li>
+</ul>
 </header>
-<script src="//code.tidio.co/cf02wzadzvhfykn8u60bxpjnuw5niber.js" async></script>

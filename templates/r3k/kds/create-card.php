@@ -17,24 +17,15 @@ $OrderDate = new \DateTime($row["fulfill_at"]??$row["updated_at"]);
 
     
     $todayW = (new \DateTime())->setTimestamp(strtotime("-10 minutes"));
+    $todayW->setTimezone( new \DateTimeZone($row["restaurant_timezone"]));
     $today = new \DateTime();
+    $today->setTimezone( new \DateTimeZone($row["restaurant_timezone"]));
     $bgClass='bg-info';
-    if($oDate>$todayW)
-    {
-        $bgClass='bg-info';
-    }
-    elseif($oDate<$today)
-    {
-        $bgClass='bg-danger';
-    }
-    elseif($oDate<$todayW)
-    {
-        $bgClass='bg-warning';
-    }
+   
 ?>
 <div id='accordion_<?php echo $row["id"] ?>' class='card opacity-90 <?php echo $bgClass ?>'>
-    <input type='hidden' id='bgClass' value='<?php echo $bgClass ?>'/>
-    <!-- <input type='hidden' id='OrderDate' value='$jDate'/> -->
+    <!-- <input type='hidden' id='bgClass_<?php echo $row["id"] ?>' value='<?php echo $bgClass ?>'/> -->
+    <input type='hidden' name="OrderDate" id='OrderDate_<?php echo $row["id"] ?>' value='<?php echo $jDate ?>'/>
     <!-- <input type='hidden' id='printValue' value='$printValue'/> -->
     <button class='btPrint bg-secondary text-light' id='print_<?php echo $row["id"] ?>' onclick='<?php echo "PrintElem(".$row["id"].")" ?>'><i class='fa fa-print' aria-hidden='true'></i></button>
 

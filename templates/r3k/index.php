@@ -11,11 +11,18 @@ include  $templatePath.'/header.php';
 
 
 
-<body class="w3-display-container w3-wide bgimg w3-grayscale-min">
+<body class="w3-display-container w3-wide bgimg">
 
-  <div class="w3-display-middle w3-text-white w3-center">
-    <h1 class="w3-jumbo">KDS System</h1>
-    <h2>Are your kitchen busy all the time?</h2>
+  <div class="display-middle text-white text-center">
+    <h1 class="text-jumbo">KDS System</h1>
+    <?php if(!$userLogin->checkLogin()) { ?>
+    <h2>
+      Is your kitchen busy all time?<br/>
+      Try our solution!<br/>
+      <a type="button" class="btn btn-secondary btn-sm" href="<?php echo $rootpath?>/kds">Click Here</a>
+    </h2>
+      <?php } ?>
+    
   </div>
 
 

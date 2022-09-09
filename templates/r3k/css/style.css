@@ -1,6 +1,23 @@
+
 body,h1,h2{font-family: "Raleway", sans-serif}
 body, html {max-height: 100vh;overflow:auto;}
 p {line-height: 2}
+a {
+  color: inherit;
+}
+a {
+  background-color: transparent;
+}
+
+.display-middle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+}
+
+
 .bgimg {
   min-height: 100vh;
   background-position: center;
@@ -24,3 +41,13 @@ p {line-height: 2}
   -o-text-overflow: ellipsis;
   max-width: 20em;
   }
+.bg-custom
+{
+  background: linear-gradient(135deg, rgb(171, 236, 214), rgb(251, 237, 150));
+}
+.opacity-min {
+  opacity: 0.75;
+}
+.text-jumbo {
+  font-size: 64px!important;
+}
