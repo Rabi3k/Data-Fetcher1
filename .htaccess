@@ -1,5 +1,15 @@
 RewriteEngine On
 
-RewriteCond %{THE_REQUEST} /public/([^\s?]*) [NC]
+
+RewriteCond %{THE_REQUEST} %{ENV:ROOT_PATH}/public/([^\s?]*) [NC]
 RewriteRule ^ %1 [L,NE,R=302]
 RewriteRule ^api/(.*)$ public/index.php?$1 [L,QSA]
+RewriteRule ^api$ public/index.php [L,QSA]
+
+RewriteCond %{THE_REQUEST} %{ENV:ROOT_PATH}/dashboard/([^\s?]*) [NC]
+RewriteRule ^ %1 [L,NE,R=302]
+RewriteRule ^admin/(.*)/(.*)$ dashboard/index.php?page=$1&q=$2 [L,QSA]
+RewriteRule ^admin/(.*)$ dashboard/index.php?page=$1 [L,QSA]
+RewriteRule ^admin$ dashboard/index.php [L,QSA]
+
+

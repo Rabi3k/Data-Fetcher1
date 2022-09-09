@@ -43,7 +43,8 @@ switch($query[0])
             break;
     default:
         header("HTTP/1.1 404 Not Found");
-        exit();
+        //exit();
+        die("Not Found");
 }
 
 

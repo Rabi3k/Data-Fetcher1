@@ -16,10 +16,16 @@ if (session_status() === PHP_SESSION_NONE) {
     $template = getenv('Template_Name');
     $templatePath = "templates/$template";
 
-    $rootpath=getenv('Rootpath');
+    $rootpath=getenv('ROOT_PATH');
 
     ini_set('session.referer_check', 'TRUE');
     session_start();
 }
-
-$_SESSION['Root_Path'] = $rootpath;
+if(!isset($rootpath))
+{
+    $rootpath=$_SESSION['ROOT_PATH'];
+}
+else
+{
+    $_SESSION['ROOT_PATH'] = $rootpath;
+}
