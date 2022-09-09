@@ -17,7 +17,7 @@ class UserLoginGateway {
         if( count($users)>0)
         {
             $user = $users[0];
-            if($user['user_name']===$username || $user['email']===$username )
+            if(strtolower($user['user_name'])===strtolower($username) || strtolower($user['email'])===strtolower($username ))
             {
                 $_SESSION["loggedin"] = true;
                 $_SESSION["UserId"] = $user['id'];
