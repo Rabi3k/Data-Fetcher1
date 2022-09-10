@@ -12,6 +12,7 @@ if(isset($_POST['uname']) && isset($_POST['password']))
 }
 if($userLogin->checkLogin())
 {
+  $returnUrl ="$rootpath/";
   if(isset($_SERVER['HTTP_REFERER']))
   {
   $path = parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH);
@@ -20,6 +21,10 @@ if($userLogin->checkLogin())
   echo rawurldecode($_SERVER['HTTP_REFERER'])."<br/>";
   echo $returnUrl;*/
   header("Location: $returnUrl");
+  }
+  else{
+    header("Location: $returnUrl");
+
   }
   exit();
 }
