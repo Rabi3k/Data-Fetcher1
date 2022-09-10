@@ -18,6 +18,7 @@ $oper = $_GET["q"];
 $id = $_GET["id"]??null;
 $startDate = $_GET["s"]??NULL;
 $endDate = $_GET["e"]??null;
+$secrets = $_GET["secrets"]??null;
 //echo file_get_contents('php://input');
 //echo $_GET["secrets"]??"Get Nothing";
 //echo $_POST["secrets"]??"Post nothing";
@@ -35,6 +36,23 @@ switch($oper)
         break;
     case 'orders':
         $controller = new OrderController($dbConnection, $requestMethod, null);
+
+        if(isset($startDate) && isset($endDate) && $requestMethod==='GET')
+        {
+            $secrets = json_decode($secrets);
+            if(!isset($secrets) || count($secrets)<1)
+            {
+                header('HTTP/1.1 401 Unauthorized');
+                exit();    
+            }
+           // var_dump($body->secrets);
+            $response =  $controller->getActiveOrderIdsByDate($startDate,$endDate,$secrets);    
+            header($response['status_code_header']);
+            if ($response['body']) 
+            {
+                echo $response['body'];
+            }
+        }
         $controller->getActiveOrderIds();
             break;
     default:

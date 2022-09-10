@@ -8,6 +8,7 @@ class OrderController {
     private $db;
     private $requestMethod;
     private $orderId;
+    public Array $secrets=array();
 
     private $requestsGateway;
 
@@ -57,13 +58,32 @@ class OrderController {
         $data = $this->requestsGateway->RetriveAllOrdersByDate($sDate,$eDate);
         $idOrders = array_column($data, 'id');
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
-        $response['body'] = json_encode($data);
-        echo json_encode($idOrders);
+        $response['body'] = json_encode($idOrders);
+        return $response;
+    }
+    public function getActiveOrderIdsByDate(string $startDate,string $endDate,array $secrets)
+    {
+        if($sDate =\DateTime::createFromFormat('dmY',strval($startDate),new \DateTimeZone('Europe/Copenhagen')))
+        {
+            $sDate->setTime(0,0);
+        }
+        if($eDate =\DateTime::createFromFormat('dmY',strval($endDate),new \DateTimeZone('Europe/Copenhagen')))
+        {
+            $eDate->setTime(23,59,59,999999);
+        }
+        $data = $this->requestsGateway->RetriveAllOrdersByDate($sDate,$eDate);
+
+        $found_orders = array_filter($data,function($e) use (&$secrets){
+            return (in_array(strvalue($e["restaurant_timezone"]),$secrets) );
+            });
+        $idOrders = array_column($found_orders, 'id');
+        $response['status_code_header'] = 'HTTP/1.1 200 OK';
+        $response['body'] = json_encode($idOrders);
         return $response;
     }
     private function getAllOrdersByDate($startDate,$endDate)
     {
-        $result = $this->requestsGateway->RetriveAllOrders($startDate,$endDate);
+        $result = $this->requestsGateway->RetriveAllOrdersByDate($startDate,$endDate);
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] = json_encode($result);
         return $response;

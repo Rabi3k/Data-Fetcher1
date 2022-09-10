@@ -55,6 +55,14 @@ class UserLoginGateway {
         }
         return $this->loggedIn;
     }
+    function GetSecrets()
+    {
+        if(isset($this->user))
+        {
+           return \json_encode($this->user->secrets);
+        }
+        return \json_encode(array());
+    }
     function LoadUserClass($id)
     {
         $statement = "SELECT 
@@ -80,13 +88,11 @@ class UserLoginGateway {
         -- restaurant_branch_keys
         GROUP_CONCAT(DISTINCT Concat( rbs.`branch_id`,',',rbs.`secret_key`) SEPARATOR '$') as 'secret_keys' 
 
-        
-
         FROM `users`as u
         LEFT JOIN `profiles` as p on (u.profile_id = p.id)
         LEFT JOIN `user_relations` as ur on (u.id = ur.user_id)
         LEFT JOIN `restaurant_branches` as rb1 on (ur.branch_id = rb1.id)
-        LEFT JOIN `restaurants` as r on (ur.restaurant_id = r.id or rb1.restaurant_id = r.id or 1=1)
+        LEFT JOIN `restaurants` as r on (ifnull(ur.restaurant_id ,rb1.restaurant_id)= r.id or(ifnull(ur.restaurant_id,1)=1 AND ifnull(ur.branch_id,1)=1) )
         LEFT JOIN `restaurant_branches` as rb on (rb.restaurant_id = r.id or rb.id = rb1.id)
         LEFT JOIN `restaurant_branch_keys` as rbs on (rbs.branch_id = rb.id)
         
