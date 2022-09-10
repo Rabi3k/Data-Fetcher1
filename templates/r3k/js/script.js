@@ -63,7 +63,7 @@ function myFunction () {
           })
 
 
- $.getJSON('../api/nyorders').then(r=>
+ $.getJSON('../api/orders').then(r=>
  {
     let toRemove = ActiveOrderIds.filter(x => !r.includes(x));
  let toAdd = r.filter(x => !ActiveOrderIds.includes(x));

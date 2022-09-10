@@ -11,14 +11,17 @@ class User{
     public string $password;
     public string $secret_key;
     public Profile $profile;
-    public Restaurant $restaurant;
+    public array $restaurants;
+    public array $secrets;
 #endregion
 
 #region Construct
     public function __construct()
     {
         $this->profile=new Profile();
-        $this->restaurant=new Restaurant();
+        $this->restaurants=array();
+        $this->secrets=array();
+        
     }
 #endregion
 
@@ -33,7 +36,8 @@ class User{
         string $password,
         string $secret_key,
         string $profile,
-        string $restaurant)
+        array $secrets,
+        array $restaurants)
     {
         
         $this->id = $id;
@@ -43,7 +47,8 @@ class User{
         $this->password = $password;
         $this->secret_key = $secret_key;
         $this->profile=$profile;
-        $this->restaurant=$restaurant;
+        $this->restaurants=$restaurants; 
+        $this->restaurants=$secrets;
     }
 
 #endregion
@@ -55,7 +60,8 @@ class User{
         string $password,
         string $secret_key,
         Profile $profile,
-        Restaurant $restaurant)
+        array $secrets,
+        array $restaurants)
     {
         $user = new User();
         $user->id = $id;
@@ -65,7 +71,8 @@ class User{
         $user->password = $password;
         $user->secret_key = $secret_key;
         $user->profile=$profile;
-        $user->restaurant=$restaurant;
+        $user->restaurants=$restaurants;
+        $user->restaurants=$secrets;
         return $user;
     }
 #endregion
