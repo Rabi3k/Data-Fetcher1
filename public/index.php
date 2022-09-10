@@ -37,7 +37,7 @@ switch($query[0])
         $controller = new OrderController($dbConnection, $requestMethod, $orderId);
         $controller->processRequest();
         break;
-    case 'nyorders':
+    case 'orders':
         $controller = new OrderController($dbConnection, $requestMethod, null);
         $controller->getActiveOrderIds();
             break;

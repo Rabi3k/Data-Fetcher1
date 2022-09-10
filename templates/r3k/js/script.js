@@ -13,13 +13,34 @@ function PrintElem(id)
         }, "1000");
         return true;
 }
-
+function changeTimeZone(date, timeZone,culture = 'da-DK') {
+   if (typeof date === 'string') {
+     return new Date(
+       new Date(date).toLocaleString(culture, {
+         timeZone,
+       }),
+     );
+   }
+   return new Date(
+      date.toLocaleString(culture, {
+        timeZone,
+      }),
+    );
+  }
+  function firstLetterCapitalize(_string) {
+   return _string.charAt(0).toUpperCase() + _string.slice(1);
+ }
 function updateTime(){
-    $('#time').html(Date(timestamp));
-    timestamp++;
+   //weekday:"long", year:"numeric", month:"short", day:"numeric",
+   const CopenhagenDate = 
+      (new Date()).toLocaleString('da-DK',{timeZone:'Europe/Copenhagen',dateStyle:"full"});
+   const CopenhagenTime = 
+      (new Date()).toLocaleString('da-DK',{timeZone:'Europe/Copenhagen',timeStyle:"long"});
+
+    $('#time').html(firstLetterCapitalize(CopenhagenDate)+"<br/>"+CopenhagenTime);
   }
   $(function(){
-    setInterval(updateTime, 1000);
+    setInterval(updateTime, 200);
   });
 
   

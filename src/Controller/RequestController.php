@@ -70,6 +70,7 @@ class RequestController {
 
     private function createRequestFromRequest()
     {
+        $header = json_encode(getallheaders()); 
         $body = file_get_contents('php://input');
         $input = (array) json_decode($body, TRUE);
         $results =array();
@@ -83,6 +84,7 @@ class RequestController {
             $result = $this->requestsGateway->insert([
                 'private_key' => $privateKey,
                 'order_id' => $orderId,
+                'header' => $header,
                 'body' => $body,
                 'executed' => $executed
         ]);

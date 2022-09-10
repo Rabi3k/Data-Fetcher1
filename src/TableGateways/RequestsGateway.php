@@ -140,16 +140,17 @@ class RequestsGateway {
     public function insert(Array $input)
     {
         $statement = "INSERT INTO $this->tblName
-        (`private_key`, `body`,`order_id`, `executed`) 
+        (`private_key`, `order_id`, `header`, `body`, `executed`) 
         VALUES 
-        (:private_key, :body, :order_id, :executed);";
+        (:private_key, :order_id, :header, :body, :executed);";
 
         try {
             $statement = $this->db->prepare($statement);
             $statement->execute(array(
                 'private_key' => $input['private_key'],
-                'body'  => $input['body'],
                 'order_id'  => $input['order_id'],
+                'header'  => $input['header'],
+                'body'  => $input['body'],
                 'executed'  =>$input['executed'],
             ));
             return $statement->rowCount();

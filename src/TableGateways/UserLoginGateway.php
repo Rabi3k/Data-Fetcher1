@@ -1,28 +1,36 @@
 <?php
 namespace Src\TableGateways;
+use Src\Classes\User;
+use Src\Classes\Profile;
+use Src\Classes\Restaurant;
+use Src\Classes\Branch;
+
 
 class UserLoginGateway {
 
     private $db = null;
     private $tblName = "`users`";
     private $user=null;
+    private $loggedIn =null;
 
     public function __construct($db)
     {
         $this->db = $db;
+        $this->user=new User();
     }
     function ValidateLogin($username,$password)
     {
-        $users = $this->GetUser($username,$password);
+        $users = $this->GetUserByUsernamePassword($username,$password);
         if( count($users)>0)
         {
             $user = $users[0];
+
             if(strtolower($user['user_name'])===strtolower($username) || strtolower($user['email'])===strtolower($username ))
             {
                 $_SESSION["loggedin"] = true;
                 $_SESSION["UserId"] = $user['id'];
                 $_SESSION["username"] = $user['user_name'];
-                $this->user= $user;
+                //$this->LoadUserClass($user['id']);
                 return true;
             }
         }
@@ -32,13 +40,128 @@ class UserLoginGateway {
     }
     function checkLogin()
     {
-        if (!$_SESSION || !isset($_SESSION['loggedin']) || $_SESSION["loggedin"] === false ) 
-        {          
-            return false;
+        if(isset($this->loggedIn))
+        {
+            return $this->loggedIn;
         }
-        return true;
+        if (!$_SESSION || !isset($_SESSION['loggedin']) || $_SESSION["loggedin"] === false ) 
+        {        
+            $this->loggedIn = false;  
+        }
+        else
+        {
+            $this->LoadUserClass($_SESSION["UserId"]);
+            $this->loggedIn = true;
+        }
+        return $this->loggedIn;
     }
-    function GetUser($username,$password)
+    function LoadUserClass($id)
+    {
+        $statement = "SELECT 
+
+        u.`id`, 
+        u.`email`, 
+        u.`user_name`, 
+        u.`full_name`, 
+        u.`password`, 
+        u.`secret_key`, 
+        u.`profile_id`, 
+        u.`restaurant_id`,
+        
+        -- Profile
+        p.`Name` AS 'profile' ,
+        
+        -- restaurants
+        r.`name` as 'restaurant_name', 
+        r.`phone`, 
+        r.`email` as 'restaurant_email', 
+        r.`cvr`, 
+        r.`logo`, 
+        r.`reference_id`,
+        
+        -- restaurant_branches
+        GROUP_CONCAT(DISTINCT Concat(rb.`id`,',',rb.`city`,',',rb.`zip_code`,',',rb.`address`,',',rb.`country`,',',IFNULL(rb.`cvr`, '0')) SEPARATOR '$') as 'branches',
+
+        -- restaurant_branch_keys
+        GROUP_CONCAT(DISTINCT Concat( rbs.`branch_id`,',',rbs.`secret_key`) SEPARATOR '$') as 'secret_keys' 
+
+        
+
+        FROM `users`as u
+        LEFT JOIN `profiles` as p on (u.profile_id = p.id)
+        LEFT JOIN `user_relations` as ur on (u.id = ur.user_id)
+        LEFT JOIN `restaurant_branches` as rb1 on (ur.branch_id = rb1.id)
+        LEFT JOIN `restaurants` as r on (ur.restaurant_id = r.id or rb1.restaurant_id = r.id)
+        LEFT JOIN `restaurant_branches` as rb on (rb.restaurant_id = r.id or rb.id = rb1.id)
+        LEFT JOIN `restaurant_branch_keys` as rbs on (rbs.branch_id = rb.id)
+        
+        WHERE u.`id` = ?
+        
+        GROUP BY u.`id`;";
+
+         try {
+            $statement = $this->db->prepare($statement);
+            $statement->execute(array($id));
+            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            foreach($result as $row)
+            {
+                $profile = Profile::GetProfile(intval($row["profile_id"]),strval($row["profile"]));
+                $restaurant = Restaurant::Getrestaurant(intval($row["restaurant_id"])
+                ,strval($row["restaurant_email"])
+                ,strval($row["restaurant_name"])
+                ,strval($row["phone"])
+                ,strval($row["cvr"])
+                ,strval($row["logo"])
+                ,strval($row["reference_id"])
+                ,array()
+                );
+                $branches = explode( '$',$row["branches"]);
+                foreach($branches as $br)
+                {
+                    $bra = explode( ',',$br);
+                    $branch = Branch::GetBranch(
+                        intval($bra[0]),
+                        intval($row["restaurant_id"]),
+                        strval($bra[1]),
+                        strval($bra[2]),
+                        strval($bra[3]),
+                        strval($bra[4]),
+                        strval($bra[5]),
+                        array()
+                    );
+                    $secrets = explode( '$',$row["secret_keys"]);
+                    foreach($secrets as $s)
+                    {
+                        $secret = explode( ',',$s);
+                        if($branch->id === intval($secret[0]))
+                        {
+                            array_push($branch->secrets,$secret[1]);
+                        }
+                    }
+                    
+                    array_push($restaurant->branches,$branch);
+                }
+                $this->user = User::GetUser(
+                    intval($row["id"]),
+                    strval($row["email"]),
+                    strval($row["user_name"]),
+                    strval($row["full_name"]),
+                    strval($row["password"]),
+                    strval($row["secret_key"]),
+                    $profile
+                    , $restaurant);
+
+                   // echo "<li><span> USer => ".json_encode($this->user)."<span></li>";
+
+                    Break;
+
+            }
+
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }    
+    }
+    function GetUserByUsernamePassword($username,$password)
     {
         $username = strtolower($username);
         /*$password = \mysql_escape_string($password);*/

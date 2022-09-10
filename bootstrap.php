@@ -3,20 +3,25 @@ require 'vendor/autoload.php';
 use Dotenv\Dotenv;
 
 use Src\System\DatabaseConnector;
-
 use Src\TableGateways\UserLoginGateway;
+
+
+
 if (session_status() === PHP_SESSION_NONE) {
     $dotenv = new DotEnv(__DIR__);
     $dotenv->load();
 
+    $template = getenv('Template_Name');
+    $rootpath=getenv('ROOT_PATH');
+
     $dbConnection = (new DatabaseConnector())->getConnection();
 
     $userLogin = new UserLoginGateway($dbConnection);
+    //$user = new User;
 
-    $template = getenv('Template_Name');
+    
     $templatePath = "templates/$template";
 
-    $rootpath=getenv('ROOT_PATH');
 
     ini_set('session.referer_check', 'TRUE');
     session_start();

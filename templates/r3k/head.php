@@ -26,7 +26,6 @@
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/dataTables.bootstrap4.min.js"></script>
 <script type="text/javascript">
 var rootpath = '<?php echo $rootpath ?>';
-var timestamp = '<?=time();?>';
 </script>
 <script type="text/javascript" src="<?php echo $rootpath."/".$templatePath ?>/js/playsound.min.js"></script>
 <script type="text/javascript" src="<?php echo $rootpath."/".$templatePath ?>/js/script.min.js"></script>
