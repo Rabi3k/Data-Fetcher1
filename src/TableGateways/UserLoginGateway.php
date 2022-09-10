@@ -162,7 +162,7 @@ class UserLoginGateway {
                 }
                     $this->user->restaurants = $restaurants;
                     $this->user->secrets = $userSecrets;
-                    echo "<li><span> USer => ".json_encode($this->user)."<span></li>";
+                    //echo "<li><span> USer => ".json_encode($this->user)."<span></li>";
 
                     Break;
 
