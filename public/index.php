@@ -14,27 +14,23 @@ $uri = explode( '/', $uri );
 
 $query = explode( '/',strtolower($_SERVER['QUERY_STRING']));
 $requestMethod = $_SERVER["REQUEST_METHOD"];
-switch($query[0])
+$oper = $_GET["q"];
+$id = $_GET["id"]??null;
+$startDate = $_GET["s"]??NULL;
+$endDate = $_GET["e"]??null;
+//echo file_get_contents('php://input');
+//echo $_GET["secrets"]??"Get Nothing";
+//echo $_POST["secrets"]??"Post nothing";
+switch($oper)
 {
     case 'request':
-        $reqId = null;
-        if (isset($query[1])) {
-            $reqId = (int) $query[1];
-        }
-
-
         // pass the request method and user ID to the PersonController and process the HTTP request:
-        $controller = new RequestController($dbConnection, $requestMethod, $reqId);
+        $controller = new RequestController($dbConnection, $requestMethod, $id);
         $controller->processRequest();
         break;
     case 'order':
-        $orderId = null;
-        if (isset($query[1])) {
-            $orderId = (int) $query[1];
-        }
-
         // pass the request method and user ID to the PersonController and process the HTTP request:
-        $controller = new OrderController($dbConnection, $requestMethod, $orderId);
+        $controller = new OrderController($dbConnection, $requestMethod, $id);
         $controller->processRequest();
         break;
     case 'orders':
@@ -44,7 +40,7 @@ switch($query[0])
     default:
         header("HTTP/1.1 404 Not Found");
         //exit();
-        die("Not Found");
+        die("$oper Not Found");
 }
 
 
