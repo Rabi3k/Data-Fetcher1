@@ -13,6 +13,10 @@ class UserLoginGateway {
     private $user=null;
     private $loggedIn =null;
 
+    public function GetUser()
+    {
+        return $this->user;
+    }
     public function __construct($db)
     {
         $this->db = $db;
