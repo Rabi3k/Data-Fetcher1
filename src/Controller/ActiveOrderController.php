@@ -2,28 +2,58 @@
 namespace Src\Controller;
 
 use Src\TableGateways\RequestsGateway;
-
-class OrderController {
-
+use Src\Enums\FunctionsController;
+use Src\Enums\FuncType;
+use Src\Classes\User;
+// enum FuncType
+// {
+//     case ByDate;
+//     case ById;
+//     case All;
+//     case None;
+// }
+class ActiveOrderController {
+#region private props
     private $db;
     private $requestMethod;
-    private $orderId;
-
+    private array $params;
+    private array $secrets;
     private $requestsGateway;
+#endregion
 
-    public function __construct($db, $requestMethod, $orderId=null)
+#region constructor
+    public function __construct($db, $requestMethod,$params =array(),$secrets = array())
     {
         $this->db = $db;
         $this->requestMethod = $requestMethod;
-        $this->orderId = $orderId??null;
+        $this->params = $params;
+        $this->secrets = $secrets??array();
 
         $this->requestsGateway = new RequestsGateway($db);
     }
+#endregion
 
+#region request process
     public function processRequest()
     {
+        $response;
         switch ($this->requestMethod) {
             case 'GET':
+                switch($this->getFunc())
+                {
+                    case FuncType::ByDate:
+                        $response = $this->getActiveOrderIdsByDate($this->params['startDate'],$this->params['endDate'],$this->secrets);
+                        break;
+                    case FuncType::ById:
+                    case FuncType::All:
+                        $response['status_code_header'] = 'HTTP/1.1 200 OK';
+                        $response['body'] = json_encode("[{'all_good':true}]");
+                        break;
+                    case FuncType::None:
+                        $response = $this->notFoundResponse();
+                        break;
+                }
+                break;
             case 'POST':
             case 'PUT':
             case 'DELETE':
@@ -36,9 +66,58 @@ class OrderController {
             echo $response['body'];
         }
     }
+#endregion
 
-    
+#region private function
+    private function getFunc():FuncType
+    {
+       if(!isset($this->params) || !isset($this->secrets) || \count($this->secrets)<1)
+       {
+            return FuncType::None;
+       }
+       if(isset($this->params["id"]))
+       {
+        return FuncType::ById;
+       }
+       if(isset($this->params['startDate']) && isset($this->params['endDate']))
+       {
+        return FuncType::ByDate;
+       }
+       return FuncType::All;
+    }
+    private function getActiveOrderIdsByDate(string $startDate,string $endDate,array $secrets)
+    {
+        if($sDate =\DateTime::createFromFormat('dmY',strval($startDate),new \DateTimeZone('Europe/Copenhagen')))
+        {
+            $sDate->setTime(0,0);
+        }
+        if($eDate =\DateTime::createFromFormat('dmY',strval($endDate),new \DateTimeZone('Europe/Copenhagen')))
+        {
+            $eDate->setTime(23,59,59,999999);
+        }
+        $data = $this->requestsGateway->RetriveAllOrdersByDate($sDate,$eDate,$secrets);
+        $response['status_code_header'] = 'HTTP/1.1 200 OK';
+        $response['body'] = json_encode($data);
+        return $response;
+    }
+    private function getActiveOrderIdsByDate(string $startDate,string $endDate,array $secrets)
+    {
+        if($sDate =\DateTime::createFromFormat('dmY',strval($startDate),new \DateTimeZone('Europe/Copenhagen')))
+        {
+            $sDate->setTime(0,0);
+        }
+        if($eDate =\DateTime::createFromFormat('dmY',strval($endDate),new \DateTimeZone('Europe/Copenhagen')))
+        {
+            $eDate->setTime(23,59,59,999999);
+        }
+        $data = $this->requestsGateway->RetriveAllOrdersByDate($sDate,$eDate,$secrets);
+        $response['status_code_header'] = 'HTTP/1.1 200 OK';
+        $response['body'] = json_encode($data);
+        return $response;
+    }
+#endregion
 
+#region Header response
     private function unprocessableEntityResponse()
     {
         $response['status_code_header'] = 'HTTP/1.1 422 Unprocessable Entity';
@@ -54,4 +133,5 @@ class OrderController {
         $response['body'] = null;
         return $response;
     }
+#endregion
 }
