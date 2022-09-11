@@ -78,7 +78,6 @@ class UserLoginGateway {
         u.`password`, 
         u.`secret_key`, 
         u.`profile_id`, 
-        u.`restaurant_id`,
         
         -- Profile
         p.`Name` AS 'profile' ,
@@ -96,7 +95,7 @@ class UserLoginGateway {
         LEFT JOIN `profiles` as p on (u.profile_id = p.id)
         LEFT JOIN `user_relations` as ur on (u.id = ur.user_id)
         LEFT JOIN `restaurant_branches` as rb1 on (ur.branch_id = rb1.id)
-        LEFT JOIN `restaurants` as r on (ifnull(ur.restaurant_id ,rb1.restaurant_id)= r.id or(ifnull(ur.restaurant_id,1)=1 AND ifnull(ur.branch_id,1)=1) )
+        LEFT JOIN `restaurants` as r on (IFNULL(ur.restaurant_id ,rb1.restaurant_id)= r.id OR (IFNULL(ur.restaurant_id,1)=1 AND IFNULL(ur.branch_id,1)=1 AND u.profile_id = 1) )
         LEFT JOIN `restaurant_branches` as rb on (rb.restaurant_id = r.id or rb.id = rb1.id)
         LEFT JOIN `restaurant_branch_keys` as rbs on (rbs.branch_id = rb.id)
         

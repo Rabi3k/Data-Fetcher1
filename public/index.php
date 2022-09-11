@@ -2,6 +2,7 @@
 require "../bootstrap.php";
 use Src\Controller\RequestController;
 use Src\Controller\OrderController;
+use Src\Controller\ActiveOrderController;
 
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
@@ -19,6 +20,7 @@ $id = $_GET["id"]??null;
 $startDate = $_GET["s"]??NULL;
 $endDate = $_GET["e"]??null;
 $secrets = $_GET["secrets"]??null;
+$secrets = isset($secrets)? json_decode($secrets):array();
 //echo file_get_contents('php://input');
 //echo $_GET["secrets"]??"Get Nothing";
 //echo $_POST["secrets"]??"Post nothing";
@@ -35,11 +37,16 @@ switch($oper)
         $controller->processRequest();
         break;
     case 'orders':
-        $controller = new OrderController($dbConnection, $requestMethod, null);
-
-        if(isset($startDate) && isset($endDate) && $requestMethod==='GET')
+        $params = ([
+            'id'        =>  $id,
+            'startDate' =>  $startDate,
+            'endDate'   =>  $endDate,
+        ]);
+        $controller = new Src\Controller\ActiveOrderController($dbConnection, $requestMethod,$params,$secrets);
+        $controller->processRequest();
+        /*if(isset($startDate) && isset($endDate) && $requestMethod==='GET')
         {
-            $secrets = json_decode($secrets);
+            
             if(!isset($secrets) || count($secrets)<1)
             {
                 header('HTTP/1.1 401 Unauthorized');
@@ -53,7 +60,7 @@ switch($oper)
                 echo $response['body'];
             }
         }
-        $controller->getActiveOrderIds();
+        $controller->getActiveOrderIds();*/
             break;
     default:
         header("HTTP/1.1 404 Not Found");

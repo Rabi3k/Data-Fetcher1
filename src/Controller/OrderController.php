@@ -8,7 +8,7 @@ class OrderController {
     private $db;
     private $requestMethod;
     private $orderId;
-    public Array $secrets;
+    private Array $secrets;
 
     private $requestsGateway;
 
@@ -55,7 +55,7 @@ class OrderController {
     {
         $sDate =(new \DateTime('midnight',new \DateTimeZone('Europe/Copenhagen')));
         $eDate =(new \DateTime('tomorrow midnight',new \DateTimeZone('Europe/Copenhagen')));
-        $data = $this->requestsGateway->RetriveAllOrdersByDate($sDate,$eDate);
+        $data = $this->requestsGateway->RetriveAllOrdersByDate($sDate,$eDate,$this->secrets);
         $idOrders = array_column($data, 'id');
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] = json_encode($idOrders);
@@ -81,7 +81,7 @@ class OrderController {
     }
     private function getAllOrdersByDate($startDate,$endDate)
     {
-        $result = $this->requestsGateway->RetriveAllOrdersByDate($startDate,$endDate);
+        $result = $this->requestsGateway->RetriveAllOrdersByDate($startDate,$endDate,$this->secrets);
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] = json_encode($result);
         return $response;

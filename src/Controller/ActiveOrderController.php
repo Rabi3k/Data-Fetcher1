@@ -85,21 +85,7 @@ class ActiveOrderController {
        }
        return FuncType::All;
     }
-    private function getActiveOrderIdsByDate(string $startDate,string $endDate,array $secrets)
-    {
-        if($sDate =\DateTime::createFromFormat('dmY',strval($startDate),new \DateTimeZone('Europe/Copenhagen')))
-        {
-            $sDate->setTime(0,0);
-        }
-        if($eDate =\DateTime::createFromFormat('dmY',strval($endDate),new \DateTimeZone('Europe/Copenhagen')))
-        {
-            $eDate->setTime(23,59,59,999999);
-        }
-        $data = $this->requestsGateway->RetriveAllOrdersByDate($sDate,$eDate,$secrets);
-        $response['status_code_header'] = 'HTTP/1.1 200 OK';
-        $response['body'] = json_encode($data);
-        return $response;
-    }
+   
     private function getActiveOrderIdsByDate(string $startDate,string $endDate,array $secrets)
     {
         if($sDate =\DateTime::createFromFormat('dmY',strval($startDate),new \DateTimeZone('Europe/Copenhagen')))

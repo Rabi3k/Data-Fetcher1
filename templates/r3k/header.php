@@ -7,12 +7,13 @@
 
 <header class="sticky-top bg-custom opacity-min p2">
   
-  <div class="container"><div class="row">
+  <div class="container">
+    <div class="row">
     <div class="col-12">
       <p id ='time' class="text-center"></p>
     </div>
-  </div></div>
-  <ul class="nav justify-content-center ">
+    </div>  <div class="row justify-content-center ">
+  <ul class="nav">
 
   <li class="nav-item">
     <a class="nav-link" href="<?php echo $rootpath?>/" >Home</a>
@@ -31,4 +32,6 @@
   <?php } ?>
   </li>
 </ul>
+</div>
+</div>
 </header>

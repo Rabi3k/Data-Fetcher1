@@ -51,3 +51,8 @@ a {
 .text-jumbo {
   font-size: 64px!important;
 }
+.sticky-bottom {
+  position: fixed;
+  bottom: 0;
+  width: -webkit-fill-available;
+}
