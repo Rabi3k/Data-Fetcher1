@@ -6,8 +6,8 @@ $requestGateway = new RequestsGateway($dbConnection);
 $sDate =(new \DateTime('today midnight',new \DateTimeZone('Europe/Copenhagen')));
 $eDate =(new \DateTime('tomorrow midnight',new \DateTimeZone('Europe/Copenhagen')));
 
-
-$data = $requestGateway->RetriveAllOrdersByDate($sDate,$eDate);
+$secrets = $userLogin->user->secrets;
+$data = $requestGateway->RetriveAllOrdersByDate($sDate,$eDate,$secrets);
 $idOrders = array_column($data, 'id');
 //echo "<span class='card'>".json_encode($idOrders)." Test</span><br/>";
 ?>

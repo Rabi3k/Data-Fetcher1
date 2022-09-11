@@ -8,16 +8,16 @@ class OrderController {
     private $db;
     private $requestMethod;
     private $orderId;
-    public Array $secrets=array();
+    public Array $secrets;
 
     private $requestsGateway;
 
-    public function __construct($db, $requestMethod, $orderId=null)
+    public function __construct($db, $requestMethod, int $orderId=null, array $secrets=array())
     {
         $this->db = $db;
         $this->requestMethod = $requestMethod;
         $this->orderId = $orderId??null;
-
+        $this->secrets=$secrets;
         $this->requestsGateway = new RequestsGateway($db);
     }
 
@@ -71,11 +71,9 @@ class OrderController {
         {
             $eDate->setTime(23,59,59,999999);
         }
-        $data = $this->requestsGateway->RetriveAllOrdersByDate($sDate,$eDate);
+        $data = $this->requestsGateway->RetriveAllOrdersByDate($sDate,$eDate,$secrets);
 
-        $found_orders = array_filter($data,function($e) use (&$secrets){
-            return (in_array(strvalue($e["restaurant_timezone"]),$secrets) );
-            });
+      
         $idOrders = array_column($found_orders, 'id');
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] = json_encode($idOrders);

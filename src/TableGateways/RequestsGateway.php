@@ -69,7 +69,7 @@ class RequestsGateway {
             exit($e->getMessage());
         }
     }
-    public function RetriveAllOrdersByDate($startDate,$endDate)
+    public function RetriveAllOrdersByDate($startDate,$endDate,$secrets)
     {
         try 
         {
@@ -78,11 +78,14 @@ class RequestsGateway {
            $eDate =($endDate);
            
             $orders = $this->RetriveAllOrders();
-            $found_orders = array_filter($orders,function($e) use (&$sDate,&$eDate){
+            $found_orders = array_filter($data,function($e) use (&$secrets){
+                return (in_array(strvalue($e["restaurant_timezone"]),$secrets) );
+                });
+            $found_orders = array_filter($orders,function($e) use (&$sDate,&$eDate,&$secrets){
                 $oDate = new \DateTime($e["fulfill_at"]);
                 $oDate->setTimezone( new \DateTimeZone($e["restaurant_timezone"]));
                 //echo "<span class='card'>".$sDate->format('m-d H:i') ."=>". $oDate->format('m-d H:i') ."&&". $eDate->format('m-d H:i') ."=>". $oDate->format('m-d H:i')."<br/></span>";
-                return ($sDate <= $oDate && $eDate >=$oDate);
+                return ($sDate <= $oDate && $eDate >=$oDate && in_array(strvalue($e["restaurant_timezone"]),$secrets) );
                 });
             return  $found_orders;
         } catch (\PDOException $e) {
