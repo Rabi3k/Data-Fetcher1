@@ -34,7 +34,7 @@ include  $templatePath.'/header.php';
             } else {
             die('Unknown error');
             }*/
-            echo $code."<br/> Page".$codes[$code]??"";
+            echo $code."<br/> Page ".$codes[$code]??"";
         ?>
     </span>
     
