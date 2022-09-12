@@ -83,7 +83,8 @@ class RequestsGateway {
                 $oDate = new \DateTime($e["fulfill_at"]);
                 $oDate->setTimezone( new \DateTimeZone($e["restaurant_timezone"]));
                 //echo "<span class='card'>".$sDate->format('m-d H:i') ."=>". $oDate->format('m-d H:i') ."&&". $eDate->format('m-d H:i') ."=>". $oDate->format('m-d H:i')."<br/></span>";
-                return ($sDate <= $oDate && $eDate >=$oDate && in_array(strvalue($e["restaurant_timezone"]),$secrets) );
+               // echo "<span class='card'>".."<br/></span>";
+                return ($sDate <= $oDate && $eDate >=$oDate && in_array(strval($e["restaurant_key"]),$secrets) );
                 });
             return  $found_orders;
         } catch (\PDOException $e) {
@@ -92,6 +93,7 @@ class RequestsGateway {
     }
     public function RetriveOrder($id)
     {
+        
        $result = $this->findByOrderId($id);
        $orders = array();
         try {
