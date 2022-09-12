@@ -97,8 +97,9 @@ class ActiveOrderController {
             $eDate->setTime(23,59,59,999999);
         }
         $data = $this->requestsGateway->RetriveAllOrdersByDate($sDate,$eDate,$secrets);
+        $idOrders = array_column($data, 'id');
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
-        $response['body'] = json_encode($data);
+        $response['body'] = json_encode($idOrders);
         return $response;
     }
 #endregion
