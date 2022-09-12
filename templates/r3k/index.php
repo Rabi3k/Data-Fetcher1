@@ -1,7 +1,4 @@
 <?php
-
-?>
-<?php
 $PageTitle = "KDS System";
 include  $templatePath.'/head.php';
 

@@ -1,5 +1,5 @@
 <?php
-    $code = $_SERVER['REDIRECT_STATUS'];
+/*    $code = $_SERVER['REDIRECT_STATUS'];
     $codes = array(
         403 => 'Forbidden',
         404 => 'Not Found',
@@ -10,5 +10,15 @@
         die("Error $code: {$codes[$code]}");
     } else {
         die('Unknown error');
-    }
-?>
+    }*/
+
+require "bootstrap.php";
+
+/*
+if(!$userLogin->checkLogin())
+{
+    header("Location: $rootpath/login.php");
+}
+*/
+include "$templatePath/error.php";
+//die("silence is the key");
