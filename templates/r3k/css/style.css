@@ -56,3 +56,6 @@ a {
   bottom: 0;
   width: -webkit-fill-available;
 }
+.wide {
+  letter-spacing: 4px;
+}

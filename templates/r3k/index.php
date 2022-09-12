@@ -11,7 +11,7 @@ include  $templatePath.'/header.php';
 
 
 
-<body class="w3-display-container w3-wide bgimg">
+<body class="wide bgimg">
 
   <div class="display-middle text-white text-center">
     <h1 class="text-jumbo">KDS System</h1>

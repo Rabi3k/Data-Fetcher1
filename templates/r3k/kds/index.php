@@ -15,7 +15,7 @@ include "../$templatePath/head.php";
 <?php
 include "../$templatePath/header.php";
 ?>
-<body class="w3-display-container w3-wide bgimg w3-grayscale-min">
+<body class="wide bgimg">
 <script type='text/javascript'>
 var interval = setInterval( function(){myFunction();},1*1000);
 </script>

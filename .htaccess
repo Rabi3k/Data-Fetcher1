@@ -16,6 +16,9 @@ RewriteRule ^admin/(.*)/(.*)$ dashboard/index.php?page=$1&q=$2 [L,QSA]
 RewriteRule ^admin/(.*)$ dashboard/index.php?page=$1 [L,QSA]
 RewriteRule ^admin$ dashboard/index.php [L,QSA]
 
+ErrorDocument 403 "%{ENV:ROOT_PATH}/error.php"
+ErrorDocument 404 "%{ENV:ROOT_PATH}/error.php"
+ErrorDocument 500 "%{ENV:ROOT_PATH}/error.php"
 
 # php -- BEGIN cPanel-generated handler, do not edit
 # Set the “ea-php81” package as the default “PHP” programming language.
