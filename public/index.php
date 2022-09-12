@@ -63,11 +63,25 @@ switch($oper)
         $controller->getActiveOrderIds();*/
             break;
     default:
-        header("HTTP/1.1 404 Not Found");
+    //$GLOBALS['http_response_code'] = 404;
+    //http_response_code(404);
+    //header('X-PHP-Response-Code: 404', true, 404);
+    setResponseHead(404,'Not Found');
+        //header("HTTP/1.1 404 Not Found");
         //exit();
-        die("$oper Not Found");
+        //die("$oper Not Found");
+        //exit();
 }
-
+function setResponseHead($httpStatusCode = 521,$httpStatusMsg  = 'Web server is down')
+{
+$phpSapiName    = substr(php_sapi_name(), 0, 3);
+if ($phpSapiName == 'cgi' || $phpSapiName == 'fpm') {
+    header('Status: '.$httpStatusCode.' '.$httpStatusMsg);
+} else {
+    $protocol = isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0';
+    header($protocol.' '.$httpStatusCode.' '.$httpStatusMsg);
+}
+}
 
 // all of our endpoints start with /person
 // everything else results in a 404 Not Found
