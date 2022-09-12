@@ -9,7 +9,7 @@ function PrintElem(id)
         
         setTimeout(() => {
             mywindow.print();
-            mywindow.close();
+            //mywindow.close();
         }, "1000");
         return true;
 }
