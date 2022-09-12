@@ -33,8 +33,7 @@ class Profile
         string $name)
     {
         $profile = new Profile();
-        $profile->id = $id;
-        $profile->name = $name;
+        $profile->LoadProfile($id,$name);
         return $profile;
     }
 #endregion

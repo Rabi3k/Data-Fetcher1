@@ -17,7 +17,6 @@ if (session_status() === PHP_SESSION_NONE) {
     $dbConnection = (new DatabaseConnector())->getConnection();
 
     $userLogin = new UserLoginGateway($dbConnection);
-    //$user = new User;
 
     
     $templatePath = "templates/$template";

@@ -29,6 +29,6 @@ var rootpath = '<?php echo $rootpath ?>';
 var userSecrets = JSON.parse('<?php echo $userLogin->GetSecrets() ?>')
 </script>
 <script type="text/javascript" src="<?php echo $rootpath."/".$templatePath ?>/js/playsound.min.js"></script>
-<script type="text/javascript" src="<?php echo $rootpath."/".$templatePath ?>/js/script.min.js"></script>
+<script type="text/javascript" src="<?php echo $rootpath."/".$templatePath ?>/js/script.js"></script>
 
 </head>

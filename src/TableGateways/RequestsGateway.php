@@ -100,14 +100,47 @@ class RequestsGateway {
             foreach($result as $request)
             {
                 $order = json_decode($request["body"],true);
-                $found_key = array_filter($orders,function($e) use (&$order){
-                    return $e["id"] === $order["id"];
-                });
-                
-                    array_push($orders,$order);
-                
+                array_push($orders,$order);
             }
             return  $orders;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
+
+    private function compare_func($a, $b)
+{
+    $oDate = new \DateTime($a["updated_at"]);
+    $oDate->setTimezone( new \DateTimeZone($a["restaurant_timezone"]));
+    $oDate2 = new \DateTime($b["updated_at"]);
+    $oDate2->setTimezone( new \DateTimeZone($b["restaurant_timezone"]));
+    if ($oDate == $oDate2) {
+        return 0;
+    }
+    return ($oDate < $oDate2) ? -1 : 1;
+    // You can apply your own sorting logic here.
+}
+
+//usort($arrayOfObjects, "compare_func");
+
+    public function RetriveLastOrderById($id)
+    {
+        
+       $result = $this->RetriveOrder($id);
+        try {
+            $order =usort($result, function($a, $b)
+            {
+                $oDate = new \DateTime($a["updated_at"]);
+                $oDate->setTimezone( new \DateTimeZone($a["restaurant_timezone"]));
+                $oDate2 = new \DateTime($b["updated_at"]);
+                $oDate2->setTimezone( new \DateTimeZone($b["restaurant_timezone"]));
+                if ($oDate == $oDate2) {
+                    return 0;
+                }
+                return ($oDate < $oDate2);
+                // You can apply your own sorting logic here.
+            });
+            return  $result[0];
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }

@@ -4,7 +4,8 @@ if(isset($_GET['id']))
 {
    $id = $_GET['id'];
     $requestGateway = new RequestsGateway($dbConnection);
-    $row = $requestGateway ->RetriveOrder($id)[0];
+    $row = $requestGateway ->RetriveLastOrderById($id);
+    //var_dump($row);
 }
 if(!isset($row))
 {

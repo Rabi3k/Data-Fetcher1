@@ -35,7 +35,7 @@ class User{
         string $full_name,
         string $password,
         string $secret_key,
-        string $profile,
+        Profile $profile,
         array $secrets,
         array $restaurants)
     {
@@ -64,6 +64,16 @@ class User{
         array $restaurants)
     {
         $user = new User();
+        $user->LoadUser($id,
+         $email,
+         $user_name,
+         $full_name,
+         $password,
+         $secret_key,
+         $profile,
+         $secrets,
+         $restaurants);
+         /*
         $user->id = $id;
         $user->email = $email;
         $user->user_name = $user_name;
@@ -72,7 +82,8 @@ class User{
         $user->secret_key = $secret_key;
         $user->profile=$profile;
         $user->restaurants=$restaurants;
-        $user->restaurants=$secrets;
+        $user->restaurants=$secrets;*/
+        //echo json_encode($user);
         return $user;
     }
 #endregion

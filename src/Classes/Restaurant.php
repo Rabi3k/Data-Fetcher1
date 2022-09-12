@@ -43,7 +43,6 @@ class Restaurant
         $this->logo = $logo;
         $this->reference_id = $reference_id;
         $this->branches=$branches;
-        $this->restaurant=$restaurant;
     }
 
 #endregion
@@ -59,14 +58,15 @@ class Restaurant
         array $branches)
     {
         $restaurant = new Restaurant();
-        $restaurant->id = $id;
-        $restaurant->email = $email;
-        $restaurant->name = $name;
-        $restaurant->phone = $phone;
-        $restaurant->cvr = $cvr;
-        $restaurant->logo = $logo;
-        $restaurant->reference_id = $reference_id;
-        $restaurant->branches=$branches;
+        $restaurant->LoadRestaurant($id,
+         $email,
+         $name,
+         $phone,
+         $cvr,
+         $logo,
+         $reference_id,
+         $branches);
+         //echo json_encode($restaurant);
         return $restaurant;
     }
 #endregion
