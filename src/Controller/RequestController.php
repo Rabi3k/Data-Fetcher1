@@ -85,7 +85,7 @@ class RequestController {
             $body = json_encode($order);
             $result = $this->requestsGateway->insertFromClass(Request::GetRequest(0,
                 strval($privateKey),
-                 inval($orderId),
+                 intval($orderId),
                  strval($header),
                  strval($body),
                 $executed
