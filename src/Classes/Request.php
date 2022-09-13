@@ -20,7 +20,7 @@ class Request
         string $header,
         string $body,
         string $created_date,
-        array $executed)
+        int $executed)
     {
         
         $this->id = $id;
@@ -29,7 +29,6 @@ class Request
         $this->header = $header;
         $this->body = $body;
         $this->created_date = $created_date;
-        $this->reference_id = $reference_id;
         $this->executed=$executed;
     }
 
@@ -42,10 +41,10 @@ class Request
     string $header,
     string $body,
     string $created_date,
-    array $executed)
+    int $executed)
     {
         $request = new Request();
-        $restaurant->LoadRequest($id,
+        $request->LoadRequest($id,
          $private_key,
          $order_id,
          $header,

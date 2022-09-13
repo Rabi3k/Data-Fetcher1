@@ -207,9 +207,9 @@ class RequestsGateway {
                 if (!file_exists("logs/".$oDate->format('dmY'))) {
                     mkdir("logs/".$oDate->format('dmY'), 0777, true);
                 }
-                $myfile = fopen("logs/".$oDate->format('dmY')."/Log_".$input['order_id'].".txt", "w")
+                $myfile = fopen("logs/".$oDate->format('dmY')."/Log_".$input->order_id.".txt", "w")
                                 or die("Unable to open file!");
-                $inputStr ="Test 123123:".json_decode($input)."\n\r SqlStatment:".json_encode($statement);
+                $inputStr ="Test 123123:".json_encode($input)."\n\r SqlStatment:".json_encode($statement);
                 fwrite($myfile, $inputStr);
                 fclose($myfile);
             

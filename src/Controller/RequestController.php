@@ -81,14 +81,15 @@ class RequestController {
             $privateKey  = $order["restaurant_key"];
             $orderId  = $order["id"];
             $orderId  = $order["id"];
-            $executed = $order["ready"];
+            $executed = (int)$order["ready"];
             $body = json_encode($order);
             $result = $this->requestsGateway->insertFromClass(Request::GetRequest(0,
                 strval($privateKey),
                  intval($orderId),
                  strval($header),
                  strval($body),
-                $executed
+                 "",
+                intval($executed)
         ));
         array_push($results,$result);
        
