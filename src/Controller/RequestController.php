@@ -77,7 +77,6 @@ class RequestController {
         
         foreach ($input["orders"] as $order)
         {
-            \array_push($results, \json_encode($order));
             $privateKey  = $order["restaurant_key"];
             $orderId  = $order["id"];
             $orderId  = $order["id"];

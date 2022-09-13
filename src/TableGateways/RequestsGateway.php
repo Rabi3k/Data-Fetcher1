@@ -205,6 +205,8 @@ class RequestsGateway {
                 fwrite($myfile, $inputStr);
                 fclose($myfile);
             };
+            
+            return $statement->rowCount();
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }    
