@@ -2,21 +2,36 @@
 <?php
 use Src\TableGateways\RequestsGateway;
 use Src\Classes\Order;
+use Src\Classes\GlobalFunctions;
 
 
-$orderId =  $_GET['id'];
-if(!$orderId)
+if(isset($_GET['id']))
 {
-    die("OrderId is Not Provided");
+    $orderId =  $_GET['id'];
 }
-$requestGateway = new RequestsGateway($dbConnection);
-$datas = $requestGateway->RetriveOrder($orderId)[0];
-if(!$datas)
+if(!isset($orderId))
 {
     $PageTitle = "Order Not Found!";
+    $code =404;
+    $httpResponseMessage = $PageTitle;
     include "../$templatePath/head.php";
-
-    die("Order Not Found!");
+    include "../$templatePath/header.php";
+    include "../$templatePath/error/body.php";
+    include "../$templatePath/footer.php";
+    exit();
+}
+$requestGateway = new RequestsGateway($dbConnection);
+$datas = $requestGateway->RetriveLastOrderById($orderId);
+if(!isset($datas))
+{
+    $PageTitle = "Order Not Found!";
+    $code =404;
+    $httpResponseMessage = $PageTitle;
+    include "../$templatePath/head.php";
+    include "../$templatePath/header.php";
+    include "../$templatePath/error/body.php";
+    include "../$templatePath/footer.php";
+    exit();
 }
 $OrderClass = new Order($datas);
 //echo json_encode($OrderClass->items[0]["id"])."<br/>";

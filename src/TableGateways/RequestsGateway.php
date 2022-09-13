@@ -126,21 +126,25 @@ class RequestsGateway {
     public function RetriveLastOrderById($id)
     {
         
-       $result = $this->RetriveOrder($id);
         try {
-            $order =usort($result, function($a, $b)
+            $result = $this->RetriveOrder($id);
+            if(\count($result)>1)
             {
-                $oDate = new \DateTime($a["updated_at"]);
-                $oDate->setTimezone( new \DateTimeZone($a["restaurant_timezone"]));
-                $oDate2 = new \DateTime($b["updated_at"]);
-                $oDate2->setTimezone( new \DateTimeZone($b["restaurant_timezone"]));
-                if ($oDate == $oDate2) {
-                    return 0;
-                }
-                return ($oDate < $oDate2);
-                // You can apply your own sorting logic here.
-            });
-            return  $result[0];
+                $order =usort($result, function($a, $b)
+                {
+                    $oDate = new \DateTime($a["updated_at"]);
+                    $oDate->setTimezone( new \DateTimeZone($a["restaurant_timezone"]));
+                    $oDate2 = new \DateTime($b["updated_at"]);
+                    $oDate2->setTimezone( new \DateTimeZone($b["restaurant_timezone"]));
+                    if ($oDate == $oDate2) {
+                        return 0;
+                    }
+                    return ($oDate < $oDate2);
+                    // You can apply your own sorting logic here.
+                });
+            }
+            return (isset($result) && count($result)>0)? $result[0]:NULL;
+            
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }

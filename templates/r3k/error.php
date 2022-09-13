@@ -29,12 +29,12 @@ include  $templatePath.'/header.php';
     <span class="text-jumbo">
         Error</span><br/><span class="h3">Code: 
         <?php
-        /*if (array_key_exists($code, $codes) && is_numeric($code)) {
-            die("Error $code: {$codes[$code]}");
+        echo $code."<br/> Page ";
+        if (array_key_exists($code, $codes) && is_numeric($code)) {
+            echo("$codes[$code]");
             } else {
-            die('Unknown error');
-            }*/
-            echo $code."<br/> Page ".$codes[$code]??"";
+            echo('Unknown error');
+            }
         ?>
     </span>
     

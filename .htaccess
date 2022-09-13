@@ -17,6 +17,7 @@ RewriteRule ^admin/(.*)$ dashboard/index.php?page=$1 [L,QSA]
 RewriteRule ^admin$ dashboard/index.php [L,QSA]
 
 ErrorDocument 403 /error.php
+#ErrorDocument 404 /data%20fetcher/error.php
 ErrorDocument 404 /error.php
 ErrorDocument 500 /error.php
 
