@@ -186,14 +186,25 @@ class RequestsGateway {
 
         try {
             $statement = $this->db->prepare($statement);
-            $statement->execute(array(
+           if(! $statement->execute(array(
                 'private_key' => $input['private_key'],
                 'order_id'  => $input['order_id'],
                 'header'  => $input['header'],
                 'body'  => $input['body'],
                 'executed'  =>$input['executed'],
-            ));
-            return $statement->rowCount();
+            )))
+            {
+                $oDate = new \DateTime();
+                $oDate->setTimezone( new \DateTimeZone('Europe/Copenhagen'));
+                if (!file_exists("logs/".$oDate->format('dmY'))) {
+                    mkdir("logs/".$oDate->format('dmY'), 0777, true);
+                }
+                $myfile = fopen("logs/".$oDate->format('dmY')."/Log_".$input['order_id'].".txt", "w")
+                                or die("Unable to open file!");
+                $inputStr ="Test 123123:".json_decode($input);
+                fwrite($myfile, $inputStr);
+                fclose($myfile);
+            };
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }    

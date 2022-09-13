@@ -74,8 +74,10 @@ class RequestController {
         $body = file_get_contents('php://input');
         $input = (array) json_decode($body, TRUE);
         $results =array();
+        
         foreach ($input["orders"] as $order)
         {
+            \array_push($results, \json_encode($order));
             $privateKey  = $order["restaurant_key"];
             $orderId  = $order["id"];
             $orderId  = $order["id"];
@@ -89,6 +91,7 @@ class RequestController {
                 'executed' => $executed
         ]);
         array_push($results,$result);
+       
         }
 
        // $privateKey  = $input["restaurant_key"];
