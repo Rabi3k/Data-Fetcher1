@@ -2,6 +2,7 @@
 namespace Src\Controller;
 
 use Src\TableGateways\RequestsGateway;
+use Src\Classes\Request;
 
 class RequestController {
 
@@ -82,13 +83,13 @@ class RequestController {
             $orderId  = $order["id"];
             $executed = $order["ready"];
             $body = json_encode($order);
-            $result = $this->requestsGateway->insert([
-                'private_key' => $privateKey,
-                'order_id' => $orderId,
-                'header' => $header,
-                'body' => $body,
-                'executed' => $executed
-        ]);
+            $result = $this->requestsGateway->insertFromClass(Request::GetRequest(0,
+                strval($privateKey),
+                 inval($orderId),
+                 strval($header),
+                 strval($body),
+                $executed
+        ));
         array_push($results,$result);
        
         }

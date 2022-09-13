@@ -1,6 +1,7 @@
 <?php
 namespace Src\TableGateways;
 use DateTime;
+use Src\Classes\Request;
 class RequestsGateway {
 
     private $db = null;
@@ -175,7 +176,48 @@ class RequestsGateway {
             exit($e->getMessage());
         }    
     }
-
+    public function insertFromClass(Request $input)
+    {
+        $statement = "INSERT INTO $this->tblName
+        (`private_key`, `order_id`, `header`, `body`, `executed`) 
+        VALUES 
+        (:private_key, :order_id, :header, :body, :executed);";
+/*
+    public $id; //int
+    public $private_key; //String
+    public $order_id; //int
+    public $header; //String
+    public $body; //String
+    public $created_date; //Date
+    public $executed; //int
+   
+ */
+        try {
+            $statement = $this->db->prepare($statement);
+           $statement->execute(array(
+                'private_key' => $input->private_key,
+                'order_id'  => $input->order_id,
+                'header'  => $input->header,
+                'body'  => $input->body,
+                'executed'  =>$input->executed,
+           ));
+            
+                $oDate = new \DateTime();
+                $oDate->setTimezone( new \DateTimeZone('Europe/Copenhagen'));
+                if (!file_exists("logs/".$oDate->format('dmY'))) {
+                    mkdir("logs/".$oDate->format('dmY'), 0777, true);
+                }
+                $myfile = fopen("logs/".$oDate->format('dmY')."/Log_".$input['order_id'].".txt", "w")
+                                or die("Unable to open file!");
+                $inputStr ="Test 123123:".json_decode($input)."\n\r SqlStatment:".json_encode($statement);
+                fwrite($myfile, $inputStr);
+                fclose($myfile);
+            
+            return $statement->rowCount();
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }    
+    }
 
     public function insert(Array $input)
     {
