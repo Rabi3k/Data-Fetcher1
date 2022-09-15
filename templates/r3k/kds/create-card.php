@@ -1,10 +1,14 @@
 <?php 
-    use Src\TableGateways\RequestsGateway;
+    use Src\TableGateways\OrdersGateway;
+    use Src\Classes\Order;
 if(isset($_GET['id']))
 {
-   $id = $_GET['id'];
-    $requestGateway = new RequestsGateway($dbConnection);
-    $row = $requestGateway ->RetriveLastOrderById($id);
+    $id = $_GET['id'];
+    $orderstGateway = new OrdersGateway($dbConnection);
+    $datas =$orderstGateway->FindById($id);
+    $dataE = (array)end($datas);
+    $row = new Order($dataE);
+   // $row = $requestGateway ->RetriveLastOrderById($id);
     //var_dump($row);
 }
 if(!isset($row))

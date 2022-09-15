@@ -100,6 +100,9 @@ class OrdersGateway extends DbObject
                                     
                                     And JSON_UNQUOTE(
                                     JSON_EXTRACT(data,'$.restaurant_key')) in ('$secretsJ')
+                                    And JSON_UNQUOTE(
+                                    JSON_EXTRACT(data,'$.status')) in ('accepted')
+
                                     group by JSON_EXTRACT(data,'$.id') having MAX(ready)=0
                                     ";
         //echo "secretsJ: $secretsJ \nstatment: $statment\n";
@@ -143,6 +146,10 @@ class OrdersGateway extends DbObject
                                     
                                     And JSON_UNQUOTE(
                                     JSON_EXTRACT(data,'$.restaurant_key')) in ('$secretsJ')
+
+                                    And JSON_UNQUOTE(
+                                    JSON_EXTRACT(data,'$.status')) in ('accepted')
+
                                     group by JSON_EXTRACT(data,'$.id') having MAX(ready)=0
                                     ";
         //echo "secretsJ: $secretsJ \nstatment: $statment\n";
