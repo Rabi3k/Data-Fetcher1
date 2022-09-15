@@ -9,20 +9,19 @@ if(!$orderId)
 {
     die("OrderId is Not Provided");
 }
-$requestGateway = new OrdersGateway($dbConnection);
-$datas =$requestGateway->FindById($orderId);
-$dataE = end($datas);
-$datasJ = (array)json_decode($dataE,true);
+$orderstGateway = new OrdersGateway($dbConnection);
+$datas =$orderstGateway->FindById($orderId);
+$dataE = (array)end($datas);
 /*var_dump($datasJ);
 echo $datasJ->id;*/
-if(!$datas)
+if(!$dataE)
 {
     $PageTitle = "Order Not Found!";
     include "../$templatePath/head.php";
 
     die("Order Not Found!");
 }
-$OrderClass = new Order($datasJ);
+$OrderClass = new Order($dataE);
 //$OrderClass->setFromJsonStr($datas);
 //echo $OrderClass->id;
 $OrderClass2 = new Order();

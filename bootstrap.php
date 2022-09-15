@@ -35,12 +35,12 @@ if(!isset($_SESSION['logger']))
     $logger->pushHandler(new FirePHPHandler());
     $_SESSION['logger'] = $logger;
     $logger->info('Logger is now Ready');
-    echo 'Logger is now Ready';
+    //echo 'Logger is now Ready';
 }
 else
 {
     $logger =   $_SESSION['logger'];
-    $logger->info('Logger is loaded');
+    //$logger->info('Logger is loaded');
 }
 
 

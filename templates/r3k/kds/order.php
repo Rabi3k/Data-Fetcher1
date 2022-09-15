@@ -1,6 +1,6 @@
 
 <?php
-use Src\TableGateways\RequestsGateway;
+use Src\TableGateways\OrdersGateway;
 use Src\Classes\Order;
 use Src\Classes\GlobalFunctions;
 
@@ -20,9 +20,11 @@ if(!isset($orderId))
     include "../$templatePath/footer.php";
     exit();
 }
-$requestGateway = new RequestsGateway($dbConnection);
-$datas = $requestGateway->RetriveLastOrderById($orderId);
-if(!isset($datas))
+$orderstGateway = new OrdersGateway($dbConnection);
+$datas =$orderstGateway->FindById($orderId);
+$dataE = (array)end($datas);
+//$datasJ = (array)json_decode($dataE,true);
+if(!isset($dataE))
 {
     $PageTitle = "Order Not Found!";
     $code =404;
@@ -33,7 +35,7 @@ if(!isset($datas))
     include "../$templatePath/footer.php";
     exit();
 }
-$OrderClass = new Order($datas);
+$OrderClass = new Order($dataE);
 //echo json_encode($OrderClass->items[0]["id"])."<br/>";
 $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 
@@ -91,38 +93,38 @@ include "../$templatePath/head.php";
                 </div>
                 <div class="container table legend">
                 <?php foreach($OrderClass->items as $item){ 
-                    if($item["type"] === 'item'){
+                    if($item->type === 'item'){
                 ?>
 
                 <div class="row service">
                     <div class="tableitem col-5 text-left">
-                        <span class="itemtext"><?php echo $item["name"] ?></span><br/>
+                        <span class="itemtext"><?php echo $item->name ?></span><br/>
                             <div class="px-5">
-                            <?php if($item["instructions"]){?>
-                                <span class="itemtext"><?php echo '*'.$item["instructions"].'*' ?></span><br/>
-                            <?php } foreach($item["options"] as $option) {?>
-                                <span class="itemtext "><?php echo $option["name"] ?></span><br/>
+                            <?php if($item->instructions){?>
+                                <span class="itemtext"><?php echo '*'.$item->instructions.'*' ?></span><br/>
+                            <?php } foreach($item->options as $option) {?>
+                                <span class="itemtext "><?php echo $option->name ?></span><br/>
                             <?php } ?>
                             </div>
                     </div>
-                    <div class="tableitem col-2 text-center"><span class="itemtext"><?php echo $item["quantity"] ?></span></div>
-                    <div class="tableitem col-5 text-right"><span class="itemtext"><?php echo $item["price"]." ".$OrderClass->currency; ?></span></div>
+                    <div class="tableitem col-2 text-center"><span class="itemtext"><?php echo $item->quantity ?></span></div>
+                    <div class="tableitem col-5 text-right"><span class="itemtext"><?php echo $item->price." ".$OrderClass->currency; ?></span></div>
                 </div>
                 <?php } }?>
                 <?php foreach($OrderClass->items as $item){ 
-                    if($item["type"] === 'promo_cart'){ ?>
+                    if($item->type === 'promo_cart'){ ?>
                 <div class="row service">
                     <div class="col-6"></div>
-                    <div class="Rate col-3 text-right"><h6><?php echo $item["name"] ?></h6></div>
-                    <div class="Rate col-3 text-right"><h6><?php echo $item["cart_discount_rate"]; ?></h6></div>
+                    <div class="Rate col-3 text-right"><h6><?php echo $item->name ?></h6></div>
+                    <div class="Rate col-3 text-right"><h6><?php echo $item->cart_discount_rate; ?></h6></div>
                 </div>
                 <?php } }?>
                 <?php foreach($OrderClass->items as $item){ 
-                    if($item["type"] === 'delivery_fee'){ ?>
+                    if($item->type === 'delivery_fee'){ ?>
                 <div class="row service">
                     <div class="col-6"></div>
-                    <div class="Rate col-3 text-right"><h6><?php echo $item["name"] ?></h6></div>
-                    <div class="payment col-3 text-right"><h6><?php echo $item["price"]." ".$OrderClass->currency; ?></h6></div>
+                    <div class="Rate col-3 text-right"><h6><?php echo $item->name ?></h6></div>
+                    <div class="payment col-3 text-right"><h6><?php echo $item->price." ".$OrderClass->currency; ?></h6></div>
                 </div>
 
                 <?php } }?>

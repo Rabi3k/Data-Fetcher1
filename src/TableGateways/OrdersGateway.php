@@ -27,7 +27,13 @@ class OrdersGateway extends DbObject
                 $statement = $this->getDbConnection()->query($statment);
                 $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
                 $Orders = array_column($result, 'data');
-                return ($Orders);
+                $results = array();
+                foreach($result as $row)
+                {
+                    $jObj = json_decode($row['data']);
+                    array_push($results,$jObj);
+                }
+                return $results;
             } catch (\PDOException $e) {
                 exit($e->getMessage());
             }   
