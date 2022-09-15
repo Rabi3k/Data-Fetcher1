@@ -1,6 +1,12 @@
 <?php
 require "../bootstrap.php";
-$userid=1;
+$getWholeUrl = $_SERVER['HTTP_HOST']."".$_SERVER['REQUEST_URI']."";
+if(!$userLogin->checkLogin())
+{
+    header("Location: $rootpath/login.php");
+    exit();
+}
+$userid=$userLogin->GetUser()->id;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -23,10 +29,14 @@ include "head.php";?>
                         </main>
                 </div>
         </div>
+        <?php
+                include "scripts-loader.php"
+        ?>
 </body>
 <footer class=" bg-dark bg-light text-light">
 <?php
-include "footer.php";
+
+//include "footer.php";
 ?>
 </footer>
 </html>

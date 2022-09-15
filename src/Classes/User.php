@@ -13,6 +13,7 @@ class User{
     public Profile $profile;
     public array $restaurants;
     public array $secrets;
+    public bool $isAdmin, $isSuperAdmin;
 #endregion
 
 #region Construct
@@ -37,7 +38,9 @@ class User{
         string $secret_key,
         Profile $profile,
         array $secrets,
-        array $restaurants)
+        array $restaurants,
+        bool $isAdmin, 
+        bool $isSuperAdmin)
     {
         
         $this->id = $id;
@@ -48,7 +51,9 @@ class User{
         $this->secret_key = $secret_key;
         $this->profile=$profile;
         $this->restaurants=$restaurants; 
-        $this->restaurants=$secrets;
+        $this->secrets=$secrets;
+        $this->isAdmin=$isAdmin;
+        $this->isSuperAdmin=$isSuperAdmin;
     }
 
 #endregion
@@ -61,7 +66,9 @@ class User{
         string $secret_key,
         Profile $profile,
         array $secrets,
-        array $restaurants)
+        array $restaurants,
+        bool $isAdmin, 
+        bool $isSuperAdmin)
     {
         $user = new User();
         $user->LoadUser($id,
@@ -72,18 +79,10 @@ class User{
          $secret_key,
          $profile,
          $secrets,
-         $restaurants);
-         /*
-        $user->id = $id;
-        $user->email = $email;
-        $user->user_name = $user_name;
-        $user->full_name = $full_name;
-        $user->password = $password;
-        $user->secret_key = $secret_key;
-        $user->profile=$profile;
-        $user->restaurants=$restaurants;
-        $user->restaurants=$secrets;*/
-        //echo json_encode($user);
+         $restaurants,
+         $isAdmin, 
+         $isSuperAdmin);
+         
         return $user;
     }
 #endregion

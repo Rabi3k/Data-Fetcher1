@@ -77,7 +77,9 @@ class UserLoginGateway {
         u.`full_name`, 
         u.`password`, 
         u.`secret_key`, 
-        u.`profile_id`, 
+        u.`profile_id`,  
+        `IsAdmin`, 
+        `isSuperAdmin`,
         
         -- Profile
         p.`Name` AS 'profile' ,
@@ -120,7 +122,9 @@ class UserLoginGateway {
                     strval($row["secret_key"]),
                     $profile
                     , array()
-                    , array());
+                    , array()
+                    ,boolval($row["IsAdmin"])
+                    ,boolval($row["isSuperAdmin"]));
                 $restaurants = array();
                  $rests = explode( '$',$row["restaurants"]);
                 foreach($rests as $rest)
@@ -185,9 +189,9 @@ class UserLoginGateway {
     {
         $username = strtolower($username);
         /*$password = \mysql_escape_string($password);*/
-        $statement = "SELECT * FROM $this->tblName WHERE (LOWER(user_name)=:username AND `password` = PASSWORD(:password))
+        $statement = "SELECT * FROM $this->tblName WHERE (LOWER(user_name)=:username AND `password` = SHA2(:password,224))
 
-        OR (LOWER(email)=:username AND `password` = PASSWORD(:password));";
+        OR (LOWER(email)=:username AND `password` = SHA2(:password,224));";
 
         try {
             $sth = $this->db->prepare($statement);
@@ -197,6 +201,50 @@ class UserLoginGateway {
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }
+    }
+    function InsertUser(User $input)
+    {
+        //Password(:password), sha(:secret_key)
+        $statement = "INSERT INTO `$this->tblName`
+        (`email`, `user_name`, `full_name`, `password`, `secret_key`, `profile_id`, `IsAdmin`, `isSuperAdmin`)
+         VALUES (email, :user_name, :full_name, Password(:password), sha(:secret_key), :profile_id, :IsAdmin, :isSuperAdmin)";
+
+        try {
+            $statement = $this->db->prepare($statement);
+            $statement->execute(array(
+                'email' => $input->email,
+                'user_name' => $input->user_name,
+                'full_name' => $input->full_name,
+                'password' => 'funneat',
+                'secret_key' =>'funneat',
+                'profile_id' => $input->profile_id,
+                'IsAdmin' => $input->IsAdmin,
+                'isSuperAdmin' => $input->isSuperAdmin,
+           ));
+            return $statement->rowCount();
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }    
+    }
+    function UpdateUserPassword(string $password)
+    {
+        //Password(:password), sha(:secret_key)
+        $statement = "UPDATE $this->tblName
+         SET 
+         `password` =   SHA2(:secret_key,224) ,
+         `secret_key`   =   SHA(:secret_key) 
+         WHERE id   = :id;";
+
+        try {
+            $statement = $this->db->prepare($statement);
+            $statement->execute(array(
+                'id' => (int)$this->user->id,
+                'secret_key' =>strval($password),
+           ));
+            return $statement->rowCount();
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }    
     }
 
 }
