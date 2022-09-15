@@ -109,8 +109,7 @@ class OrdersGateway extends DbObject
                 $results = array();
                 foreach($result as $row)
                 {
-                    $jObj = json_decode($row['data']);
-                    array_push($results,$jObj);
+                    array_push($results,intval($row['id']));
                 }
                 return $results;
                 
