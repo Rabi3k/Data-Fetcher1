@@ -1,4 +1,6 @@
-on: release
+on:  
+  release:
+    types: [published]
 name: 🚀 Deploy website on release
 jobs:
   web-deploy:
