@@ -17,7 +17,7 @@ include "../$templatePath/header.php";
 ?>
 <body class="wide bgimg">
 <script type='text/javascript'>
-var interval = setInterval( function(){myFunction();},1*1000);
+var interval = setInterval( function(){myFunction();},5*1000);
 </script>
 
 

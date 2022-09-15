@@ -19,7 +19,7 @@ abstract class ClassObj
     }
     public function setFromJsonStr(string $jsonString)
     {
-        $this->data =  json_decode($jsonString);
+        $this->data =  (array)json_decode($jsonString,true);//json_decode($jsonString);
     }
     public function __set($name, $value)
     {

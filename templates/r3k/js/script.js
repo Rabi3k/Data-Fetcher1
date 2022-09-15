@@ -40,7 +40,7 @@ function updateTime(){
     $('#time').html(firstLetterCapitalize(CopenhagenDate)+"<br/>"+CopenhagenTime);
   }
   $(function(){
-    setInterval(updateTime, 200);
+    setInterval(updateTime, 1000);
   });
 function getdatestr(date,seperator)
 {

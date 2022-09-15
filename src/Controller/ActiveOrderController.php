@@ -2,6 +2,7 @@
 namespace Src\Controller;
 
 use Src\TableGateways\RequestsGateway;
+use Src\TableGateways\OrdersGateway;
 use Src\Enums\FunctionsController;
 use Src\Enums\FuncType;
 use Src\Classes\User;
@@ -30,6 +31,7 @@ class ActiveOrderController {
         $this->secrets = $secrets??array();
 
         $this->requestsGateway = new RequestsGateway($db);
+        $this->orderGateway = new OrdersGateway($db);
     }
 #endregion
 
@@ -45,6 +47,8 @@ class ActiveOrderController {
                         $response = $this->getActiveOrderIdsByDate($this->params['startDate'],$this->params['endDate'],$this->secrets);
                         break;
                     case FuncType::ById:
+                        $response = $this->getOrderById($this->params['id']);
+                        break;
                     case FuncType::All:
                         $response['status_code_header'] = 'HTTP/1.1 200 OK';
                         $response['body'] = json_encode("[{'all_good':true}]");
@@ -96,10 +100,25 @@ class ActiveOrderController {
         {
             $eDate->setTime(23,59,59,999999);
         }
-        $data = $this->requestsGateway->RetriveAllOrdersByDate($sDate,$eDate,$secrets);
+        $data = $this->orderGateway->FindActiveIdsByDate($sDate,$eDate,$secrets);
         $idOrders = array_column($data, 'id');
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] = json_encode($idOrders);
+        return $response;
+    }
+    private function getOrderById($id)
+    {
+        $id = \intval($id);
+        $results = $this->orderGateway->FindById($id);
+       /* $result = array_filter($results,function($e) use (&$id){
+            return $e["id"] === $id;
+        });*/
+        //var_dump($results);
+        if (! $results) {
+            return $this->notFoundResponse();
+        }
+        $response['status_code_header'] = 'HTTP/1.1 200 OK';
+        $response['body'] = json_encode($results);
         return $response;
     }
 #endregion

@@ -1,13 +1,17 @@
 <!DOCTYPE html>
 <?php
 use Src\TableGateways\RequestsGateway;
+use Src\TableGateways\OrdersGateway;
+
 $requestGateway = new RequestsGateway($dbConnection);
+$ordersGateway = new OrdersGateway($dbConnection);
 
 $sDate =(new \DateTime('today midnight',new \DateTimeZone('Europe/Copenhagen')));
 $eDate =(new \DateTime('tomorrow midnight',new \DateTimeZone('Europe/Copenhagen')));
 
 $secrets = $userLogin->GetUser()?->secrets??array();
 $data = $requestGateway->RetriveAllOrdersByDate($sDate,$eDate,$secrets);
+$data = $ordersGateway->FindActiveByDate($sDate,$eDate,$secrets);
 $idOrders = array_column($data, 'id');
 //echo "<span class='card'>".json_encode($data)." Test</span><br/>";
 ?>

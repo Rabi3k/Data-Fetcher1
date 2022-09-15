@@ -2,6 +2,8 @@
 namespace Src\TableGateways;
 use DateTime;
 use Src\Classes\Request;
+
+
 class RequestsGateway {
 
     private $db = null;
@@ -202,7 +204,7 @@ class RequestsGateway {
                 'executed'  =>$input->executed,
            ));
             
-                $oDate = new \DateTime();
+              /*  $oDate = new \DateTime();
                 $oDate->setTimezone( new \DateTimeZone('Europe/Copenhagen'));
                 if (!file_exists("logs/".$oDate->format('dmY'))) {
                     mkdir("logs/".$oDate->format('dmY'), 0777, true);
@@ -211,7 +213,7 @@ class RequestsGateway {
                                 or die("Unable to open file!");
                 $inputStr ="Test 123123:".json_encode($input)."\n\r SqlStatment:".json_encode($statement);
                 fwrite($myfile, $inputStr);
-                fclose($myfile);
+                fclose($myfile);*/
             
             return $statement->rowCount();
         } catch (\PDOException $e) {
