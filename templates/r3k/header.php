@@ -28,7 +28,7 @@
             <a class="nav-link" href="<?php echo $rootpath ?>/login.php">login</a>
           </li>
         <?php } else { ?>
-          <?php if (!$userLogin->GetUser()->isSuperAdmin) { ?>
+          <?php if ($userLogin->GetUser()->isSuperAdmin) { ?>
             <li class="nav-item">
               <a class="nav-link" href="/admin">Super Dash</a>
             </li>
