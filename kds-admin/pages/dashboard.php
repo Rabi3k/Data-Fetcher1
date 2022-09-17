@@ -12,6 +12,17 @@
   </div>
 </div>
 <script>
+  
+var jsonfile=JSON.parse(' <?php echo json_encode($orderstGateway->GetItemsSold()); ?>');
+//[{"id":11052316,"qty":1,"name":"Pizza Prosciutto"},{"id":11052319,"qty":3,"name":"Coffee"},{"id":11052321,"qty":9,"name":"Lemonade"},{"id":11052318,"qty":3,"name":"Spaghetti Carbonara"}];
+
+var labels = jsonfile.map(function(e) {
+   return e.name;
+});
+var data = jsonfile.map(function(e) {
+   return e.qty;
+});;
+
 const ctxPolar = document.getElementById('myChartPolar').getContext('2d');
 const ctxBars = document.getElementById('myChartBars').getContext('2d');
 const myChartBars = new Chart(ctxBars, {
@@ -51,16 +62,10 @@ const myChartBars = new Chart(ctxBars, {
 const myChartPolar = new Chart(ctxPolar, {
   type: 'polarArea',
   data: {
-  labels: [
-    'Red',
-    'Green',
-    'Yellow',
-    'Grey',
-    'Blue'
-  ],
+  labels: labels,
   datasets: [{
-    label: 'My First Dataset',
-    data: [11, 16, 7, 3, 14],
+    label: 'Item sold',
+    data: data,
     backgroundColor: [
       'rgb(255, 99, 132)',
       'rgb(75, 192, 192)',

@@ -18,7 +18,26 @@ class OrdersGateway extends DbObject
     {
         $this->tblName = "tbl_order";
     }
-
+    public function FindByRestaurantRefId($id)
+    {
+        $tblname = $this->getTableName();
+        $statment = "SELECT * FROM `$tblname` 
+        where JSON_EXTRACT(data,'$.restaurant_id') = $id";
+        //echo "ID: $id <br/>statment: $statment<br/>";
+        try {
+            $statement = $this->getDbConnection()->query($statment);
+            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $Orders = array_column($result, 'data');
+            $results = array();
+            foreach ($result as $row) {
+                $jObj = json_decode($row['data']);
+                array_push($results, $jObj);
+            }
+            return $results;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
     public function FindById($id)
     {
         $tblname = $this->getTableName();
@@ -81,9 +100,12 @@ class OrdersGateway extends DbObject
         $results = array();
         foreach ($strings->selectMany(function ($x) {
             return json_decode($x["data"])->items;
+        })->where(function($y){
+            return $y->type==="item";
         })->groupBy(function ($i) {
-            return $i->id;
-        })->asArray() as $id => $itemGrp) {
+            return $i->type_id;
+        })
+        ->asArray() as $id => $itemGrp) {
             //echo $id;
             $qty = 0;
             $name = '';

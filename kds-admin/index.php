@@ -1,5 +1,9 @@
 <?php
 require "../bootstrap.php";
+
+use Src\TableGateways\OrdersGateway;
+use Src\Classes\Order;
+
 $getWholeUrl = $_SERVER['HTTP_HOST'] . "" . $_SERVER['REQUEST_URI'] . "";
 if (!$userLogin->checkLogin()) {
         header("Location: $rootpath/login.php");
@@ -12,6 +16,10 @@ if(!$loggedUser->isSuperAdmin)
         exit();
 }
 $userid = $loggedUser->id;
+
+
+$orderstGateway = new OrdersGateway($dbConnection);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
