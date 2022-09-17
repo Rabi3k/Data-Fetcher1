@@ -1,11 +1,17 @@
 {
     "require": {
         "vlucas/phpdotenv": "^2.4",
-        "monolog/monolog": "^3.2"
+        "monolog/monolog": "^3.2",
+        "timetoogo/pinq": "^3.5"
     },
     "autoload": {
         "psr-4": {
             "Src\\": "src/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "composer/installers": true
         }
     }
 }

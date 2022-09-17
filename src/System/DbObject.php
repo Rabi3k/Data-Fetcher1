@@ -35,7 +35,7 @@ abstract class DbObject
 
 
     #region private functions
-    private function Select()
+    public function SelectAll()
     {
         {
             $statement = "$this->selectStatment";

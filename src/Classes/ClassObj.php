@@ -17,6 +17,7 @@ abstract class ClassObj
         $jsonStr= json_encode($this->data);
         return \json_decode($jsonStr);
     }
+    
     public function setFromJsonStr(string $jsonString)
     {
         $this->data =  (array)json_decode($jsonString,true);//json_decode($jsonString);

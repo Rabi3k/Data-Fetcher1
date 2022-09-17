@@ -1,0 +1,14 @@
+language: php
+
+php:
+  - 7.3
+  - 7.4
+
+install: composer install --no-interaction
+
+script:
+ - mkdir -p build/logs
+ - php vendor/bin/phpunit -v --configuration "phpunit.xml.dist" --coverage-clover build/logs/clover.xml
+
+after_script:
+  - travis_retry php vendor/bin/coveralls -v

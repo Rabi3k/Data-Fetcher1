@@ -3,17 +3,18 @@
 <div class="container">
   <div class="row">
     <div class="col-6">
-
+    <canvas id="myChartPolar"></canvas>
     </div>
     <div class="col-6">
-    <canvas id="myChart"></canvas>
+    <canvas id="myChartBars"></canvas>
 
     </div>
   </div>
 </div>
 <script>
-const ctx = document.getElementById('myChart').getContext('2d');
-const myChart = new Chart(ctx, {
+const ctxPolar = document.getElementById('myChartPolar').getContext('2d');
+const ctxBars = document.getElementById('myChartBars').getContext('2d');
+const myChartBars = new Chart(ctxBars, {
     type: 'bar',
     data: {
         labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
@@ -46,6 +47,30 @@ const myChart = new Chart(ctx, {
             }
         }
     }
+});
+const myChartPolar = new Chart(ctxPolar, {
+  type: 'polarArea',
+  data: {
+  labels: [
+    'Red',
+    'Green',
+    'Yellow',
+    'Grey',
+    'Blue'
+  ],
+  datasets: [{
+    label: 'My First Dataset',
+    data: [11, 16, 7, 3, 14],
+    backgroundColor: [
+      'rgb(255, 99, 132)',
+      'rgb(75, 192, 192)',
+      'rgb(255, 205, 86)',
+      'rgb(201, 203, 207)',
+      'rgb(54, 162, 235)'
+    ]
+  }]
+},
+  options: {}
 });
 </script>
 
