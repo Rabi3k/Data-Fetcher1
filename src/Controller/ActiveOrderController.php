@@ -3,7 +3,6 @@ namespace Src\Controller;
 
 use Src\TableGateways\RequestsGateway;
 use Src\TableGateways\OrdersGateway;
-use Src\Enums\FunctionsController;
 use Src\Enums\FuncType;
 use Src\Classes\User;
 // enum FuncType
@@ -38,7 +37,6 @@ class ActiveOrderController {
 #region request process
     public function processRequest()
     {
-        $response;
         switch ($this->requestMethod) {
             case 'GET':
                 switch($this->getFunc())
