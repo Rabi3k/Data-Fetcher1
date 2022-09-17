@@ -31,7 +31,7 @@ if (session_status() === PHP_SESSION_NONE) {
 if(!isset($_SESSION['logger']))
 {
     $logger = new Logger('logger');
-    $logger->pushHandler(new StreamHandler(__DIR__.'/logs/app.log', Logger::DEBUG));
+    $logger->pushHandler(new StreamHandler(__DIR__.'/logs/app.log', Monolog\Level::Debug));
     $logger->pushHandler(new FirePHPHandler());
     $_SESSION['logger'] = $logger;
     $logger->info('Logger is now Ready');

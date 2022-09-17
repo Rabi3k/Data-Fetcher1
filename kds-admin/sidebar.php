@@ -7,7 +7,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/admin/userpassword">
+                <a class="nav-link" href="/admin/users">
                   <span data-feather="users"></span>
                   users
                 </a>

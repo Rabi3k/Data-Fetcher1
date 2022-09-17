@@ -12,6 +12,8 @@ class Profile
 #region Construct
     public function __construct()
     {
+        $this->id=3;
+        $this->name="user";
     }
 #endregion
 

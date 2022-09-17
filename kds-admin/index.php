@@ -5,7 +5,13 @@ if (!$userLogin->checkLogin()) {
         header("Location: $rootpath/login.php");
         exit();
 }
-$userid = $userLogin->GetUser()->id;
+$loggedUser = $userLogin->GetUser();
+if(!$loggedUser->isSuperAdmin)
+{
+        header("Location: /");
+        exit();
+}
+$userid = $loggedUser->id;
 ?>
 <!DOCTYPE html>
 <html lang="en">

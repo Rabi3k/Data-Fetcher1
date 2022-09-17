@@ -1,17 +1,20 @@
 <?php
+
 namespace Src\TableGateways;
+
 use Src\Classes\User;
 use Src\Classes\Profile;
 use Src\Classes\Restaurant;
 use Src\Classes\Branch;
 
 
-class UserLoginGateway {
+class UserLoginGateway
+{
 
     private $db = null;
     private $tblName = "`users`";
-    private $user=null;
-    private $loggedIn =null;
+    private $user = null;
+    private $loggedIn = null;
 
     public function GetUser()
     {
@@ -20,17 +23,15 @@ class UserLoginGateway {
     public function __construct($db)
     {
         $this->db = $db;
-        $this->user=new User();
+        $this->user = new User();
     }
-    function ValidateLogin($username,$password)
+    function ValidateLogin($username, $password)
     {
-        $users = $this->GetUserByUsernamePassword($username,$password);
-        if( count($users)>0)
-        {
+        $users = $this->GetUserByUsernamePassword($username, $password);
+        if (count($users) > 0) {
             $user = $users[0];
 
-            if(strtolower($user['user_name'])===strtolower($username) || strtolower($user['email'])===strtolower($username ))
-            {
+            if (strtolower($user['user_name']) === strtolower($username) || strtolower($user['email']) === strtolower($username)) {
                 $_SESSION["loggedin"] = true;
                 $_SESSION["UserId"] = $user['id'];
                 $_SESSION["username"] = $user['user_name'];
@@ -38,22 +39,17 @@ class UserLoginGateway {
                 return true;
             }
         }
-        
+
         return false;
-   
     }
     function checkLogin()
     {
-        if(isset($this->loggedIn))
-        {
+        if (isset($this->loggedIn)) {
             return $this->loggedIn;
         }
-        if (!$_SESSION || !isset($_SESSION['loggedin']) || $_SESSION["loggedin"] === false ) 
-        {        
-            $this->loggedIn = false;  
-        }
-        else
-        {
+        if (!$_SESSION || !isset($_SESSION['loggedin']) || $_SESSION["loggedin"] === false) {
+            $this->loggedIn = false;
+        } else {
             $this->LoadUserClass($_SESSION["UserId"]);
             $this->loggedIn = true;
         }
@@ -61,12 +57,69 @@ class UserLoginGateway {
     }
     function GetSecrets()
     {
-        if(isset($this->user))
-        {
-           return \json_encode($this->user->secrets);
+        if (isset($this->user)) {
+            return \json_encode($this->user->secrets);
         }
         return \json_encode(array());
     }
+
+    function GetAllUsers()
+    {
+        $statement = "SELECT 
+
+        u.`id`, 
+        u.`email`, 
+        u.`user_name`, 
+        u.`full_name`, 
+        u.`password`, 
+        u.`secret_key`, 
+        u.`profile_id`,  
+        u.`IsAdmin`, 
+        u.`isSuperAdmin`,
+        
+        -- Profile
+        p.`Name` AS 'profile' 
+        
+        FROM `users`as u
+        LEFT JOIN `profiles` as p on (u.profile_id = p.id)";
+        try {
+            $statement = $this->db->prepare($statement);
+            $statement->execute();
+            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $users = array();
+            foreach ($result as $row) {
+                $userSecrets = array();
+                $profile = Profile::GetProfile(intval($row["profile_id"]), strval($row["profile"]));
+                $user = User::GetUser(
+                    intval($row["id"]),
+                    strval($row["email"]),
+                    strval($row["user_name"]),
+                    strval($row["full_name"]),
+                    strval($row["password"]),
+                    strval($row["secret_key"]),
+                    $profile,
+                    array(),
+                    array(),
+                    boolval($row["IsAdmin"]),
+                    boolval($row["isSuperAdmin"])
+                );
+                array_push($users, $user);
+            }
+            return $users;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
+    static function GetUserClass($id)
+    {
+        if (!isset($GLOBALS['dbConnection'])) {
+            exit("db connection not loaded properly");
+        }
+        $ul = new UserLoginGateway($GLOBALS['dbConnection']);
+        $ul->LoadUserClass($id);
+        return $ul;
+    }
+
     function LoadUserClass($id)
     {
         $statement = "SELECT 
@@ -78,8 +131,8 @@ class UserLoginGateway {
         u.`password`, 
         u.`secret_key`, 
         u.`profile_id`,  
-        `IsAdmin`, 
-        `isSuperAdmin`,
+        u.`IsAdmin`, 
+        u.`isSuperAdmin`,
         
         -- Profile
         p.`Name` AS 'profile' ,
@@ -97,7 +150,7 @@ class UserLoginGateway {
         LEFT JOIN `profiles` as p on (u.profile_id = p.id)
         LEFT JOIN `user_relations` as ur on (u.id = ur.user_id)
         LEFT JOIN `restaurant_branches` as rb1 on (ur.branch_id = rb1.id)
-        LEFT JOIN `restaurants` as r on (IFNULL(ur.restaurant_id ,rb1.restaurant_id)= r.id OR (IFNULL(ur.restaurant_id,1)=1 AND IFNULL(ur.branch_id,1)=1 AND u.profile_id = 1) )
+        LEFT JOIN `restaurants` as r on (IFNULL(ur.restaurant_id ,rb1.restaurant_id)= r.id OR (IFNULL(ur.restaurant_id,1)=1 AND IFNULL(ur.branch_id,1)=1 AND u.isSuperAdmin = 1) )
         LEFT JOIN `restaurant_branches` as rb on (rb.restaurant_id = r.id or rb.id = rb1.id)
         LEFT JOIN `restaurant_branch_keys` as rbs on (rbs.branch_id = rb.id)
         
@@ -105,14 +158,14 @@ class UserLoginGateway {
         
         GROUP BY u.`id`;";
 
-         try {
+        try {
             $statement = $this->db->prepare($statement);
             $statement->execute(array($id));
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            foreach($result as $row)
-            {
-                $userSecrets =array();
-                $profile = Profile::GetProfile(intval($row["profile_id"]),strval($row["profile"]));
+            foreach ($result as $row) {
+                $userSecrets = array();
+                $restaurants = array();
+                $profile = Profile::GetProfile(intval($row["profile_id"]), strval($row["profile"]));
                 $this->user = User::GetUser(
                     intval($row["id"]),
                     strval($row["email"]),
@@ -120,72 +173,68 @@ class UserLoginGateway {
                     strval($row["full_name"]),
                     strval($row["password"]),
                     strval($row["secret_key"]),
-                    $profile
-                    , array()
-                    , array()
-                    ,boolval($row["IsAdmin"])
-                    ,boolval($row["isSuperAdmin"]));
-                $restaurants = array();
-                 $rests = explode( '$',$row["restaurants"]);
-                foreach($rests as $rest)
-                {
-                    $r = explode( ',',$rest);
-                    $restaurant = Restaurant::Getrestaurant(intval($r[0])
-                    ,strval($r[1])
-                    ,strval($r[2])
-                    ,strval($r[3])
-                    ,strval($r[4])
-                    ,strval($r[5])
-                    ,strval($r[6])
-                    ,array()
-                    );
-                    $branches = explode( '$',$row["branches"]);
-                    foreach($branches as $br)
-                    {
-                        
-                        $bra = explode( ',',$br);
-                        if($restaurant->id === intval($bra[0]))
-                        {
-                            $branch = Branch::GetBranch(
-                                intval($bra[0]),
-                                intval($restaurant->id),
-                                strval($bra[1]),
-                                strval($bra[2]),
-                                strval($bra[3]),
-                                strval($bra[4]),
-                                strval($bra[5]),
-                                array()
-                            );
-                            $secrets = explode( '$',$row["secret_keys"]);
-                            foreach($secrets as $s)
-                            {
-                                $secret = explode( ',',$s);
-                                if($branch->id === intval($secret[0]))
-                                {
-                                    array_push($branch->secrets,$secret[1]);
-                                    array_push($userSecrets,$secret[1]);
+                    $profile,
+                    $userSecrets,
+                    $restaurants,
+                    boolval($row["IsAdmin"]),
+                    boolval($row["isSuperAdmin"])
+                );
+                if (isset($row["restaurants"])) {
+                    $rests = explode('$', $row["restaurants"]);
+                    foreach ($rests as $rest) {
+                        $r = explode(',', $rest);
+                        $restaurant = Restaurant::Getrestaurant(
+                            intval($r[0]),
+                            strval($r[1]),
+                            strval($r[2]),
+                            strval($r[3]),
+                            strval($r[4]),
+                            strval($r[5]),
+                            strval($r[6]),
+                            array()
+                        );
+                        $branches = explode('$', $row["branches"]);
+                        foreach ($branches as $br) {
+
+                            $bra = explode(',', $br);
+                            if ($restaurant->id === intval($bra[0])) {
+                                $branch = Branch::GetBranch(
+                                    intval($bra[0]),
+                                    intval($restaurant->id),
+                                    strval($bra[1]),
+                                    strval($bra[2]),
+                                    strval($bra[3]),
+                                    strval($bra[4]),
+                                    strval($bra[5]),
+                                    array()
+                                );
+                                $secrets = explode('$', $row["secret_keys"]);
+                                foreach ($secrets as $s) {
+                                    $secret = explode(',', $s);
+                                    if ($branch->id === intval($secret[0])) {
+                                        array_push($branch->secrets, $secret[1]);
+                                        array_push($userSecrets, $secret[1]);
+                                    }
                                 }
+
+                                array_push($restaurant->branches, $branch);
                             }
-                            
-                            array_push($restaurant->branches,$branch);
                         }
+                        array_push($restaurants, $restaurant);
                     }
-                    array_push($restaurants,$restaurant);
-                    
                 }
-                    $this->user->restaurants = $restaurants;
-                    $this->user->secrets = $userSecrets;
-                    //echo "<li><span> USer => ".json_encode($this->user)."<span></li>";
 
-                    Break;
+                $this->user->restaurants = $restaurants;
+                $this->user->secrets = $userSecrets;
+                //echo "<li><span> USer => ".json_encode($this->user)."<span></li>";
 
+                break;
             }
-
         } catch (\PDOException $e) {
             exit($e->getMessage());
-        }    
+        }
     }
-    function GetUserByUsernamePassword($username,$password)
+    function GetUserByUsernamePassword($username, $password)
     {
         $username = strtolower($username);
         /*$password = \mysql_escape_string($password);*/
@@ -202,31 +251,74 @@ class UserLoginGateway {
             exit($e->getMessage());
         }
     }
-    function InsertUser(User $input)
+    function InsertOrUpdate(User $input)
+    {
+
+        if ($input->id == 0) {
+            return $this->InsertUser($input);
+        } else {
+            return $this->UpdateUser($input);
+        }
+    }
+    private function InsertUser(User $input)
     {
         //Password(:password), sha(:secret_key)
-        $statement = "INSERT INTO `$this->tblName`
+        $statement = "INSERT INTO $this->tblName
         (`email`, `user_name`, `full_name`, `password`, `secret_key`, `profile_id`, `IsAdmin`, `isSuperAdmin`)
-         VALUES (email, :user_name, :full_name, Password(:password), sha(:secret_key), :profile_id, :IsAdmin, :isSuperAdmin)";
+         VALUES (email, :user_name, :full_name, SHA2(:secret_key,224), SHA(:secret_key), :profile_id, :IsAdmin, :isSuperAdmin)";
 
         try {
             $statement = $this->db->prepare($statement);
+            $this->db->beginTransaction();
             $statement->execute(array(
                 'email' => $input->email,
                 'user_name' => $input->user_name,
                 'full_name' => $input->full_name,
-                'password' => 'funneat',
-                'secret_key' =>'funneat',
-                'profile_id' => $input->profile_id,
-                'IsAdmin' => $input->IsAdmin,
+                'secret_key' => 'funneat',
+                'profile_id' => $input->profile->id,
+                'IsAdmin' => $input->isAdmin,
                 'isSuperAdmin' => $input->isSuperAdmin,
-           ));
-            return $statement->rowCount();
+            ));
+            $this->db->commit();
+            $input->id = intval($this->db->lastInsertId());
+            return $input;
         } catch (\PDOException $e) {
             exit($e->getMessage());
-        }    
+        }
     }
-    function UpdateUserPassword(string $password)
+    private function UpdateUser(User $input)
+    {
+        //Password(:password), sha(:secret_key)
+        $statement = "UPDATE $this->tblName
+         SET 
+         `email` =   :email ,
+         `user_name` =   :user_name ,
+         `full_name` =   :full_name ,
+         `profile_id` =   :profile_id ,
+         `IsAdmin` =   :IsAdmin ,
+         `isSuperAdmin` =   :isSuperAdmin 
+
+         WHERE id   = :id;";
+
+        try {
+            $statement = $this->db->prepare($statement);
+            $this->db->beginTransaction();
+            $statement->execute(array(
+                'id' => (int)$input->id,
+                'email' => $input->email,
+                'user_name' => $input->user_name,
+                'full_name' => $input->full_name,
+                'profile_id' => $input->profile->id,
+                'IsAdmin' => $input->isAdmin ?? false,
+                'isSuperAdmin' => $input->isSuperAdmin ?? false,
+            ));
+            $this->db->commit();
+            return $input;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
+    function UpdatePassword(string $password)
     {
         //Password(:password), sha(:secret_key)
         $statement = "UPDATE $this->tblName
@@ -237,14 +329,37 @@ class UserLoginGateway {
 
         try {
             $statement = $this->db->prepare($statement);
+            $this->db->beginTransaction();
             $statement->execute(array(
                 'id' => (int)$this->user->id,
-                'secret_key' =>strval($password),
-           ));
-            return $statement->rowCount();
+                'secret_key' => strval($password),
+            ));
+            $this->db->commit();
+            return $this->user;
         } catch (\PDOException $e) {
             exit($e->getMessage());
-        }    
+        }
     }
+    function UpdateUserPassword(User $user,string $password)
+    {
+        //Password(:password), sha(:secret_key)
+        $statement = "UPDATE $this->tblName
+         SET 
+         `password` =   SHA2(:secret_key,224) ,
+         `secret_key`   =   SHA(:secret_key) 
+         WHERE id   = :id;";
 
+        try {
+            $statement = $this->db->prepare($statement);
+            $this->db->beginTransaction();
+            $statement->execute(array(
+                'id' => (int)$user->id,
+                'secret_key' => strval($password),
+            ));
+            $this->db->commit();
+            return $user;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
 }
