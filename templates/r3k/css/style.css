@@ -10,7 +10,7 @@ a {
 }
 
 .display-middle {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
@@ -43,7 +43,7 @@ a {
   }
 .bg-custom
 {
-  background: linear-gradient(135deg, rgb(171, 236, 214), rgb(251, 237, 150));
+  background: linear-gradient(100deg, rgb(0, 0, 0), rgb(230,223,16));
 }
 .opacity-min {
   opacity: 0.75;
@@ -58,11 +58,11 @@ a {
 }
 .wide {
   letter-spacing: 4px;
+  overflow-x: clip;
 }
 .full-div
 { 
-  margin-top: -8em;
-  /* position: fixed;    */
+   position: fixed;   
   height: 100vh;
   width: 100vw;
 }
