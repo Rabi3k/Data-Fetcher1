@@ -18,6 +18,35 @@ class OrdersGateway extends DbObject
     {
         $this->tblName = "tbl_order";
     }
+    public function findSoldItems($restauntRefId = null)
+    {
+        $tblname = $this->getTableName();
+        $statment = "SELECT JSON_UNQUOTE(
+            JSON_EXTRACT(
+                data,'$.items')) as 'items'
+                FROM $tblname WHERE  
+                JSON_UNQUOTE(
+                    JSON_EXTRACT(data,'$.ready')) = 'true'
+                    AND
+                    JSON_UNQUOTE(
+                        JSON_EXTRACT(data,'$.restaurant_id')) = ifnull(:restauntRefId,JSON_UNQUOTE(
+                        JSON_EXTRACT(data,'$.restaurant_id')));";
+
+        try {
+            $statement = $this->getDbConnection()->prepare($statment);
+            $this->getDbConnection()->beginTransaction();
+            $statement->execute(array(
+                'restauntRefId' => $restauntRefId,
+            ));
+            $this->getDbConnection()->commit();
+            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $itemsTr = Traversable::from($result);
+            $itemsarray = $itemsTr->selectMany(function($x){return json_decode($x['items']);})->asArray();
+            return $itemsarray;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
     public function FindByRestaurantRefId($id)
     {
         $tblname = $this->getTableName();
@@ -27,7 +56,8 @@ class OrdersGateway extends DbObject
         try {
             $statement = $this->getDbConnection()->query($statment);
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            $Orders = array_column($result, 'data');
+            $orders = Traversable::from($result);
+
             $results = array();
             foreach ($result as $row) {
                 $jObj = json_decode($row['data']);
@@ -95,17 +125,15 @@ class OrdersGateway extends DbObject
     }
     public function GetItemsSold()
     {
-        $orders = $this->SelectAll();
-        $strings = Traversable::from($orders);
+        $items = $this->findSoldItems();
+        $strings = Traversable::from($items);
         $results = array();
-        foreach ($strings->selectMany(function ($x) {
-            return json_decode($x["data"])->items;
-        })->where(function($y){
-            return $y->type==="item";
+        foreach ($strings->where(function ($y) {
+            return $y->type === "item";
         })->groupBy(function ($i) {
             return $i->type_id;
         })
-        ->asArray() as $id => $itemGrp) {
+            ->asArray() as $id => $itemGrp) {
             //echo $id;
             $qty = 0;
             $name = '';

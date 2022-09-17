@@ -2,8 +2,10 @@
   <h2>Sidebar</h2>
 <div class="container">
   <div class="row">
-    <div class="col-6">
-    <canvas id="myChartPolar"></canvas>
+    <div class="col-4">
+      <canvas id="myChartPolar"></canvas>
+    </div>
+    <div class="col-2">
     </div>
     <div class="col-6">
     <canvas id="myChartBars"></canvas>
@@ -13,8 +15,8 @@
 </div>
 <script>
   
-var jsonfile=JSON.parse(' <?php echo json_encode($orderstGateway->GetItemsSold()); ?>');
-//[{"id":11052316,"qty":1,"name":"Pizza Prosciutto"},{"id":11052319,"qty":3,"name":"Coffee"},{"id":11052321,"qty":9,"name":"Lemonade"},{"id":11052318,"qty":3,"name":"Spaghetti Carbonara"}];
+var jsonfile  = JSON.parse('<?php echo json_encode($orderstGateway->GetItemsSold()); ?>');
+//[{"id":11052316,"qty":1,s"name":"Pizza Prosciutto"},{"id":11052319,"qty":3,"name":"Coffee"},{"id":11052321,"qty":9,"name":"Lemonade"},{"id":11052318,"qty":3,"name":"Spaghetti Carbonara"}];
 
 var labels = jsonfile.map(function(e) {
    return e.name;
@@ -26,29 +28,21 @@ var data = jsonfile.map(function(e) {
 const ctxPolar = document.getElementById('myChartPolar').getContext('2d');
 const ctxBars = document.getElementById('myChartBars').getContext('2d');
 const myChartBars = new Chart(ctxBars, {
-    type: 'bar',
+   
     data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: labels,
         datasets: [{
-            label: '# of Votes',
-            data: [12, 19, 3, 5, 2, 3],
-            backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
-            ],
-            borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
-            ],
-            borderWidth: 1
+            label: 'Item sold1', 
+            type: 'bar',
+            //labels: labels,
+            data: data,
+            backgroundColor: ['rgb(75, 192, 192)']
+        },{
+            label: 'Item sold2', 
+            type: 'line',
+            //labels: labels,
+            data: data,
+            backgroundColor: ['rgb(255, 99, 132)']
         }]
     },
     options: {
