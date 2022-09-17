@@ -2,11 +2,9 @@
 
 $errorMessage = false;
 if (isset($_POST['uname']) && isset($_POST['password'])) {
-  echo "sign";
   if (!$userLogin->ValidateLogin($_POST['uname'], $_POST['password'])) {
     //show error message;
     $errorMessage = true;
-    echo "Error";
   }
 }
 if ($userLogin->checkLogin()) {
@@ -39,7 +37,7 @@ include  $templatePath . '/head.php';
         <img class="mb-4" src="/media/System/logo.svg" alt="logo" width="150" height="150">
         <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
         <label for="inputEmail" class="sr-only">Email address</label>
-        <input type="email" id="inputEmail" class="form-control" name="uname" placeholder="Email address" required autofocus>
+        <input type="text" id="inputEmail" class="form-control" name="uname" placeholder="Email address" required autofocus>
         <label for="inputPassword" class="sr-only">Password</label>
         <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" required>
         <div class="checkbox mb-3">
