@@ -3,7 +3,7 @@
 use Src\TableGateways\RequestsGateway;
 if(!$userLogin->checkLogin())
 {
-    header("Location: $rootpath/login.php");
+    header("Location: $rootpath/login.php?returnurl=/kds");
     exit();
 }
 $PageTitle = "KDS System";

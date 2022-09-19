@@ -9,6 +9,7 @@ use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\FirePHPHandler;
 
+
 if (session_status() === PHP_SESSION_NONE) {
     $dotenv = new DotEnv(__DIR__);
     $dotenv->load();
@@ -19,10 +20,8 @@ if (session_status() === PHP_SESSION_NONE) {
     $dbConnection = (new DatabaseConnector())->getConnection();
 
     $userLogin = new UserLoginGateway($dbConnection);
-
     
     $templatePath = "templates/$template";
-
 
     ini_set('session.referer_check', 'TRUE');
     session_start();

@@ -7,6 +7,7 @@ use Src\Classes\Profile;
 use Src\Classes\Restaurant;
 use Src\Classes\Branch;
 
+use Pinq\Traversable;
 
 class UserLoginGateway
 {
@@ -234,6 +235,84 @@ class UserLoginGateway
             exit($e->getMessage());
         }
     }
+    function GetEncryptedKey($userEmail)
+    {
+        /*AES_Encrypt(concat(`user_name`,'$',`secret_key`),'maxtibi1301') */
+
+        $userEmail = strtolower($userEmail);
+        /*$password = \mysql_escape_string($password);*/
+        $statement = " SELECT AES_Encrypt(concat(`user_name`,'$',`secret_key`),'maxtibi1301') as 'SecretKey' from $this->tblName where email=:email ;";
+
+        try {
+            $sth = $this->db->prepare($statement);
+            $this->db->beginTransaction();
+            $sth->execute(array('email'=>$userEmail));
+            $this->db->commit();
+            $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
+            $UserSecret = Traversable::from($result);
+            return $UserSecret->first()['SecretKey']??null;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
+    function DecryptSecretKey($secretKey)
+    {
+        /*AES_Encrypt(concat(`user_name`,'$',`secret_key`),'maxtibi1301') */
+
+        /*$password = \mysql_escape_string($password);*/
+        $statement = " SELECT AES_DECRYPT($secretKey,'maxtibi1301') as 'UserSecret';";
+
+        try {
+            $sth = $this->db->prepare($statement);
+
+            $this->db->beginTransaction();
+            $sth->execute();
+            $this->db->commit();
+            $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
+            $UserSecret = Traversable::from($result);
+            $str = $UserSecret
+                ->select(function ($x) {
+                    return explode('$', strval($x['UserSecret']));
+                })->first();
+            return $str;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
+    function GetUserByUsernameSecretKey($username, $secretKey)
+    {
+        $username = strtolower($username);
+        /*$password = \mysql_escape_string($password);*/
+        $statement = "SELECT * FROM $this->tblName 
+        WHERE (LOWER(user_name)=:username AND `secret_key` = :secretKey)
+        OR (LOWER(email)=:username AND `secret_key` = :secretKey);";
+
+        try {
+            $sth = $this->db->prepare($statement);
+            $sth->execute(array('secretKey' => $secretKey, 'username' => $username));
+            $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
+            $user = Traversable::from($result);
+            if ($user->first() !== null) {
+                $rval = $user->first();
+                return User::GetUser(
+                    intval($rval['id']),
+                    $rval['email'],
+                    $rval['user_name'],
+                    $rval['full_name'],
+                    $rval['password'],
+                    $rval['secret_key'],
+                    new Profile(),
+                    array(),
+                    array(),
+                    boolval($rval['IsAdmin']),
+                    boolval($rval['isSuperAdmin'])
+                );
+            }
+            return  null;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
     function GetUserByUsernamePassword($username, $password)
     {
         $username = strtolower($username);
@@ -340,7 +419,7 @@ class UserLoginGateway
             exit($e->getMessage());
         }
     }
-    function UpdateUserPassword(User $user,string $password)
+    function UpdateUserPassword(User $user, string $password)
     {
         //Password(:password), sha(:secret_key)
         $statement = "UPDATE $this->tblName

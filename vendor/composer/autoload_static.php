@@ -21,6 +21,7 @@ class ComposerStaticInit066f79285e7902e26079783eeea82b75
             'Psr\\Log\\' => 8,
             'Pinq\\' => 5,
             'PhpParser\\' => 10,
+            'PHPMailer\\PHPMailer\\' => 20,
         ),
         'M' => 
         array (
@@ -52,6 +53,10 @@ class ComposerStaticInit066f79285e7902e26079783eeea82b75
         'PhpParser\\' => 
         array (
             0 => __DIR__ . '/..' . '/nikic/php-parser/lib/PhpParser',
+        ),
+        'PHPMailer\\PHPMailer\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
         'Monolog\\' => 
         array (

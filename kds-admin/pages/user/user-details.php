@@ -1,5 +1,6 @@
 <?php
 
+use Src\Classes\KMail;
 use Src\TableGateways\UserLoginGateway;
 use Src\Classes\User;
 
@@ -17,7 +18,11 @@ if (isset($_GET['id'])) {
 if (isset($_GET['action'])) {
     if ($_GET['action'] == 'change-password') {
         if (isset($_POST['password1'])) {
-            $userLogin->UpdateUserPassword($lUser,$_POST['password1']);
+            $userLogin->UpdateUserPassword($lUser, $_POST['password1']);
+        } else if (array_key_exists('SendRestPaswordEmail', $_POST)) {
+
+            $secret = $userLogin->GetEncryptedKey($lUser->email);
+            KMail::sendResetPasswordMail($lUser->email, $secret);
         }
     } else if ($_GET['action'] == 'edit-details') {
 
@@ -35,7 +40,7 @@ if (isset($_GET['action'])) {
             $lUser->SetUsertype(strval($_POST['userType']));
         }
         if (isset($_POST['inputProfile']) && !empty($_POST['inputProfile'])) {
-            $lUser->profile->id =intval($_POST['inputProfile']);
+            $lUser->profile->id = intval($_POST['inputProfile']);
         }
         $lUser = $userLogin->InsertOrUpdate($lUser);
         $idUrl = "id=$lUser->id";
@@ -75,7 +80,7 @@ if (isset($_GET['action'])) {
             </div>
             <div class="form-row">
                 <fieldset class="form-group col-md-3">
-                    <label >User Type</label>
+                    <label>User Type</label>
                     <div class="card">
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="userType" id="SuperAdmin" value="SuperAdmin">
@@ -126,30 +131,24 @@ if (isset($_GET['action'])) {
                     <p class="text-center h5">Use the form below to change your password.</p>
                 </div>
             </div>
-            <form method="post" id="passwordForm" action="?<?php echo $idUrl ?>&action=change-password&tab=password">
-                <div class="row">
-                    <div class="col-9">
-                        <div class="col-12 p-2">
-                            <input type="password" class="input-lg form-control" name="password1" id="password1" placeholder="New Password" autocomplete="off">
-                        </div>
-                        <div class="col-12 p-2">
-                            <input type="password" class="input-lg form-control" name="password2" id="password2" placeholder="Repeat Password" autocomplete="off">
-                        </div>
-                        <div class="offset-9 p-2">
-                            <input type="submit" class="btn btn-primary btn-load btn-lg" data-loading-text="Changing Password..." value="Change Password">
-                        </div>
-                    </div>
-                    <!--/col-sm-6-->
-                    <div class="col-3">
-                        <span id="8char" data-feather="x"></span> 8 Characters Long<br>
-                        <span id="ucase" data-feather="x"></span> One Uppercase Letter<br>
-                        <span id="lcase" data-feather="x"></span> One Lowercase Letter<br>
-                        <span id="num" data-feather="x"></span> One Number<br>
-                        <span id="pwmatch" data-feather="x"></span> Passwords Match
+            <form method="post" id="SendResetpasswordForm" action="?<?php echo $idUrl ?>&action=change-password&tab=password">
+                <div class="row text-center">
+                    <div class="offset-4 p-2">
+                        <input type="submit" class="btn btn-primary btn-load btn-lg" name="SendRestPaswordEmail" data-loading-text="Sending Email..." value="Send Reset Password Email">
                     </div>
                 </div>
-                <!--/row-->
             </form>
+            <!-- <hr />
+            <div class="row text-center">
+                <div class="col-12 p-2">
+                    <p class="text-center h5">Or</p>
+                </div>
+            </div>
+            <hr />
+            <form method="post" id="passwordForm" action="?<?php echo $idUrl ?>&action=change-password&tab=password">
+                <?php //include "user-password.php" ?>
+            </form> -->
+
         </div>
     </div>
 </div>

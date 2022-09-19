@@ -7,7 +7,6 @@ $("#passwordForm").on("submit",function(e)
         e.preventDefault();
         alert("submit form"+d);
     }
-    
 });
 
 $("input[type=password]").keyup(function(){checkPassword();});

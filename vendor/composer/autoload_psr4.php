@@ -11,6 +11,7 @@ return array(
     'Psr\\Log\\' => array($vendorDir . '/psr/log/src'),
     'Pinq\\' => array($vendorDir . '/timetoogo/pinq/Source'),
     'PhpParser\\' => array($vendorDir . '/nikic/php-parser/lib/PhpParser'),
+    'PHPMailer\\PHPMailer\\' => array($vendorDir . '/phpmailer/phpmailer/src'),
     'Monolog\\' => array($vendorDir . '/monolog/monolog/src/Monolog'),
     'Dotenv\\' => array($vendorDir . '/vlucas/phpdotenv/src'),
 );

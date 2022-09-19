@@ -48,7 +48,8 @@
         </div>
       </div>
     </div>
-    <div class="col-3">
+    <div class="col-3 justify-content-end pull-right">
+      <img class="mb-4 pull-right" src="/media/System/logo.svg" alt="" width="100" height="100">
     </div>
   </div>
 </header>
