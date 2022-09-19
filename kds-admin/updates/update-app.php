@@ -19,20 +19,44 @@ curl_setopt_array($curl, array(
   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
   CURLOPT_CUSTOMREQUEST => 'GET',
   CURLOPT_HTTPHEADER => array(
-    'Authorization: Bearer '.getenv('GIT_ACCESS_TOKEN'),
-    'User-Agent:'.$_SERVER['HTTP_USER_AGENT'],
+    'Authorization: Bearer ' . getenv('GIT_ACCESS_TOKEN'),
+    'User-Agent:' . $_SERVER['HTTP_USER_AGENT'],
   ),
 ));
 
 $response = json_decode(curl_exec($curl));
 $lov = $response[0]->name; // Latest Online Version
 curl_close($curl);
-echo $_ENV["VERSION"]." => ".VERSION." => $lov <br/>";
-$statments= GetStatmentsToExecute($UpdatesSqlStatments);
-foreach($statments as $kv=>$value)
-{
-  echo "$kv => $value <br/>";
-}
+echo $_ENV["VERSION"] . " => " . VERSION . " => $lov <br/>";
+$statments = GetStatmentsToExecute($UpdatesSqlStatments);
+?>
 
- //setEnv("VERSION",VERSION);
- 
+<body>
+  
+
+    <div class="container-fluid">
+      <div class="card-columns">
+
+
+
+
+        <?php foreach ($statments as $kv => $value) { ?>
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title">Version <?php echo $kv ?></h5>
+            </div>
+            <div class="card-body">
+              <p class="card-text"><?php echo $value ?></p>
+
+            </div>
+          </div>
+        <?php }
+        //setEnv("VERSION",VERSION);
+
+        ?>
+      </div>
+
+
+    </div>
+  </div>
+</body>

@@ -13,6 +13,10 @@ $UpdatesSqlStatments = array(
         `Comment` text COLLATE utf8_unicode_ci,
         PRIMARY KEY (`id`)
        ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
+    '0.0.112' => "ALTER TABLE `users` ADD UNIQUE `Email` (`email`(50));",
+    '0.0.113' => "ALTER TABLE `users` ADD UNIQUE `Email` (`email`(50));",
+    '0.0.114' => "ALTER TABLE `users` ADD UNIQUE `Email` (`email`(50));",
+    '0.0.119' => "ALTER TABLE `users` ADD UNIQUE `Email` (`email`(50));",
     '0.0.122' => "ALTER TABLE `users` ADD UNIQUE `Email` (`email`(50));",
    // '0.0.2' => "ALTER TABLE `users` ADD UNIQUE `Email` (`email`(50));"
 );
