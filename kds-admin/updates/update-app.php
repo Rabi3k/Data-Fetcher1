@@ -19,7 +19,7 @@ curl_setopt_array($curl, array(
   CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
   CURLOPT_CUSTOMREQUEST => 'GET',
   CURLOPT_HTTPHEADER => array(
-    'Authorization: Bearer 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',
+    'Authorization: Bearer '.getenv('GIT_ACCESS_TOKEN'),
     'User-Agent:'.$_SERVER['HTTP_USER_AGENT'],
   ),
 ));
