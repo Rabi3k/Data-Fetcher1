@@ -22,7 +22,7 @@ if (isset($_GET['action'])) {
         } else if (array_key_exists('SendRestPaswordEmail', $_POST)) {
 
             $secret = $userLogin->GetEncryptedKey($lUser->email);
-            KMail::sendResetPasswordMail($lUser->email, $secret);
+            KMail::sendResetPasswordMail($lUser, $secret);
         }
     } else if ($_GET['action'] == 'edit-details') {
 

@@ -52,6 +52,9 @@ include "../$templatePath/head.php";
   background: #FFFFFF;
   }
 </style>
+
+
+
 <div id="invoice-POS" class="bg-white p-5">
     
     <center id="top">

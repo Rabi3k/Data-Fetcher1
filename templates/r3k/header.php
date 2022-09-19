@@ -28,7 +28,7 @@
               <a class="nav-link" href="https://funneat.dk/" target="_blank">Fun'N Eat</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="<?php echo $rootpath ?>/kds">KDS System</a>
+              <b><a class="nav-link" href="<?php echo $rootpath ?>/kds">KDS System</a></b>
             </li>
             <?php if (!$userLogin->checkLogin()) { ?>
               <li class="nav-item">

@@ -1,10 +1,27 @@
+body,
+h1,
+h2 {
+  font-family: "Raleway", sans-serif
+}
 
-body,h1,h2{font-family: "Raleway", sans-serif}
-body, html {max-height: 100vh;overflow:auto;}
-p {line-height: 2}
+body,
+html {
+  max-height: 100vh;
+  overflow: auto;
+
+  font-family: Verdana,sans-serif;
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+p {
+  line-height: 2
+}
+
 a {
   color: inherit;
 }
+
 a {
   background-color: transparent;
 }
@@ -13,8 +30,8 @@ a {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%,-50%);
-  -ms-transform: translate(-50%,-50%);
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
 }
 
 
@@ -23,15 +40,22 @@ a {
   background-position: center;
   background-size: cover;
 }
-.bgimg {background-image: url("../img/background.jpg")}
-.opacity-90{opacity: 90%;}
+
+.bgimg {
+  background-image: url("../img/background.jpg")
+}
+
+.opacity-90 {
+  opacity: 90%;
+}
+
 .btPrint {
-    left: 50%;
-    position: absolute;
-    padding: 0em;
-    border: 1px solid gray;
-    border-radius: 10px;
-    cursor: pointer;
+  left: 50%;
+  position: absolute;
+  padding: 0em;
+  border: 1px solid gray;
+  border-radius: 10px;
+  cursor: pointer;
 }
 
 .tdbody {
@@ -40,29 +64,38 @@ a {
   text-overflow: ellipsis;
   -o-text-overflow: ellipsis;
   max-width: 20em;
-  }
-.bg-custom
-{
-  background: linear-gradient(100deg, rgb(0, 0, 0), rgb(230,223,16));
 }
+
+.bg-custom {
+  background: linear-gradient(100deg, rgb(0, 0, 0), rgb(230, 223, 16));
+}
+
 .opacity-min {
   opacity: 0.75;
 }
+
 .text-jumbo {
-  font-size: 64px!important;
+  font-size: 64px !important;
 }
+
 .sticky-bottom {
   position: fixed;
   bottom: 0;
   width: -webkit-fill-available;
 }
+
 .wide {
   letter-spacing: 4px;
   overflow-x: clip;
 }
-.full-div
-{ 
-   position: fixed;   
+
+.full-div {
+  position: fixed;
   height: 100vh;
   width: 100vw;
+}
+
+a,
+a:hover {
+  color: inherit;
 }

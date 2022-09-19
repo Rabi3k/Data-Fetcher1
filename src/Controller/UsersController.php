@@ -73,6 +73,10 @@ class UsersController {
        {
         return FuncType::ById;
        }
+       if(isset($this->params["TypeId"]))
+       {
+        return FuncType::ById;
+       }
        if(isset($this->params['startDate']) && isset($this->params['endDate']))
        {
         return FuncType::ByDate;

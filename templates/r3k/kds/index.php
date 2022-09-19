@@ -15,7 +15,9 @@ include "../$templatePath/head.php";
 <?php
 include "../$templatePath/header.php";
 ?>
-<body class="wide bgimg">
+<body class="wide">
+<div class="full-div bgimg ">
+    <div class="full-div  opacity-min bg-light">
 <script type='text/javascript'>
 var interval = setInterval( function(){myFunction();},5*1000);
 </script>
@@ -26,7 +28,7 @@ var interval = setInterval( function(){myFunction();},5*1000);
 include "load-cards.php";
 ?>
 
-</div>
+</div></div>
 <?php
 //include  __DIR__.'/footer.php';
 ?>

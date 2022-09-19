@@ -64,4 +64,32 @@
                 </a>
               </li>
             </ul>
+
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+              <span>Settings</span>
+              <a class="d-flex align-items-center text-muted" href="#">
+                <span data-feather="settings"></span>
+              </a>
+            </h6>
+            <ul class="nav flex-column mb-2">
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <span data-feather="database"></span>
+                  Database Connections
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#">
+                  <span data-feather="send"></span>
+                  smtp settings
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/admin/update">
+                  <span data-feather="download-cloud"></span>
+                  Check updates
+                </a>
+              </li>
+            </ul>
+             
           </div>
