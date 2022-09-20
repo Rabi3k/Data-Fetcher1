@@ -1,2 +1,2 @@
 <?php
-include_once "updates/update-app.php";
+include_once "Settings/update-app.php";

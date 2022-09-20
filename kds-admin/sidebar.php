@@ -73,13 +73,13 @@
             </h6>
             <ul class="nav flex-column mb-2">
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="/admin/database-setup">
                   <span data-feather="database"></span>
                   Database Connections
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="/admin/email-setup">
                   <span data-feather="send"></span>
                   smtp settings
                 </a>
