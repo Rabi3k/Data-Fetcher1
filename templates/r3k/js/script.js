@@ -85,7 +85,23 @@ $.getJSON('../api/orders/'+s+'-'+s+'?secrets='+secrets).then(r=>
  
  if(toAdd && toAdd.length>0){
     toAdd.forEach(x=>{
-      $.get('create-card.php?id='+x,function(resp){$('#orderCards').append(resp)});
+      const index = r.findIndex(object => {
+        return object === x;
+      });
+      if (index === 0)
+      {
+        $.get('create-card.php?id='+x,function(resp){$('#orderCards').prepend(resp)});
+      }
+      else if(index === r.length-1)
+      {
+        $.get('create-card.php?id='+x,function(resp){$('#orderCards').append(resp)});
+      }
+      else
+      {
+        var idx = r[index+1];
+        $.get('create-card.php?id='+x,function(resp){$('#accordion_'+idx).before(resp)});
+      }
+      
       playSound();
    });
  }

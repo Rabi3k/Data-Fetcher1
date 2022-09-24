@@ -2,6 +2,7 @@
 
 use Src\Classes\KMail;
 use Src\TableGateways\UserLoginGateway;
+use Src\TableGateways\UserProfilesGateway;
 use Src\Classes\User;
 
 $SaveType = "";
@@ -15,6 +16,8 @@ if (isset($_GET['id'])) {
     $SaveType = "add";
     $idUrl = "new";
 }
+$profiles = (new UserProfilesGateway($dbConnection))->GetAllProfiles();
+
 if (isset($_GET['action'])) {
     if ($_GET['action'] == 'change-password') {
         if (isset($_POST['password1'])) {
@@ -61,7 +64,7 @@ if (isset($_GET['action'])) {
 </ul>
 
 <!-- set User Details Tab -->
-<div class="tab-content" id="myTabContent">
+<div class="tab-content p-2 border border-top-0" id="myTabContent">
     <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
         <form method="post" id="userDetails" action="?<?php echo $idUrl ?>&action=edit-details&tab=home">
             <div class="form-row">
@@ -81,21 +84,21 @@ if (isset($_GET['action'])) {
             <div class="form-row">
                 <fieldset class="form-group col-md-3">
                     <label>User Type</label>
-                    <div class="card">
+                    <div class="card p-2">
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="userType" id="SuperAdmin" value="SuperAdmin">
+                            <input class="form-check-input" type="radio" name="userType" id="rb_SuperAdmin" value="SuperAdmin">
                             <label class="form-check-label" for="SuperAdmin">
                                 Super Admin
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="userType" id="Admin" value="Admin">
+                            <input class="form-check-input" type="radio" name="userType" id="rb_Admin" value="Admin">
                             <label class="form-check-label" for="Admin">
                                 Admin
                             </label>
                         </div>
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="userType" id="User" value="User">
+                            <input class="form-check-input" type="radio" name="userType" id="rb_User" value="User">
                             <label class="form-check-label" for="User">
                                 User
                             </label>
@@ -106,13 +109,25 @@ if (isset($_GET['action'])) {
                 <div class="form-group col-md-4">
                     <label for="inputProfile">Profile</label>
                     <select id="inputProfile" name="inputProfile" class="form-control">
-                        <option value="1">Super Admin</option>
-                        <option value="2">Admin</option>
-                        <option value="3">User</option>
+
+                        <?php foreach ($profiles as $profile) {
+                            echo  "<option name='" . $profile->GetProfileType() . "' value='$profile->id'>$profile->name</option>";
+                        } ?>
+                        <!-- <option name="SuperAdmin" value="1">SA Profile1</option>
+                        <option name="SuperAdmin" value="2">SA Profile2</option>
+                        <option name="SuperAdmin" value="3">SA Profile3</option>
+                        <option name="Admin" value="4">A Profile1</option>
+                        <option name="Admin" value="5">A Profile2</option>
+                        <option name="Admin" value="6">A Profile3</option>
+                        <option name="User"value="7">Super Admin3</option>
+                        <option name="User" value="8">Admin3</option>
+                        <option name="User"value="9">User3</option> -->
                     </select>
                 </div>
             </div>
+            <script type="text/javascript">
 
+            </script>
 
             <button type="submit" class="btn btn-primary">Save</button>
         </form>
@@ -146,7 +161,8 @@ if (isset($_GET['action'])) {
             </div>
             <hr />
             <form method="post" id="passwordForm" action="?<?php echo $idUrl ?>&action=change-password&tab=password">
-                <?php //include "user-password.php" ?>
+                <?php //include "user-password.php" 
+                ?>
             </form> -->
 
         </div>
@@ -168,7 +184,25 @@ if (isset($_GET['action'])) {
             $('#' + val).addClass('show active');
         });
     }
-    $("#<?php echo $lUser->UserType()   ?>").prop("checked", true);
+    $('input:radio[name="userType"]').change(
+        function() {
+            $('#inputProfile option').hide();
+            if ($(this).is(':checked')) {
+                $('#inputProfile option[name=' + $(this).val() + ']').show();
+                $('#inputProfile').val($('#inputProfile option[name=' + $(this).val() + ']').first().val());
+                // append goes here
+            }
+        });
+    $('#inputProfile option').hide();
+    $('#inputProfile option[name=<?php echo $lUser->UserType() ?>]').show();
+    $("#rb_<?php echo $lUser->UserType()   ?>").prop("checked", true);
     $("#inputProfile").val("<?php echo $lUser->profile->id   ?>");
-    $("#userDetails").validate();
+    $("#userDetails").validate({
+        rules: {
+            inputUserName: {
+                alphanumeric: true
+            }
+        }
+    });
+    
 </script>

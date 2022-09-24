@@ -179,6 +179,7 @@ class OrdersGateway extends DbObject
                                     JSON_EXTRACT(data,'$.status')) in ('accepted')
 
                                     group by JSON_EXTRACT(data,'$.id') having MAX(ready)=0
+                                    ORDER BY   CAST(JSON_UNQUOTE(JSON_EXTRACT(data,'$.fulfill_at')) as DateTime)
                                     ";
         //echo "secretsJ: $secretsJ \nstatment: $statment\n";
         try {
@@ -222,6 +223,7 @@ class OrdersGateway extends DbObject
                                     JSON_EXTRACT(data,'$.status')) in ('accepted')
 
                                     group by JSON_EXTRACT(data,'$.id') having MAX(ready)=0
+                                    ORDER BY CAST(JSON_UNQUOTE(JSON_EXTRACT(data,'$.fulfill_at')) as DateTime)
                                     ";
         //echo "secretsJ: $secretsJ \nstatment: $statment\n";
         try {

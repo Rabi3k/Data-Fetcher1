@@ -1,5 +1,9 @@
-RewriteEngine On
 
+
+<FilesMatch  ".env|.env.example">  
+  Require all denied
+</FilesMatch>
+RewriteEngine On
 
 RewriteCond %{THE_REQUEST} %{ENV:ROOT_PATH}/public/([^\s?]*) [NC]
 RewriteRule ^ %1 [L,NE,R=302]

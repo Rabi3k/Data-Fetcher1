@@ -1,5 +1,8 @@
 <?php
-$users = $userLogin->GetAllUsers();
+
+use Src\TableGateways\UserProfilesGateway;
+
+$profiles = (new UserProfilesGateway($dbConnection))->GetAllProfiles();
 ?>
     <div class="row">
         <div class="col-4"></div>
@@ -10,29 +13,23 @@ $users = $userLogin->GetAllUsers();
     </div>
 <hr/>
 <div class="table-responsive ">
-    <table class="table table-bordered table-hover" id="tblUsers">
-        <caption>List of users</caption>
+    <table class="table table-bordered table-hover" id="tblUserProfiles">
+        <caption>List of users profiles</caption>
         <thead class="thead-dark">
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
-                <th scope="col">Email</th>
-                <th scope="col">UserName</th>
-                <th scope="col">Profile</th>
-                <th scope="col">UserType</th>
+                <th scope="col">Type</th>
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($users as $user) {
-                $usertype = $user->usertype();
+            <?php foreach ($profiles as $profile) {
+                $profiletype = $profile->GetProfileType();
             ?>
-                <tr class='clickable-row' data-href="?id=<?php echo $user->id ?>">
-                    <th scope="row"><?php echo $user->id ?></th>
-                    <td scope="row"><?php echo $user->full_name ?></td>
-                    <td scope="row"><?php echo $user->email ?></td>
-                    <td scope="row"><?php echo $user->user_name ?></td>
-                    <td scope="row"><?php echo $user->profile->name ?></td>
-                    <td scope="row"><?php echo $usertype ?></td>
+                <tr class='clickable-row' data-href="?id=<?php echo $profile->id ?>">
+                    <th scope="row"><?php echo $profile->id ?></th>
+                    <td scope="row"><?php echo $profile->name ?></td>
+                    <td scope="row"><?php echo $profiletype ?></td>
                 </tr>
             <?php } ?>
         </tbody>
@@ -41,7 +38,7 @@ $users = $userLogin->GetAllUsers();
 <script type="text/javascript">
     $(document).ready(function() {
 
-        var table = $('#tblUsers').DataTable({
+        var table = $('#tblUserProfiles').DataTable({
             responsive: true,
         });
     });

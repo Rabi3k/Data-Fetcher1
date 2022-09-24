@@ -25,6 +25,21 @@ var data = jsonfile.map(function(e) {
    return e.qty;
 });;
 
+var coloR1 = [];
+var coloR2 = [];
+
+var dynamicColors = function() {
+   var r = Math.floor(Math.random() * 255);
+   var g = Math.floor(Math.random() * 255);
+   var b = Math.floor(Math.random() * 255);
+   return "rgb(" + r + "," + g + "," + b + ")";
+};
+
+for (var i in data) {
+   coloR2.push(dynamicColors());
+   coloR1.push(dynamicColors());
+}
+
 const ctxPolar = document.getElementById('myChartPolar').getContext('2d');
 const ctxBars = document.getElementById('myChartBars').getContext('2d');
 const myChartBars = new Chart(ctxBars, {
@@ -32,17 +47,17 @@ const myChartBars = new Chart(ctxBars, {
     data: {
         labels: labels,
         datasets: [{
-            label: 'Item sold1', 
+            label: 'Rest x', 
             type: 'bar',
             //labels: labels,
             data: data,
-            backgroundColor: ['rgb(75, 192, 192)']
+            backgroundColor: coloR1
         },{
-            label: 'Item sold2', 
-            type: 'line',
+            label: 'Rest Y', 
+            type: 'bar',
             //labels: labels,
             data: data,
-            backgroundColor: ['rgb(255, 99, 132)']
+            backgroundColor: coloR2
         }]
     },
     options: {
@@ -53,6 +68,9 @@ const myChartBars = new Chart(ctxBars, {
         }
     }
 });
+
+
+
 const myChartPolar = new Chart(ctxPolar, {
   type: 'polarArea',
   data: {
@@ -60,13 +78,7 @@ const myChartPolar = new Chart(ctxPolar, {
   datasets: [{
     label: 'Item sold',
     data: data,
-    backgroundColor: [
-      'rgb(255, 99, 132)',
-      'rgb(75, 192, 192)',
-      'rgb(255, 205, 86)',
-      'rgb(201, 203, 207)',
-      'rgb(54, 162, 235)'
-    ]
+    backgroundColor: coloR1
   }]
 },
   options: {}

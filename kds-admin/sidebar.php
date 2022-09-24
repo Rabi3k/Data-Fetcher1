@@ -9,7 +9,13 @@
               <li class="nav-item">
                 <a class="nav-link" href="/admin/users">
                   <span data-feather="users"></span>
-                  users
+                  Users
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/admin/user-profiles">
+                  <span data-feather="user-x"></span>
+                  User Profiles
                 </a>
               </li>
               <li class="nav-item">

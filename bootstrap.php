@@ -18,7 +18,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Handler\FirePHPHandler;
 
 require_once("config.php");
-
+//$config = yaml_parse_file("config.yaml");
 
 
 if (session_status() === PHP_SESSION_NONE) {

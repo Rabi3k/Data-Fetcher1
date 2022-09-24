@@ -41,7 +41,6 @@ class User
                 $this->isSuperAdmin =  $this->isAdmin = false;
                 return;
         }
-        return $this->isSuperAdmin ? "SuperAdmin" : $usertype = $this->isAdmin ? "Admin" : "User";
     }
     #endregion
 

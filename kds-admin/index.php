@@ -35,7 +35,8 @@ include "head.php"; ?>
                         </nav>
                         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
                                 <?php $page = "dashboard";
-                                if (isset($_GET["page"]) && !empty($_GET["page"])) {
+                                if (isset($_GET["page"]) && !empty($_GET["page"]) && file_exists("pages/".$_GET["page"].".php")) {
+
                                         $page = strtolower($_GET["page"]);
                                 }
                                 include "pages/$page.php"; ?>

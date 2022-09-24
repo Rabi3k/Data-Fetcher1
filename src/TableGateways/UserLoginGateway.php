@@ -79,7 +79,9 @@ class UserLoginGateway
         u.`isSuperAdmin`,
         
         -- Profile
-        p.`Name` AS 'profile' 
+        p.`name` AS 'profile' ,
+        p.`admin`  ,
+        p.`super-admin`  
         
         FROM `users`as u
         LEFT JOIN `profiles` as p on (u.profile_id = p.id)";
@@ -90,7 +92,7 @@ class UserLoginGateway
             $users = array();
             foreach ($result as $row) {
                 $userSecrets = array();
-                $profile = Profile::GetProfile(intval($row["profile_id"]), strval($row["profile"]));
+                $profile = Profile::GetProfile(intval($row["profile_id"]), strval($row["profile"]), boolval($row["super-admin"]), boolval($row["admin"]));
                 $user = User::GetUser(
                     intval($row["id"]),
                     strval($row["email"]),
@@ -136,7 +138,10 @@ class UserLoginGateway
         u.`isSuperAdmin`,
         
         -- Profile
-        p.`Name` AS 'profile' ,
+        p.`name` AS 'profile' ,
+        p.`admin`  ,
+        p.`super-admin`,
+
         
         -- restaurants
         GROUP_CONCAT(DISTINCT Concat(r.`id`,',',r.`name`,',',r.`phone`,',',r.`email`,',',r.`cvr`,',',r.`logo`, ',',r.`reference_id`) SEPARATOR '$') as 'restaurants',
@@ -166,7 +171,7 @@ class UserLoginGateway
             foreach ($result as $row) {
                 $userSecrets = array();
                 $restaurants = array();
-                $profile = Profile::GetProfile(intval($row["profile_id"]), strval($row["profile"]));
+                $profile = Profile::GetProfile(intval($row["profile_id"]), strval($row["profile"]), boolval($row["super-admin"]), boolval($row["admin"]));
                 $this->user = User::GetUser(
                     intval($row["id"]),
                     strval($row["email"]),
@@ -344,7 +349,7 @@ class UserLoginGateway
         //Password(:password), sha(:secret_key)
         $statement = "INSERT INTO $this->tblName
         (`email`, `user_name`, `full_name`, `password`, `secret_key`, `profile_id`, `IsAdmin`, `isSuperAdmin`)
-         VALUES (email, :user_name, :full_name, SHA2(:secret_key,224), SHA(:secret_key), :profile_id, :IsAdmin, :isSuperAdmin)";
+         VALUES (:email, :user_name, :full_name, SHA2(:secret_key,224), SHA(:secret_key), :profile_id, :IsAdmin, :isSuperAdmin)";
 
         try {
             $statement = $this->db->prepare($statement);
