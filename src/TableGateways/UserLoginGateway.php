@@ -203,15 +203,15 @@ class UserLoginGateway
                         foreach ($branches as $br) {
 
                             $bra = explode(',', $br);
-                            if ($restaurant->id === intval($bra[0])) {
+                            if ($restaurant->id === intval($bra[1])) {
                                 $branch = Branch::GetBranch(
                                     intval($bra[0]),
                                     intval($restaurant->id),
-                                    strval($bra[1]),
                                     strval($bra[2]),
                                     strval($bra[3]),
                                     strval($bra[4]),
                                     strval($bra[5]),
+                                    strval($bra[6]),
                                     array()
                                 );
                                 $secrets = explode('$', $row["secret_keys"]);

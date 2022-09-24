@@ -45,40 +45,43 @@ if (isset($_GET['action'])) {
 </ul>
 
 <!-- set User Details Tab -->
-<div class="tab-content" id="myTabContent">
+<div class="tab-content border border-top-0 p-2" id="myTabContent">
     <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
         <form method="post" id="userDetails" action="?<?php echo $idUrl ?>&action=edit-details&tab=home">
-            <div class="form-group col-md-6">
-                <label for="inputEmail">Name</label>
-                <input type="text" class="form-control" name="inputName" id="inputName" value="<?php echo $lprofile->name ?>" required>
-            </div>
-            <div class="form-row">
-                <fieldset class="form-group col-md-3">
-                    <label>User Type</label>
-                    <div class="card p-2">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="profileType" id="rb_SuperAdmin" value="SuperAdmin">
-                            <label class="form-check-label" for="SuperAdmin">
-                                Super Admin
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="profileType" id="rb_Admin" value="Admin">
-                            <label class="form-check-label" for="Admin">
-                                Admin
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="profileType" id="rb_User" value="User">
-                            <label class="form-check-label" for="User">
-                                User
-                            </label>
-                        </div>
+            <div class="container">
+                <div class="row">
+                    <div class="form-group col-12">
+                        <label for="inputEmail">Name</label>
+                        <input type="text" class="form-control" name="inputName" id="inputName" value="<?php echo $lprofile->name ?>" required>
                     </div>
-                </fieldset>
+                    <fieldset class="form-group col-md-3">
+                        <label>User Type</label>
+                        <div class="card p-2">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="profileType" id="rb_SuperAdmin" value="SuperAdmin">
+                                <label class="form-check-label" for="SuperAdmin">
+                                    Super Admin
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="profileType" id="rb_Admin" value="Admin">
+                                <label class="form-check-label" for="Admin">
+                                    Admin
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="profileType" id="rb_User" value="User">
+                                <label class="form-check-label" for="User">
+                                    User
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                    <div class="form-group col-12 text-right float-right">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
             </div>
-
-            <button type="submit" class="btn btn-primary">Save</button>
         </form>
     </div>
     <!-- End of User Details Tab -->
@@ -95,8 +98,14 @@ if (isset($_GET['action'])) {
                     <p class="text-center h5">select profile access </p>
                 </div>
             </div>
+
             <form method="post" id="profleAccess" action="?<?php echo $idUrl ?>&action=set-access&tab=access">
-                <button type="submit" class="btn btn-primary">Save</button>
+                <div class="row">
+                    <div class="form-group col-12 text-right float-right">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </div>
+
             </form>
         </div>
     </div>

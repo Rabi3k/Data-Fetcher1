@@ -113,3 +113,9 @@ html {
   font-weight: bold;
   content: "*";
 }
+.img-portrait
+{
+  max-height: 20em;
+  max-width: 30em;
+  object-fit:cover;
+}

@@ -1,8 +1,8 @@
 <?php
 
-use Src\TableGateways\UserProfilesGateway;
+use Src\TableGateways\RestaurantsGateway;
 
-$profiles = (new UserProfilesGateway($dbConnection))->GetAllProfiles();
+$restaurants = (new RestaurantsGateway($dbConnection))->GetAllRestaurants();
 ?>
     <div class="row">
         <div class="col-4"></div>
@@ -13,7 +13,7 @@ $profiles = (new UserProfilesGateway($dbConnection))->GetAllProfiles();
     </div>
 <hr/>
 <div class="table-responsive ">
-    <table class="table table-bordered table-hover" id="tblUserProfiles">
+    <table class="table table-bordered table-hover" id="tblRestaurants">
         <caption>List of users profiles</caption>
         <thead class="thead-dark">
             <tr>
@@ -23,13 +23,13 @@ $profiles = (new UserProfilesGateway($dbConnection))->GetAllProfiles();
             </tr>
         </thead>
         <tbody>
-            <?php foreach ($profiles as $profile) {
-                $profiletype = $profile->GetProfileType();
+            <?php foreach ($restaurants as $restaurant) {
+                
             ?>
-                <tr class='clickable-row' data-href="?id=<?php echo $profile->id ?>">
-                    <th scope="row"><?php echo $profile->id ?></th>
-                    <td scope="row"><?php echo $profile->name ?></td>
-                    <td scope="row"><?php echo $profiletype ?></td>
+                <tr class='clickable-row' data-href="?id=<?php echo $restaurant->id ?>">
+                    <th scope="row"><?php echo $restaurant->id ?></th>
+                    <td scope="row"><?php echo $restaurant->name ?></td>
+                    <td scope="row"><?php echo $restaurant->cvr ?></td>
                 </tr>
             <?php } ?>
         </tbody>
@@ -38,11 +38,11 @@ $profiles = (new UserProfilesGateway($dbConnection))->GetAllProfiles();
 <script type="text/javascript">
     $(document).ready(function() {
 
-        var table = $('#tblUserProfiles').DataTable({
+        var table = $('#tblRestaurants').DataTable({
             responsive: true,
         });
     });
-    $('#tblUserProfiles tbody').on('click', 'tr', function() {
+    $('#tblRestaurants tbody').on('click', 'tr', function() {
         //$(this).toggleClass('selected');
         window.location = $(this).data("href");
     });

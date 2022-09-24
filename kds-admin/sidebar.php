@@ -19,7 +19,7 @@
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="/admin/restaurants">
                   <span data-feather="coffee"></span>
                   Restaurants
                 </a>
