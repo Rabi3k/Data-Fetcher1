@@ -62,24 +62,25 @@ class RestaurantsGateway
         r.`reference_id`,
         
         -- restaurant_branches
-        GROUP_CONCAT(DISTINCT CONCAT(rb.`id`,
-                    ',',
-                    rb.`restaurant_id`,
-                    ',',
-                    rb.`city`,
-                    ',',
-                    rb.`zip_code`,
-                    ',',
-                    rb.`address`,
-                    ',',
-                    rb.`country`,
-                    ',',
-                    IFNULL(rb.`cvr`, '0'))
-            SEPARATOR '$') AS 'branches',
-
-            -- restaurant_branch_keys
-        GROUP_CONCAT(DISTINCT CONCAT(rbs.`branch_id`, ',', rbs.`secret_key`)
-            SEPARATOR '$') AS 'secret_keys'
+        CONCAT('[',
+            GROUP_CONCAT(DISTINCT JSON_OBJECT(
+                'id', rb.`id`,
+                'restaurant_id', rb.`restaurant_id`,
+                'city', rb.`city`,
+                'zip_code', rb.`zip_code`,
+                'address', rb.`address`,
+                'country', rb.`country`,
+                'cvr', rb.`cvr`)
+            SEPARATOR ','),
+            ']') AS 'branches',
+            
+	    -- restaurant_branch_keys
+        CONCAT('[',
+            GROUP_CONCAT(DISTINCT JSON_OBJECT(
+                'branch_id', rbs.`branch_id`,
+                'secret_key', rbs.`secret_key`)
+            SEPARATOR ','),
+            ']') AS 'secret_keys'
     FROM
         `restaurants` r
             LEFT JOIN
@@ -106,32 +107,33 @@ class RestaurantsGateway
                     strval($row["reference_id"]),
                     array()
                 );
-                $branches = explode('$', $row["branches"]);
+                $branches = json_decode($row["branches"]);
+                
                 foreach ($branches as $br) {
-
-                    $bra = explode(',', $br);
-                    if (isset($bra[1]) && $restaurant->id === intval($bra[1])) {
+                    if(isset($br->restaurant_id) && $br->restaurant_id === $restaurant->id)
+                    {
                         $branch = Branch::GetBranch(
-                            intval($bra[0]),
-                            intval($restaurant->id),
-                            strval($bra[2]),
-                            strval($bra[3]),
-                            strval($bra[4]),
-                            strval($bra[5]),
-                            strval($bra[6]),
+                            $br->id,
+                            $br->restaurant_id,
+                            $br->city,
+                            $br->zip_code,
+                            $br->address,
+                            $br->country,
+                            $br->cvr,
                             array()
                         );
-                        $secrets = explode('$', $row["secret_keys"]);
+                        $secrets =  json_decode($row["secret_keys"]);
                         foreach ($secrets as $s) {
-                            $secret = explode(',', $s);
-                            if ($branch->id === intval($secret[0])) {
-                                array_push($branch->secrets, $secret[1]);
+                            if ($branch->id === $s->branch_id) {
+                                array_push($branch->secrets, $s->secret_key);
                             }
                         }
 
                         array_push($restaurant->branches, $branch);
                     }
+                   
                 }
+                
                 array_push($restaurants, $restaurant);
             }
             return $restaurants;
@@ -215,5 +217,118 @@ class RestaurantsGateway
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }
+    }
+
+    function InsertOrUpdateBranch(Branch $input)
+    {
+        if (!isset($input->id)||$input->id === 0) {
+            return $this->InsertBranch($input);
+        } else {
+            return $this->UpdateBranch($input);
+        }
+    }
+    private function InsertBranch(Branch $input)
+    {
+        //Password(:password), sha(:secret_key)
+        $statement = "INSERT INTO `restaurant_branches`
+        (`restaurant_id`,
+        `city`,
+        `zip_code`,
+        `address`,
+        `country`,
+        `cvr`)
+        VALUES 
+        (:restaurant_id,
+        :city,
+        :zip_code,
+        :address,
+        :country,
+        :cvr);";
+
+        try {
+            $statement = $this->db->prepare($statement);
+            $this->db->beginTransaction();
+            $statement->execute(array(
+                'restaurant_id' => $input->restaurantId,
+                'city' => $input->city,
+                'zip_code' => $input->zip_code,
+                'cvr' => $input->cvr,
+                'address' => $input->address,
+                'country' => $input->country
+            ));
+            $this->db->commit();
+            $input->id = intval($this->db->lastInsertId());
+            return $input;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
+    private function UpdateBranch(Branch $input)
+    {
+        //Password(:password), sha(:secret_key)
+        $statement = "UPDATE `restaurant_branches`
+         SET 
+         `restaurant_id` =   :restaurant_id ,
+         `city` =   :city ,
+         `zip_code` =   :zip_code ,
+         `cvr` =   :cvr ,
+         `address` =   :address ,
+         `country` =   :country
+
+         WHERE id   = :id;";
+
+        try {
+            $statement = $this->db->prepare($statement);
+            $this->db->beginTransaction();
+            $statement->execute(array(
+                'id' => (int)$input->id,
+                'restaurant_id' => $input->restaurantId,
+                'city' => $input->city,
+                'zip_code' => $input->zip_code,
+                'cvr' => $input->cvr,
+                'address' => $input->address,
+                'country' => $input->country
+            ));
+            $this->db->commit();
+            return $input;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
+
+    public function InsertOrUpdateBranchSecrets(Branch $input)
+    {
+//Password(:password), sha(:secret_key)
+$Dstatment = "DELETE FROM `kbslb_portal`.`restaurant_branch_keys`
+WHERE `branch_id` = :branch_id;";
+
+$Istatement = "INSERT INTO `restaurant_branch_keys`
+(`branch_id`,
+`secret_key`)
+VALUES
+";
+$secsStatment = array();
+foreach($input->secrets as $secret)
+{
+    $secStatment="($input->id,'$secret')";
+    array_push($secsStatment,$secStatment);
+}
+$Istatement .=implode(",",$secsStatment).";";
+try {
+    $statement = $this->db->prepare("$Dstatment");
+    $this->db->beginTransaction();
+    $statement->execute(array(
+        'branch_id' => $input->id
+    ));
+    $this->db->commit();
+    $statement = $this->db->prepare("$Istatement");
+    $this->db->beginTransaction();
+    $statement->execute(array());
+    $this->db->commit();
+
+    return true;
+} catch (\PDOException $e) {
+    exit($e->getMessage());
+}
     }
 }

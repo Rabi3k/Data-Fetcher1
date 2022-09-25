@@ -119,3 +119,8 @@ html {
   max-width: 30em;
   object-fit:cover;
 }
+
+.custom-file-label::after
+{
+  content: "Gennemse"!important;
+}

@@ -12,13 +12,13 @@ class Branch
     rb.`country`, 
     rb.`cvr` as 'branch_cvr',*/
 #region Private props
-    public int $id;
+    public int $id=0;
     public int $restaurantId;
-    public string $city;
-    public string $zip_code;
-    public string $address;
-    public string $country;
-    public string $cvr;
+    public string $city="";
+    public string $zip_code="";
+    public string $address="";
+    public string $country="";
+    public string $cvr="";
     public array $secrets;
 #endregion
 #region Construct

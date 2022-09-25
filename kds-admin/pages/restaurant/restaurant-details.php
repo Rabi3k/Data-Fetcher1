@@ -39,11 +39,8 @@ if (isset($_GET['action'])) {
         }
         if (isset($_FILES['fileToUpload'])) {
             $nyPath =  UplaodImage(UploadType::Restaurant, $lRestaurant->name, $_FILES['fileToUpload']);
-            $lRestaurant->logo = (isset($nyPath) && !empty($nyPath))?$nyPath:$lRestaurant->logo;
-        }else
-        {
-            echo "No upload";
-        }
+            $lRestaurant->logo = (isset($nyPath) && !empty($nyPath)) ? $nyPath : $lRestaurant->logo;
+        } 
 
 
         $lRestaurant = $restaurantsGateway->InsertOrUpdate($lRestaurant);
@@ -52,7 +49,7 @@ if (isset($_GET['action'])) {
 }
 $logoPath = (isset($lRestaurant->logo)
     && !empty($lRestaurant->logo)
-    && file_exists($_SERVER['DOCUMENT_ROOT'].$lRestaurant->logo))
+    && file_exists($_SERVER['DOCUMENT_ROOT'] . $lRestaurant->logo))
     ? $lRestaurant->logo
     : "/media/restaurant/no-image.png";
 
@@ -95,16 +92,17 @@ $logoPath = (isset($lRestaurant->logo)
                         </div>
                     </div>
                     <div class="col-6">
-                        <div class="form-group">
-                            <label for="inputEmail">
-                                Select image to upload:
-                            </label>
-                            <input type="file" name="fileToUpload" id="fileToUpload" accept="image/svg, image/jpeg, image/jpg, image/png" onchange="readURL(this);">
+                        <div class="form-group col-6">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" name="fileToUpload" id="fileToUpload" accept="image/svg, image/jpeg, image/jpg, image/png" onchange="readURL(this);">
+                                <label class="custom-file-label" for="fileToUpload" >Vælg fil</label>
+                            </div>
                         </div>
-                        <div class="form-group">
+
+                        <div class="form-group col-6">
                             <picture>
                                 <source srcset="..." type="image/svg+xml, image/jpeg, image/jpg, image/png">
-                                <img id="blah" src="<?php echo $logoPath?>" alt="your image" class="img-thumbnail img-portrait" />
+                                <img id="blah" src="<?php echo $logoPath ?>" alt="your image" class="img-thumbnail img-portrait" />
                             </picture>
                         </div>
 
@@ -148,7 +146,8 @@ $logoPath = (isset($lRestaurant->logo)
             <form method="post" id="profleAccess" action="?<?php echo $idUrl ?>&action=set-branches&tab=branches">
                 <div class="row">
                     <div class="form-group col-12 text-right float-right">
-                        <button type="submit" class="btn btn-primary">Save</button>
+                        <?php include "branches-list.php" ?>
+                        <!-- <button type="submit" class="btn btn-primary">Save</button> -->
                     </div>
                 </div>
 

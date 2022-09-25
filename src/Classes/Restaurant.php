@@ -4,13 +4,13 @@ namespace Src\Classes;
 class Restaurant
 {
 #region public props
-    public int $id;
-    public string $email;
-    public string $name;
-    public string $phone;
-    public string $cvr;
-    public string $logo;
-    public string $reference_id;
+    public int $id=0;
+    public string $email='';
+    public string $name='';
+    public string $phone='';
+    public string $cvr='';
+    public string $logo='';
+    public string $reference_id='';
     public array $branches;
 #endregion
 
