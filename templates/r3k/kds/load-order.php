@@ -17,7 +17,7 @@ include "../$templatePath/header.php";
 <body class="wide ">
 <div class="full-div bgimg">
 <div class="full-div bg-warning opacity-min">
-<?php throw new Exception('Uncaught Exception');
+<?php throw new Exception('Uncaught Exception',400);
 echo "Not Executed\n"; ?>
 </div>
 </div>

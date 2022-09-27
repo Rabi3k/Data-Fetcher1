@@ -3,9 +3,12 @@
 namespace Src\Classes;
 
 use DateTime;
+
 use \Monolog\Logger;
 use \Monolog\Handler\StreamHandler;
 use \Monolog\Handler\FirePHPHandler;
+use Monolog\Formatter\JsonFormatter;
+
 use Src\TableGateways\UserLoginGateway;
 use stdClass;
 
@@ -21,7 +24,10 @@ class Loggy
     function __construct()
     {
         $this->logger = new \Monolog\Logger($this::LoggyName);
-        $this->logger->pushHandler(new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/logs/app.log', \Monolog\Level::Debug));
+        $formatter = new JsonFormatter();
+        $stream = new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/logs/app.log', \Monolog\Level::Debug);
+        $stream->setFormatter($formatter);
+        $this->logger->pushHandler($stream);
         $this->logger->pushHandler(new StreamHandler(
             'php://stdout',
             $level = \Monolog\Level::Debug,
@@ -130,8 +136,10 @@ class Loggy
                         return $this->log(\Monolog\Level::Notice, $msg, $stacktrace, $exception);
                 }
             }
-        } else {
-            $this->log(\Monolog\Level::Info, $msg, $stacktrace);
+        } else if (is_a($e, "Exception") )
+        {
+            var_dump($e);
+            $this->log(\Monolog\Level::Error, $msg, $stacktrace,$e);
         }
     }
     private function log(\Monolog\Level $level, string $msg, string $stacktrace, $exception = null)
