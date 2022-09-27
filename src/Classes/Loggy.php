@@ -21,7 +21,7 @@ class Loggy
     function __construct()
     {
         $this->logger = new \Monolog\Logger($this::LoggyName);
-        $this->logger->pushHandler(new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/logs/app.log', \Monolog\Level::Debug));
+        $this->logger->pushHandler(new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/logs/app.log', \Monolog\Level::Emergency));
         $this->logger->pushHandler(new StreamHandler(
             'php://stdout',
             $level = \Monolog\Level::Debug,

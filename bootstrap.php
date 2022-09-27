@@ -76,12 +76,6 @@ else
     $logger =   $_SESSION['logger'];
     //$logger->info('Logger is loaded');
 }
-global $lo;
-$lo = new Loggy();
-
-
-
-
 
 if(!isset($rootpath))
 {
@@ -92,10 +86,12 @@ else
     $_SESSION['ROOT_PATH'] = $rootpath;
 }
 
+/*
+global $lo;
+$lo = new Loggy();
 
 function exception_handler(Throwable $exception) {
     global $lo;
-    //echo "Uncaught exception: " , $exception->getMessage(), "\n";
     $lo->logy($exception->getMessage(),$exception->getTraceAsString(),$exception);
   }
   
@@ -108,7 +104,6 @@ register_shutdown_function(function(){
     if($error){
         global $lo;
         $lo->logy($error['message'],"",$error);
-        //throw new ErrorException($error['message'], -1, $error['type'], $error['file'], $error['line']);
     }
 });
 
@@ -119,7 +114,6 @@ set_error_handler(
         }
         global $lo;
         $lo->logy("","",array('level'=>$level,'error'=> $error,'file'=> $file,'line'=> $line));
-        //throw new ErrorException($error, -1, $level, $file, $line);
     },
     E_ALL
-);
+);*/
