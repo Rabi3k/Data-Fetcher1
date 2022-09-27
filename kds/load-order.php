@@ -1,3 +1,3 @@
 <?php
-require "../bootstrap.php";
+include_once "../bootstrap.php";
 include "../$templatePath/kds/load-order.php";

@@ -1,6 +1,4 @@
 <?php
-//require "../bootstrap.php";
-use Src\TableGateways\RequestsGateway;
 
 if (!$userLogin->checkLogin()) {
     header("Location: $rootpath/login.php?returnurl=/kds");
@@ -29,7 +27,7 @@ include "../$templatePath/header.php";
             ?>
         </div>
         <?php
-        //include  __DIR__.'/footer.php';
+        include  __DIR__.'/footer.php';
         ?>
 </body>
 
