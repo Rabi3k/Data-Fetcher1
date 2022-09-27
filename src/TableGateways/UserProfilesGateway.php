@@ -95,8 +95,9 @@ class UserProfilesGateway
                 'admin' => $input->isAdmin,
                 'super_admin' => $input->isSuperAdmin
             ));
-            $this->db->commit();
             $input->id = intval($this->db->lastInsertId());
+            $this->db->commit();
+
             return $input;
         } catch (\PDOException $e) {
             exit($e->getMessage());

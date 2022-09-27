@@ -141,16 +141,38 @@ class UserLoginGateway
         p.`name` AS 'profile' ,
         p.`admin`  ,
         p.`super-admin`,
-
         
-        -- restaurants
-        GROUP_CONCAT(DISTINCT Concat(r.`id`,',',r.`name`,',',r.`phone`,',',r.`email`,',',r.`cvr`,',',r.`logo`, ',',r.`reference_id`) SEPARATOR '$') as 'restaurants',
-        
+         -- restaurants
+        CONCAT('[',GROUP_CONCAT(DISTINCT JSON_OBJECT(
+		'id',r.`id`,
+		'name',r.`name`,
+		'phone',r.`phone`,
+		'email',r.`email`,
+		'cvr',r.`cvr`,
+		'logo',r.`logo`,
+		'reference_id',r.`reference_id`) SEPARATOR ','),
+            ']') as 'restaurants',
+            
         -- restaurant_branches
-        GROUP_CONCAT(DISTINCT Concat(rb.`id`,',',rb.`restaurant_id`,',',rb.`city`,',',rb.`zip_code`,',',rb.`address`,',',rb.`country`,',',IFNULL(rb.`cvr`, '0')) SEPARATOR '$') as 'branches',
-
-        -- restaurant_branch_keys
-        GROUP_CONCAT(DISTINCT Concat( rbs.`branch_id`,',',rbs.`secret_key`) SEPARATOR '$') as 'secret_keys' 
+        CONCAT('[',
+            GROUP_CONCAT(DISTINCT JSON_OBJECT(
+                'id', rb.`id`,
+                'restaurant_id', rb.`restaurant_id`,
+                'city', rb.`city`,
+                'zip_code', rb.`zip_code`,
+                'address', rb.`address`,
+                'country', rb.`country`,
+                'cvr', rb.`cvr`)
+            SEPARATOR ','),
+            ']') AS 'branches',
+            
+	    -- restaurant_branch_keys
+        CONCAT('[',
+            GROUP_CONCAT(DISTINCT JSON_OBJECT(
+                'branch_id', rbs.`branch_id`,
+                'secret_key', rbs.`secret_key`)
+            SEPARATOR ','),
+            ']') AS 'secret_keys'
 
         FROM `users`as u
         LEFT JOIN `profiles` as p on (u.profile_id = p.id)
@@ -185,45 +207,44 @@ class UserLoginGateway
                     boolval($row["IsAdmin"]),
                     boolval($row["isSuperAdmin"])
                 );
-                if (isset($row["restaurants"])) {
-                    $rests = explode('$', $row["restaurants"]);
-                    foreach ($rests as $rest) {
-                        $r = explode(',', $rest);
-                        $restaurant = Restaurant::Getrestaurant(
-                            intval($r[0]),
-                            strval($r[1]),
-                            strval($r[2]),
-                            strval($r[3]),
-                            strval($r[4]),
-                            strval($r[5]),
-                            strval($r[6]),
-                            array()
-                        );
-                        $branches = explode('$', $row["branches"]);
-                        foreach ($branches as $br) {
+                $rests = json_decode($row["restaurants"]);
+                if (isset($rests)) {
+                    foreach ($rests as $r) {
+                        if (isset($r->id)) {
+                            $restaurant = Restaurant::Getrestaurant(
+                                intval($r->id), //id
+                                strval($r->email), //email
+                                strval($r->name), //name
+                                strval($r->phone), //phone
+                                strval($r->cvr), //cvr
+                                strval($r->logo), //logo
+                                strval($r->reference_id), //reference_id
+                                array() //branches
+                            );
+                            $branches = json_decode($row["branches"]);
 
-                            $bra = explode(',', $br);
-                            if ($restaurant->id === intval($bra[1])) {
-                                $branch = Branch::GetBranch(
-                                    intval($bra[0]),
-                                    intval($restaurant->id),
-                                    strval($bra[2]),
-                                    strval($bra[3]),
-                                    strval($bra[4]),
-                                    strval($bra[5]),
-                                    strval($bra[6]),
-                                    array()
-                                );
-                                $secrets = explode('$', $row["secret_keys"]);
-                                foreach ($secrets as $s) {
-                                    $secret = explode(',', $s);
-                                    if ($branch->id === intval($secret[0])) {
-                                        array_push($branch->secrets, $secret[1]);
-                                        array_push($userSecrets, $secret[1]);
+                            foreach ($branches as $br) {
+                                if (isset($br->restaurant_id) && $br->restaurant_id === $restaurant->id) {
+                                    $branch = Branch::GetBranch(
+                                        $br->id,
+                                        $br->restaurant_id,
+                                        $br->city,
+                                        $br->zip_code,
+                                        $br->address,
+                                        $br->country,
+                                        $br->cvr,
+                                        array()
+                                    );
+                                    $secrets =  json_decode($row["secret_keys"]);
+                                    foreach ($secrets as $s) {
+                                        if ($branch->id === $s->branch_id) {
+                                            array_push($branch->secrets, $s->secret_key);
+                                            array_push($userSecrets, $s->secret_key);
+                                        }
                                     }
-                                }
 
-                                array_push($restaurant->branches, $branch);
+                                    array_push($restaurant->branches, $branch);
+                                }
                             }
                         }
                         array_push($restaurants, $restaurant);
@@ -232,7 +253,7 @@ class UserLoginGateway
 
                 $this->user->restaurants = $restaurants;
                 $this->user->secrets = $userSecrets;
-                //echo "<li><span> USer => ".json_encode($this->user)."<span></li>";
+                //echo "<li><span> User => ".json_encode($this->user)."<span></li>";
 
                 break;
             }
@@ -251,11 +272,11 @@ class UserLoginGateway
         try {
             $sth = $this->db->prepare($statement);
             $this->db->beginTransaction();
-            $sth->execute(array('email'=>$userEmail));
+            $sth->execute(array('email' => $userEmail));
             $this->db->commit();
             $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
             $UserSecret = Traversable::from($result);
-            return $UserSecret->first()['SecretKey']??null;
+            return $UserSecret->first()['SecretKey'] ?? null;
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }
@@ -363,8 +384,8 @@ class UserLoginGateway
                 'IsAdmin' => $input->isAdmin,
                 'isSuperAdmin' => $input->isSuperAdmin,
             ));
-            $this->db->commit();
             $input->id = intval($this->db->lastInsertId());
+            $this->db->commit();
             return $input;
         } catch (\PDOException $e) {
             exit($e->getMessage());

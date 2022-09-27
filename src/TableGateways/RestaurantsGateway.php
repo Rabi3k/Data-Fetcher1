@@ -166,12 +166,13 @@ class RestaurantsGateway
         :email,
         :cvr,
         :logo,
-        :reference_id)";
+        :reference_id);
+        ";
 
         try {
             $statement = $this->db->prepare($statement);
             $this->db->beginTransaction();
-            $statement->execute(array(
+            $st = $statement->execute(array(
                 'name' => $input->name,
                 'phone' => $input->phone,
                 'email' => $input->email,
@@ -179,8 +180,9 @@ class RestaurantsGateway
                 'logo' => $input->logo,
                 'reference_id' => $input->reference_id
             ));
-            $this->db->commit();
             $input->id = intval($this->db->lastInsertId());
+            $this->db->commit();
+
             return $input;
         } catch (\PDOException $e) {
             exit($e->getMessage());
@@ -256,8 +258,9 @@ class RestaurantsGateway
                 'address' => $input->address,
                 'country' => $input->country
             ));
-            $this->db->commit();
             $input->id = intval($this->db->lastInsertId());
+            $this->db->commit();
+
             return $input;
         } catch (\PDOException $e) {
             exit($e->getMessage());

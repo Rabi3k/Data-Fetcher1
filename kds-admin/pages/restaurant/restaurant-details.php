@@ -45,6 +45,7 @@ if (isset($_GET['action'])) {
 
         $lRestaurant = $restaurantsGateway->InsertOrUpdate($lRestaurant);
         $idUrl = "id=$lRestaurant->id";
+        $SaveType = "update";
     }
 }
 $logoPath = (isset($lRestaurant->logo)

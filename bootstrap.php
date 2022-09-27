@@ -10,12 +10,13 @@ require_once 'dbScripts.php';
 
 use Dotenv\Dotenv;
 
-use Src\System\DatabaseConnector;
-use Src\TableGateways\UserLoginGateway;
-
 use Monolog\Logger;
+use Src\Classes\Loggy;
+
+use Src\System\DatabaseConnector;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\FirePHPHandler;
+use Src\TableGateways\UserLoginGateway;
 
 require_once("config.php");
 //$config = yaml_parse_file("config.yaml");
@@ -61,11 +62,13 @@ if (session_status() === PHP_SESSION_NONE) {
 
 if(!isset($_SESSION['logger']))
 {
-    $logger = new Logger('logger');
+    
+
+    /*$logger = new Logger('logger');
     $logger->pushHandler(new StreamHandler(__DIR__.'/logs/app.log', Monolog\Level::Debug));
     $logger->pushHandler(new FirePHPHandler());
     $_SESSION['logger'] = $logger;
-    $logger->info('Logger is now Ready');
+    $logger->info('Logger is now Ready');*/
     //echo 'Logger is now Ready';
 }
 else
@@ -73,6 +76,10 @@ else
     $logger =   $_SESSION['logger'];
     //$logger->info('Logger is loaded');
 }
+global $lo;
+$lo = new Loggy();
+
+
 
 
 
@@ -84,3 +91,35 @@ else
 {
     $_SESSION['ROOT_PATH'] = $rootpath;
 }
+
+
+function exception_handler(Throwable $exception) {
+    global $lo;
+    //echo "Uncaught exception: " , $exception->getMessage(), "\n";
+    $lo->logy($exception->getMessage(),$exception->getTraceAsString(),$exception);
+  }
+  
+  set_exception_handler('exception_handler');
+
+
+
+register_shutdown_function(function(){
+    $error = error_get_last();
+    if($error){
+        global $lo;
+        $lo->logy($error['message'],"",$error);
+        //throw new ErrorException($error['message'], -1, $error['type'], $error['file'], $error['line']);
+    }
+});
+
+set_error_handler(
+    function($level, $error, $file, $line){
+        if(0 === error_reporting()){
+            return false;
+        }
+        global $lo;
+        $lo->logy("","",array('level'=>$level,'error'=> $error,'file'=> $file,'line'=> $line));
+        //throw new ErrorException($error, -1, $level, $file, $line);
+    },
+    E_ALL
+);

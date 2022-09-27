@@ -118,3 +118,4 @@ function UplaodImage(UploadType $type,string $fileName,$fileToUpload)
     }
     return "";
 }
+

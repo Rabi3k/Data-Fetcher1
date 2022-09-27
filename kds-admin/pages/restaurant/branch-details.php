@@ -60,9 +60,12 @@ if (isset($_GET['action'])) {
             }
         }
         if (count($secretList) > 0) {
+            $branch->secrets =array();
             $branch->secrets = $secretList;
             $restaurantsGateway->InsertOrUpdateBranchSecrets($branch);
         }
+        $idUrl = "rid=$lRestaurant->id&id=$branch->id";
+        $SaveType = "update";
     }
 }
 

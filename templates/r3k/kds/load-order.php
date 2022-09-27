@@ -16,7 +16,10 @@ include "../$templatePath/header.php";
 
 <body class="wide ">
 <div class="full-div bgimg">
-
+<div class="full-div bg-warning opacity-min">
+<?php throw new Exception('Uncaught Exception');
+echo "Not Executed\n"; ?>
+</div>
 </div>
 
 </body>
