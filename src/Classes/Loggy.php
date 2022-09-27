@@ -24,6 +24,7 @@ class Loggy
     function __construct()
     {
         $this->logger = new \Monolog\Logger($this::LoggyName);
+        $this->logger->pushProcessor(new \Monolog\Processor\UidProcessor());
         $formatter = new JsonFormatter();
         $stream = new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/logs/app.log', \Monolog\Level::Debug);
         $stream->setFormatter($formatter);
