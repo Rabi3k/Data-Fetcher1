@@ -86,7 +86,7 @@ else
     $_SESSION['ROOT_PATH'] = $rootpath;
 }
 
-/*
+
 global $lo;
 $lo = new Loggy();
 
@@ -98,14 +98,14 @@ function exception_handler(Throwable $exception) {
   set_exception_handler('exception_handler');
 
 
-
+/*
 register_shutdown_function(function(){
     $error = error_get_last();
     if($error){
         global $lo;
         $lo->logy($error['message'],"",$error);
     }
-});
+});*/
 
 set_error_handler(
     function($level, $error, $file, $line){
@@ -116,4 +116,4 @@ set_error_handler(
         $lo->logy("","",array('level'=>$level,'error'=> $error,'file'=> $file,'line'=> $line));
     },
     E_ALL
-);*/
+);

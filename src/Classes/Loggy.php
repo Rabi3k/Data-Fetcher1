@@ -21,7 +21,7 @@ class Loggy
     function __construct()
     {
         $this->logger = new \Monolog\Logger($this::LoggyName);
-        $this->logger->pushHandler(new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/logs/app.log', \Monolog\Level::Emergency));
+        $this->logger->pushHandler(new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/logs/app.log', \Monolog\Level::Debug));
         $this->logger->pushHandler(new StreamHandler(
             'php://stdout',
             $level = \Monolog\Level::Debug,
@@ -89,49 +89,54 @@ class Loggy
     // {
     //     $this->log(\Monolog\Level::Emergency, $msg, $stacktrace);
     // }
-    public function logy(string $msg, string $stacktrace, $exception)
+    public function logy(string $msg, string $stacktrace, $e)
     {
-        if (isset($exception) && (isset($exception['type']) || isset($exception['level']))) {
-            $type = isset($exception['type']) ? $exception['type'] : $exception['level'];
-            switch ($type) {
-                case E_ERROR: // 1 //
-                    return $this->log(\Monolog\Level::Error, $msg, $stacktrace, $exception);
-                case E_WARNING: // 2 //
-                    return $this->log(\Monolog\Level::Warning, $msg, $stacktrace, $exception);
-                case E_PARSE: // 4 //
-                    return $this->log(\Monolog\Level::Info, $msg, $stacktrace, $exception);
-                case E_NOTICE: // 8 //
-                    return $this->log(\Monolog\Level::Notice, $msg, $stacktrace, $exception);
-                case E_CORE_ERROR: // 16 //
-                    return $this->log(\Monolog\Level::Error, $msg, $stacktrace, $exception);
-                case E_CORE_WARNING: // 32 //
-                    return $this->log(\Monolog\Level::Warning, $msg, $stacktrace, $exception);
-                case E_COMPILE_ERROR: // 64 //
-                    return $this->log(\Monolog\Level::Error, $msg, $stacktrace, $exception);
-                case E_COMPILE_WARNING: // 128 //
-                    return $this->log(\Monolog\Level::Warning, $msg, $stacktrace, $exception);
-                case E_USER_ERROR: // 256 //
-                    return $this->log(\Monolog\Level::Error, $msg, $stacktrace, $exception);
-                case E_USER_WARNING: // 512 //
-                    return $this->log(\Monolog\Level::Warning, $msg, $stacktrace, $exception);
-                case E_USER_NOTICE: // 1024 //
-                    return $this->log(\Monolog\Level::Notice, $msg, $stacktrace, $exception);
-                case E_STRICT: // 2048 //
-                    return $this->log(\Monolog\Level::Error, $msg, $stacktrace, $exception);
-                case E_RECOVERABLE_ERROR: // 4096 //
-                    return $this->log(\Monolog\Level::Error, $msg, $stacktrace, $exception);
-                case E_DEPRECATED: // 8192 //
-                    return $this->log(\Monolog\Level::Notice, $msg, $stacktrace, $exception);
-                case E_USER_DEPRECATED: // 16384 //
-                    return $this->log(\Monolog\Level::Notice, $msg, $stacktrace, $exception);
+        if (gettype($e) == "array") {
+            $exception = $e;
+
+
+            if (isset($exception) && isset($exception['level'])) {
+                $type = isset($exception['type']) ? $exception['type'] : $exception['level'];
+                switch ($type) {
+                    case E_ERROR: // 1 //
+                        return $this->log(\Monolog\Level::Error, $msg, $stacktrace, $exception);
+                    case E_WARNING: // 2 //
+                        return $this->log(\Monolog\Level::Warning, $msg, $stacktrace, $exception);
+                    case E_PARSE: // 4 //
+                        return $this->log(\Monolog\Level::Info, $msg, $stacktrace, $exception);
+                    case E_NOTICE: // 8 //
+                        return $this->log(\Monolog\Level::Notice, $msg, $stacktrace, $exception);
+                    case E_CORE_ERROR: // 16 //
+                        return $this->log(\Monolog\Level::Error, $msg, $stacktrace, $exception);
+                    case E_CORE_WARNING: // 32 //
+                        return $this->log(\Monolog\Level::Warning, $msg, $stacktrace, $exception);
+                    case E_COMPILE_ERROR: // 64 //
+                        return $this->log(\Monolog\Level::Error, $msg, $stacktrace, $exception);
+                    case E_COMPILE_WARNING: // 128 //
+                        return $this->log(\Monolog\Level::Warning, $msg, $stacktrace, $exception);
+                    case E_USER_ERROR: // 256 //
+                        return $this->log(\Monolog\Level::Error, $msg, $stacktrace, $exception);
+                    case E_USER_WARNING: // 512 //
+                        return $this->log(\Monolog\Level::Warning, $msg, $stacktrace, $exception);
+                    case E_USER_NOTICE: // 1024 //
+                        return $this->log(\Monolog\Level::Notice, $msg, $stacktrace, $exception);
+                    case E_STRICT: // 2048 //
+                        return $this->log(\Monolog\Level::Error, $msg, $stacktrace, $exception);
+                    case E_RECOVERABLE_ERROR: // 4096 //
+                        return $this->log(\Monolog\Level::Error, $msg, $stacktrace, $exception);
+                    case E_DEPRECATED: // 8192 //
+                        return $this->log(\Monolog\Level::Notice, $msg, $stacktrace, $exception);
+                    case E_USER_DEPRECATED: // 16384 //
+                        return $this->log(\Monolog\Level::Notice, $msg, $stacktrace, $exception);
+                }
             }
+        } else {
+            $this->log(\Monolog\Level::Info, $msg, $stacktrace);
         }
-        $this->log(\Monolog\Level::Info, $msg, $stacktrace);
     }
     private function log(\Monolog\Level $level, string $msg, string $stacktrace, $exception = null)
     {
         $var =  $this->initValues($stacktrace, $exception);
-
         switch ($level) {
             case \Monolog\Level::Debug:
                 $this->logger->debug("$msg", $var);
