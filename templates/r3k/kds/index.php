@@ -27,7 +27,7 @@ include "../$templatePath/header.php";
             ?>
         </div>
         <?php
-        include  __DIR__.'/footer.php';
+        include "../$templatePath/footer.php";
         ?>
 </body>
 
