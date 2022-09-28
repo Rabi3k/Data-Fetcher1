@@ -29,11 +29,11 @@ class Loggy
         $stream = new StreamHandler($_SERVER['DOCUMENT_ROOT'] . '/logs/app.log', \Monolog\Level::Debug);
         $stream->setFormatter($formatter);
         $this->logger->pushHandler($stream);
-        $this->logger->pushHandler(new StreamHandler(
-            'php://stdout',
-            $level = \Monolog\Level::Debug,
-            $bubble = true
-        ));
+        // $this->logger->pushHandler(new StreamHandler(
+        //     'php://stdout',
+        //     $level = \Monolog\Level::Debug,
+        //     $bubble = true
+        // ));
         $this->logger->pushHandler(new FirePHPHandler());
     }
     #endregion
@@ -100,8 +100,6 @@ class Loggy
     {
         if (gettype($e) == "array") {
             $exception = $e;
-
-
             if (isset($exception) && isset($exception['level'])) {
                 $type = isset($exception['type']) ? $exception['type'] : $exception['level'];
                 switch ($type) {
@@ -139,7 +137,6 @@ class Loggy
             }
         } else if (is_a($e, "Exception") )
         {
-            var_dump($e);
             $this->log(\Monolog\Level::Error, $msg, $stacktrace,$e);
         }
     }
