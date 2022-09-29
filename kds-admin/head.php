@@ -26,7 +26,7 @@
 
 <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.12.1/dataRender/datetime.js"></script>
 <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
-<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment-timezone-with-data.min.js"></script>
+<!-- <script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment-timezone-with-data.min.js"></script> -->
 
     <!-- Icons -->
     <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>

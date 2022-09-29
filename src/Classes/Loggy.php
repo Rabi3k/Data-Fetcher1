@@ -52,8 +52,9 @@ class Loggy
         $user = $userLogin->GetUser();
         //var_dump($userLogin);
         $u = array(
-            'id'   =>  $user->id,
-            'Name' =>  $user->full_name
+            'id'        =>  $user->id,
+            'Name'      =>  $user->full_name,
+            'sessionId' =>  session_id()
         );
         $retval  = array(
             'Date'          => (new DateTime())->format("Y-m-d"),
@@ -63,6 +64,7 @@ class Loggy
             'exception'     =>  $exception,
             'Server'        =>  $_SERVER,
             'Session'       =>  $_SESSION
+
         );
         return ($retval);
     }

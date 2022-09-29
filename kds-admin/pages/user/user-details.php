@@ -1,9 +1,10 @@
 <?php
 
+use Src\Classes\User;
 use Src\Classes\KMail;
 use Src\TableGateways\UserLoginGateway;
+use Src\TableGateways\RestaurantsGateway;
 use Src\TableGateways\UserProfilesGateway;
-use Src\Classes\User;
 
 $SaveType = "";
 $idUrl = "";
@@ -17,6 +18,8 @@ if (isset($_GET['id'])) {
     $idUrl = "new";
 }
 $profiles = (new UserProfilesGateway($dbConnection))->GetAllProfiles();
+$restaurants = (new RestaurantsGateway($dbConnection))->GetAllRestaurants();
+
 
 if (isset($_GET['action'])) {
     if ($_GET['action'] == 'change-password') {
@@ -56,7 +59,7 @@ if (isset($_GET['action'])) {
         <a class="nav-link" data-toggle="tab" href="#home">User Details</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link" data-toggle="tab" href="#profile">Profile</a>
+        <a class="nav-link" data-toggle="tab" href="#access">Profile</a>
     </li>
     <li class="nav-item <?php echo  $SaveType === "update" ? "" : "disabled"  ?> ">
         <a class="nav-link" data-toggle="tab" href="#password">Change Password</a>
@@ -134,7 +137,37 @@ if (isset($_GET['action'])) {
     </div>
     <!-- End of User Details Tab -->
     <!-- set Profifle Tab -->
-    <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+    <div class="tab-pane fade" id="access" role="tabpanel" aria-labelledby="profile-tab">
+        <form method="post" action="?<?php echo $idUrl ?>&action=set-access&tab=access">
+            <ul class="form-group">
+                <?php foreach ($restaurants as $r) {
+                    $restaurant = (new RestaurantsGateway($dbConnection))->GetRestaurant($r->id)[0];
+                ?>
+                    <li class="form-check">
+                        <input id="restaurant_<?php echo $r->id ?>" class="form-check-input" type="checkbox" name="restaurtants[]" value="true" 
+                        data-toggle="collapse" data-target="#restaurant_<?php echo $r->id ?>_branches" aria-controls="restaurant_<?php echo $r->id ?>_branches">
+                        <label for="restaurant_<?php echo $r->id ?>" class="form-check-label"><?php echo $r->name ?></label>
+                        <ul class="form-group collapse" id="restaurant_<?php echo $r->id ?>_branches">
+                            <?php foreach ($restaurant->branches as $b) { ?>
+                                <li class="form-check">
+                                    <input id="branch_<?php echo $b->id ?>" class="form-check-input" type="checkbox" name="restaurant_<?php echo $r->id ?>[]" value="true" data-toggle="collapse" data-target="#restaurant_<?php echo $r->id ?>_branch_<?php echo $b->id ?>_secrets" aria-controls="restaurant_<?php echo $r->id ?>_branch_<?php echo $b->id ?>_secrets">
+                                    <label for="branch_<?php echo $b->id ?>" class="form-check-label"><?php echo $b->cvr . " - " . $b->city ?></label>
+                                    <ul class="form-group collapse" id="restaurant_<?php echo $r->id ?>_branch_<?php echo $b->id ?>_secrets">
+                                        <?php foreach ($b->secrets as $s) { ?>
+                                            <li class="form-check">
+                                                <input id="secret_<?php echo $s ?>" class="form-check-input" type="checkbox" name="restaurant_<?php echo $r->id ?>_branch_<?php echo $b->id ?>[]" value="true">
+                                                <label for="secret_<?php echo $s ?>" class="form-check-label"><?php echo $s ?></label>
+                                            </li>
+                                        <?php } ?>
+                                    </ul>
+                                </li>
+                            <?php } ?>
+                        </ul>
+                    </li>
+                <?php } ?>
+            </ul>
+        </form>
+
 
     </div>
     <!-- End of Profifle Tab -->
@@ -204,5 +237,4 @@ if (isset($_GET['action'])) {
             }
         }
     });
-    
 </script>
