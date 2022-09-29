@@ -9,7 +9,7 @@ namespace Pinq\Iterators\Generators;
  */
 class EmptyIterator extends Generator
 {
-    public function &getIterator()
+    public function &getIterator(): \Generator
     {
         return;
         yield null;

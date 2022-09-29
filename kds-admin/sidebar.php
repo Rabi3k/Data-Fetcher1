@@ -96,6 +96,12 @@
                   Check updates
                 </a>
               </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/admin/loggy">
+                  <span data-feather="cpu"></span>
+                  Loggy
+                </a>
+              </li>
             </ul>
              
           </div>

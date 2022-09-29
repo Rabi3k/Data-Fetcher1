@@ -60,7 +60,9 @@ class Loggy
             'Time'          => (new DateTime())->format("H:i:s"),
             'User'          =>  $u,
             'Stack Trace'   =>  $stacktrace,
-            'exception'     =>  $exception
+            'exception'     =>  $exception,
+            'Server'        =>  $_SERVER,
+            'Session'       =>  $_SESSION
         );
         return ($retval);
     }
@@ -96,6 +98,7 @@ class Loggy
     // {
     //     $this->log(\Monolog\Level::Emergency, $msg, $stacktrace);
     // }
+    
     public function logy(string $msg, string $stacktrace, $e)
     {
         if (gettype($e) == "array") {
@@ -135,9 +138,8 @@ class Loggy
                         return $this->log(\Monolog\Level::Notice, $msg, $stacktrace, $exception);
                 }
             }
-        } else if (is_a($e, "Exception") )
-        {
-            $this->log(\Monolog\Level::Error, $msg, $stacktrace,$e);
+        } else if (is_a($e, "Exception")) {
+            $this->log(\Monolog\Level::Error, $msg, $stacktrace, $e);
         }
     }
     private function log(\Monolog\Level $level, string $msg, string $stacktrace, $exception = null)

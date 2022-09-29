@@ -23,11 +23,19 @@ class IIteratorAdapter extends Generator
         $this->iterator = $iterator;
     }
 
-    public function &getIterator()
+    public function &getIterator(): \Generator
     {
         $this->iterator->rewind();
         while ($element = $this->iterator->fetch()) {
             yield $element[0] => $element[1];
         }
+    }
+
+      /**
+     * @return bool
+     */
+    final public function isArrayCompatible()
+    {
+        return $this->source instanceof IIterator ? $this->source->isArrayCompatible() : false;
     }
 }

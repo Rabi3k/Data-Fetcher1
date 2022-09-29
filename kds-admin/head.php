@@ -24,6 +24,10 @@
 <!-- Data Tables -->
 <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.12.1/b-2.2.3/b-colvis-2.2.3/b-html5-2.2.3/date-1.1.2/datatables.min.js"></script>
 
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/plug-ins/1.12.1/dataRender/datetime.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment-timezone-with-data.min.js"></script>
+
     <!-- Icons -->
     <script src="https://unpkg.com/feather-icons/dist/feather.min.js"></script>
     <!-- Charts -->

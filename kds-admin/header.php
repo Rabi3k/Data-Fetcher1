@@ -5,8 +5,8 @@
     <img class="mb-1" src="/media/System/logo.svg" alt="" width="50" height="30">
     <span>Relax!</span>
   </a>
-  
-  
+
+
   <!-- <ul class="navbar-nav px-3">
     <li class="nav-item text-nowrap">
       <a class="nav-link" href="/logout.php">Sign out</a>
@@ -14,14 +14,14 @@
   </ul> -->
 
   <div class="dropdown show">
-  <a class="btn btn-dark dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-    <i data-feather="user"></i>
-  </a>
+    <a class="btn btn-lg dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <i data-feather="user"></i>
+    </a>
 
-  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-    <a class="dropdown-item" href="/logout.php">Sign out</a>
-    <a class="dropdown-item" href="/admin/users?id=<?php echo $userLogin->GetUser()->id  ?>">my Profile</a>
-    <a class="dropdown-item" href="#">Something else here</a>
+    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+      <a class="dropdown-item" href="/logout.php">Sign out</a>
+      <a class="dropdown-item" href="/admin/users?id=<?php echo $userLogin->GetUser()->id  ?>">my Profile</a>
+      <a class="dropdown-item" href="#">Something else here</a>
+    </div>
   </div>
-</div>
 </nav>

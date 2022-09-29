@@ -99,3 +99,11 @@ a,
 a:hover {
   color: inherit;
 }
+.fa-6{
+  font-size: 5em
+
+}
+.btn:focus{
+  outline: 0!important;
+  box-shadow: 0 0 0 0 rgb(0 0 0);
+}

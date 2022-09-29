@@ -32,7 +32,7 @@ class OrderedMap extends Generator implements IOrderedMap
         }
     }
 
-    public function &getIterator()
+    public function &getIterator(): \Generator
     {
         foreach ($this->keys as $position => $key) {
             yield $key => $this->values[$position];

@@ -17,8 +17,18 @@ $idOrders = array_column($data, 'id');
     ActiveOrderIds = <?php echo json_encode($idOrders) ?>;
 </script>
 <div class="card-columns" id="orderCards">
-    <?php
+
+<nav class="nav flex-column bg-light">
+    <li class="nav-item">
+        <a class="nav-link active" href="#">Item 1</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Item 2</a>
+    </li>
+</nav>
+
+<?php
     foreach ($data as $row) {
-        include "create-card.php";
+        include "$templatePath/kds/create-card.php";
     } ?>
 </div>

@@ -46,9 +46,9 @@ function GetNearestVersion(array $versionNumbers)
  * @param mixed         $fileToUpload       the File array that hold te info about the uploaded file $_FILE['fileToUpload']
  * 
  */
-function UplaodImage(UploadType $type,string $fileName,$fileToUpload)
+function UplaodImage(UploadType $type, string $fileName, $fileToUpload)
 {
-        //TODO: make all echo to log
+    //TODO: make all echo to log
 
     $target_dir = "/media";
     switch ($type) {
@@ -64,19 +64,19 @@ function UplaodImage(UploadType $type,string $fileName,$fileToUpload)
     }
     $imageFileType = strtolower(pathinfo($fileToUpload["name"], PATHINFO_EXTENSION));
 
-    $target_file = "$target_dir$fileName.$imageFileType" ;//basename($_FILES["fileToUpload"]["name"]);
+    $target_file = "$target_dir$fileName.$imageFileType"; //basename($_FILES["fileToUpload"]["name"]);
     $uploadOk = 1;
 
     // Check if image file is a actual image or fake image
     //if (isset($_POST["submit"])) {
-        $check = $fileToUpload["tmp_name"];//getimagesize($_FILES["fileToUpload"]["tmp_name"]);
-        if ($check !== false) {
-           // echo "File is an image - " . $fileToUpload["type"] . ".";
-            $uploadOk = 1;
-        } else {
-            //echo "File is not an image.";
-            return "";
-        }
+    $check = $fileToUpload["tmp_name"]; //getimagesize($_FILES["fileToUpload"]["tmp_name"]);
+    if ($check !== false) {
+        // echo "File is an image - " . $fileToUpload["type"] . ".";
+        $uploadOk = 1;
+    } else {
+        //echo "File is not an image.";
+        return "";
+    }
     //}
 
 
@@ -92,13 +92,13 @@ function UplaodImage(UploadType $type,string $fileName,$fileToUpload)
         && $imageFileType != "svg"
     ) {
         //echo "Sorry, only JPG, JPEG, PNG & SVG files are allowed.";
-       return "";
+        return "";
     }
 
     // Check if file already exists
-    if (file_exists($_SERVER['DOCUMENT_ROOT'].$target_file)) {
-        chmod($_SERVER['DOCUMENT_ROOT'].$target_file,0755); //Change the file permissions if allowed
-        rename($_SERVER['DOCUMENT_ROOT'].$target_file, $_SERVER['DOCUMENT_ROOT']."$target_file.old");
+    if (file_exists($_SERVER['DOCUMENT_ROOT'] . $target_file)) {
+        chmod($_SERVER['DOCUMENT_ROOT'] . $target_file, 0755); //Change the file permissions if allowed
+        rename($_SERVER['DOCUMENT_ROOT'] . $target_file, $_SERVER['DOCUMENT_ROOT'] . "$target_file.old");
         //unlink($target_file); //remove the file
     }
     // Check if $uploadOk is set to 0 by an error
@@ -106,10 +106,10 @@ function UplaodImage(UploadType $type,string $fileName,$fileToUpload)
         echo "Sorry, your file was not uploaded.";
         // if everything is ok, try to upload file
     } else {
-        if (move_uploaded_file($fileToUpload["tmp_name"], $_SERVER['DOCUMENT_ROOT'].$target_file)) {
-           // echo "The file " . htmlspecialchars(basename($fileToUpload["name"])) . " has been uploaded.";
-            if (file_exists($_SERVER['DOCUMENT_ROOT']."$target_file.old")) {
-                unlink($_SERVER['DOCUMENT_ROOT']."$target_file.old"); //remove the file
+        if (move_uploaded_file($fileToUpload["tmp_name"], $_SERVER['DOCUMENT_ROOT'] . $target_file)) {
+            // echo "The file " . htmlspecialchars(basename($fileToUpload["name"])) . " has been uploaded.";
+            if (file_exists($_SERVER['DOCUMENT_ROOT'] . "$target_file.old")) {
+                unlink($_SERVER['DOCUMENT_ROOT'] . "$target_file.old"); //remove the file
             }
             return $target_file;
         } else {
@@ -119,3 +119,42 @@ function UplaodImage(UploadType $type,string $fileName,$fileToUpload)
     return "";
 }
 
+/**
+ * 
+ */
+function FriendlyErrorType($type)
+{
+    switch ($type) {
+        case E_ERROR: // 1 //
+            return 'E_ERROR';
+        case E_WARNING: // 2 //
+            return 'E_WARNING';
+        case E_PARSE: // 4 //
+            return 'E_PARSE';
+        case E_NOTICE: // 8 //
+            return 'E_NOTICE';
+        case E_CORE_ERROR: // 16 //
+            return 'E_CORE_ERROR';
+        case E_CORE_WARNING: // 32 //
+            return 'E_CORE_WARNING';
+        case E_COMPILE_ERROR: // 64 //
+            return 'E_COMPILE_ERROR';
+        case E_COMPILE_WARNING: // 128 //
+            return 'E_COMPILE_WARNING';
+        case E_USER_ERROR: // 256 //
+            return 'E_USER_ERROR';
+        case E_USER_WARNING: // 512 //
+            return 'E_USER_WARNING';
+        case E_USER_NOTICE: // 1024 //
+            return 'E_USER_NOTICE';
+        case E_STRICT: // 2048 //
+            return 'E_STRICT';
+        case E_RECOVERABLE_ERROR: // 4096 //
+            return 'E_RECOVERABLE_ERROR';
+        case E_DEPRECATED: // 8192 //
+            return 'E_DEPRECATED';
+        case E_USER_DEPRECATED: // 16384 //
+            return 'E_USER_DEPRECATED';
+    }
+    return "";
+}

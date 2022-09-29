@@ -19,7 +19,7 @@ class ArrayIterator extends Generator
         self::__constructIterator($array);
     }
 
-    public function &getIterator()
+    public function &getIterator(): \Generator
     {
         foreach ($this->array as $key => &$value) {
             yield $key => $value;

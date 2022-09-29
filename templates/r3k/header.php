@@ -19,11 +19,18 @@
             </script>
           </div>
         </div>
-        <?php include "pages/header-content.php"; ?>
       </div>
     </div>
-    <div class="col-3 justify-content-end pull-right">
-      <img class="mb-4 pull-right" src="/media/System/logo.svg" alt="" width="100" height="100">
+    <div class="col-3 justify-content-end pull-right text-right">
+      <div class="dropdown show">
+        <a class="btn btn-lg dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <i class="fa fa-user fa-6" aria-hidden="true"></i>
+        </a>
+
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+          <?php $navClass = "navbar-nav"; include "pages/header-content.php"; ?>
+        </div>
+      </div>
     </div>
   </div>
   <div class="row d-md-none">
@@ -35,8 +42,8 @@
     <div class="col-12">
       <div class="container">
         <div class="collapse" id="navbarCollapse">
-        
-          <?php $navClass="navbar-nav"; include "pages/header-content.php"; ?>
+          <?php $navClass = "navbar-nav";
+          include "pages/header-content.php"; ?>
         </div>
       </div>
     </div>
