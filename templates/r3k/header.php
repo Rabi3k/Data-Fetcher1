@@ -7,7 +7,7 @@
 <header class="sticky-top bg-custom opacity-90 p2 text-light">
   <div class="row d-md-flex d-none">
     <div class="col-3">
-      <img class="mb-4" src="/media/System/logo.svg" alt="" width="100" height="100">
+      <img class="mx-4" src="/media/System/logo.svg" alt="" width="70" height="70">
     </div>
     <div class="col-6">
       <div class="container">
@@ -24,7 +24,7 @@
     <div class="col-3 justify-content-end pull-right text-right">
       <div class="dropdown show">
         <a class="btn btn-lg dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="fa fa-user fa-4" aria-hidden="true"></i>
+          <i class="fa fa-user fa-3" aria-hidden="true"></i>
         </a>
 
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
