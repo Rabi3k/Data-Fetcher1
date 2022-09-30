@@ -38,7 +38,12 @@
         foreach ($lines as $lneNum => $line) {
             $val = json_decode($line);
             $val->lineNum = $lneNum;
-            $val->errorType = FriendlyErrorType($val->context->exception->level);
+            $val->errorType = isset($val->context->exception->level) ? FriendlyErrorType($val->context->exception->level) : "E_ERROR";
+
+            if (!isset($val->context->exception->error) && isset($val->context->exception->message)) {
+                $val->context->exception->error = $val->context->exception->message;
+            }
+
             array_push($liArr, $val);
         }
         ?>
@@ -104,7 +109,7 @@
                 }],
                 "createdRow": function(row, data, dataIndex) {
                     $(row).addClass('clickable-row');
-                    $(row).attr('data-href',"?id="+dataIndex );
+                    $(row).attr('data-href', "?id=" + dataIndex);
                 }
             });
 
@@ -113,9 +118,9 @@
                 table.draw();
             });
             $('#tblLogs tbody').on('click', 'tr', function() {
-        //$(this).toggleClass('selected');
-        window.location = $(this).data("href");
-    });
+                //$(this).toggleClass('selected');
+                window.location = $(this).data("href");
+            });
         });
     </script>
 </div>
