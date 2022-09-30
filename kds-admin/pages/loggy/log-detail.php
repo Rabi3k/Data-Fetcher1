@@ -4,7 +4,8 @@ if (isset($_GET['id'])) {
     $line = $lines[$id];
     $val = json_decode($line);
     $val->lineNum = $id;
-    $val->errorType = FriendlyErrorType($val->context->exception->level);
+    
+    $val->errorType = isset($val->context->exception->level)? FriendlyErrorType($val->context->exception->level):"E_ERROR";
 } else {
     $val = new stdClass();
 }

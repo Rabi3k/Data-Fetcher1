@@ -3,7 +3,7 @@ html {
   max-height: 100vh;
   overflow: auto;
 
-  font-family: Verdana,sans-serif;
+  font-family: Verdana, sans-serif;
   font-size: 15px;
   line-height: 1.5;
 }
@@ -23,7 +23,8 @@ html {
   top: 0;
   bottom: 0;
   left: 0;
-  z-index: 100; /* Behind the navbar */
+  z-index: 100;
+  /* Behind the navbar */
   padding: 0;
   box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
 }
@@ -31,11 +32,13 @@ html {
 .sidebar-sticky {
   position: -webkit-sticky;
   position: sticky;
-  top: 48px; /* Height of navbar */
+  top: 48px;
+  /* Height of navbar */
   height: calc(100vh - 48px);
   padding-top: .5rem;
   overflow-x: hidden;
-  overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+  overflow-y: auto;
+  /* Scrollable contents if viewport is shorter than content. */
 }
 
 .sidebar .nav-link {
@@ -95,32 +98,68 @@ html {
  * Utilities
  */
 
-.border-top { border-top: 1px solid #e5e5e5; }
-.border-bottom { border-bottom: 1px solid #e5e5e5; }
+.border-top {
+  border-top: 1px solid #e5e5e5;
+}
+
+.border-bottom {
+  border-bottom: 1px solid #e5e5e5;
+}
 
 .disabled {
-  pointer-events:none; 
-  opacity:0.6;  
+  pointer-events: none;
+  opacity: 0.6;
   color: #999;
 }
-.disabled a{
+
+.disabled a {
   color: #999;
 }
+
 .error {
   color: red;
 }
+
 .error::before {
   font-weight: bold;
   content: "*";
 }
-.img-portrait
-{
+
+.img-portrait {
   max-height: 20em;
   max-width: 30em;
-  object-fit:cover;
+  object-fit: cover;
 }
 
-.custom-file-label::after
-{
-  content: "Gennemse"!important;
+.custom-file-label::after {
+  content: "Gennemse" !important;
+}
+
+a,
+a:hover {
+  color: inherit;
+}
+
+.fa-1 {
+  font-size: 1em
+}
+
+.fa-2 {
+  font-size: 2em
+}
+
+.fa-3 {
+  font-size: 3em
+}
+
+.fa-4 {
+  font-size: 4em
+}
+
+.fa-5 {
+  font-size: 5em
+}
+
+.fa-6 {
+  font-size: 6em
 }

@@ -113,17 +113,17 @@ class UserLoginGateway
             exit($e->getMessage());
         }
     }
-    static function GetUserClass($id)
+    static function GetUserClass($id, bool $foceRest = true)
     {
         if (!isset($GLOBALS['dbConnection'])) {
             exit("db connection not loaded properly");
         }
         $ul = new UserLoginGateway($GLOBALS['dbConnection']);
-        $ul->LoadUserClass($id);
+        $ul->LoadUserClass($id, $foceRest);
         return $ul;
     }
 
-    function LoadUserClass($id)
+    function LoadUserClass($id, bool $foceRest = true)
     {
         $statement = "SELECT 
 
@@ -178,8 +178,9 @@ class UserLoginGateway
         LEFT JOIN `profiles` as p on (u.profile_id = p.id)
         LEFT JOIN `user_relations` as ur on (u.id = ur.user_id)
         LEFT JOIN `restaurant_branches` as rb1 on (ur.branch_id = rb1.id)
-        LEFT JOIN `restaurants` as r on (IFNULL(ur.restaurant_id ,rb1.restaurant_id)= r.id OR (IFNULL(ur.restaurant_id,1)=1 AND IFNULL(ur.branch_id,1)=1 AND u.isSuperAdmin = 1) )
-        LEFT JOIN `restaurant_branches` as rb on (rb.restaurant_id = r.id or rb.id = rb1.id)
+        LEFT JOIN `restaurants` as r on (IFNULL(ur.restaurant_id ,rb1.restaurant_id)= r.id ";
+        $statement .= $foceRest ? "OR (IFNULL(ur.restaurant_id,0)=0 AND IFNULL(ur.branch_id,0)=0 AND u.isSuperAdmin = 1) )" : ") ";
+        $statement .= "LEFT JOIN `restaurant_branches` as rb on (case when rb1.id is not null then rb1.id = rb.id else rb.restaurant_id = r.id end)
         LEFT JOIN `restaurant_branch_keys` as rbs on (rbs.branch_id = rb.id)
         
         WHERE u.`id` = ?
@@ -207,56 +208,98 @@ class UserLoginGateway
                     boolval($row["IsAdmin"]),
                     boolval($row["isSuperAdmin"])
                 );
+                //echo "<li><span> User => " . json_encode($this->user) . "<span></li>";
                 $rests = json_decode($row["restaurants"]);
+                $rests = array_filter($rests, function ($r) {
+                    return isset($r->id);
+                });
+                //var_dump($rests);
                 if (isset($rests)) {
                     foreach ($rests as $r) {
-                        if (isset($r->id)) {
-                            $restaurant = Restaurant::Getrestaurant(
-                                intval($r->id), //id
-                                strval($r->email), //email
-                                strval($r->name), //name
-                                strval($r->phone), //phone
-                                strval($r->cvr), //cvr
-                                strval($r->logo), //logo
-                                strval($r->reference_id), //reference_id
-                                array() //branches
+                        $restaurant = Restaurant::Getrestaurant(
+                            intval($r->id), //id
+                            strval($r->email), //email
+                            strval($r->name), //name
+                            strval($r->phone), //phone
+                            strval($r->cvr), //cvr
+                            strval($r->logo), //logo
+                            strval($r->reference_id), //reference_id
+                            array() //branches
+                        );
+                        $branches = json_decode($row["branches"]);
+                        $restBranch = array_filter($branches, function ($x) use ($r) {
+                            return $x->restaurant_id === $r->id;
+                        });
+                        foreach ($restBranch as $br) {
+                            $branch = Branch::GetBranch(
+                                $br->id,
+                                $br->restaurant_id,
+                                $br->city,
+                                $br->zip_code,
+                                $br->address,
+                                $br->country,
+                                $br->cvr,
+                                array()
                             );
-                            $branches = json_decode($row["branches"]);
+                            $secrets =  json_decode($row["secret_keys"]);
+                            $brSecrets = array_filter($secrets, function ($x) use ($br) {
+                                return $x->branch_id === $br->id;
+                            });
+                            foreach ($brSecrets as $s) {
+                                array_push($branch->secrets, $s->secret_key);
+                                array_push($userSecrets, $s->secret_key);
+                            }
 
-                            foreach ($branches as $br) {
-                                if (isset($br->restaurant_id) && $br->restaurant_id === $restaurant->id) {
-                                    $branch = Branch::GetBranch(
-                                        $br->id,
-                                        $br->restaurant_id,
-                                        $br->city,
-                                        $br->zip_code,
-                                        $br->address,
-                                        $br->country,
-                                        $br->cvr,
-                                        array()
-                                    );
-                                    $secrets =  json_decode($row["secret_keys"]);
-                                    foreach ($secrets as $s) {
-                                        if ($branch->id === $s->branch_id) {
-                                            array_push($branch->secrets, $s->secret_key);
-                                            array_push($userSecrets, $s->secret_key);
-                                        }
-                                    }
-
-                                    array_push($restaurant->branches, $branch);
-                                }
-                            }array_push($restaurants, $restaurant);
+                            array_push($restaurant->branches, $branch);
                         }
-                        
+                        array_push($restaurants, $restaurant);
                     }
+                    $this->user->restaurants = $restaurants;
+                    $this->user->secrets = $userSecrets;
                 }
 
-                $this->user->restaurants = $restaurants;
-                $this->user->secrets = $userSecrets;
-                //echo "<li><span> User => ".json_encode($this->user)."<span></li>";
+
+                //echo "<li><span> User => " . json_encode($this->user) . "<span></li>";
 
                 break;
             }
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
+    public function updateUserRelations(array $userRelations)
+    {
+        //Password(:password), sha(:secret_key)
+        $Dstatment = "DELETE FROM `user_relations`
+WHERE `user_id` = :user_id;";
+
+        $Istatement = "INSERT INTO `user_relations`
+(`user_id`,
+`restaurant_id`,
+`branch_id`)
+VALUES
+";
+        $secsStatment = array();
+        foreach ($userRelations as $i) {
+            $branch_id = $i->branch_id ?? 'null';
+            $restaurant_id = $i->restaurant_id ?? 'null';
+            $secStatment = "($i->user_id,$restaurant_id,$branch_id)";
+            array_push($secsStatment, $secStatment);
+        }
+        $Istatement .= implode(",", $secsStatment) . ";";
+        try {
+            $statement = $this->db->prepare("$Dstatment");
+            $this->db->beginTransaction();
+            $statement->execute(array(
+                'user_id' => $i->user_id
+            ));
+            $this->db->commit();
+            $statement = $this->db->prepare("$Istatement");
+            $this->db->beginTransaction();
+            $statement->execute(array());
+            $this->db->commit();
+
+            return true;
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }

@@ -2,6 +2,8 @@
 
 namespace Src\Classes;
 
+use Pinq\Traversable;
+
 class User
 {
     /*  `id`, `email`, `user_name`, `full_name`, `password`, `secret_key`, `profile_id`, `restaurant_id` */
@@ -16,6 +18,31 @@ class User
     public array $restaurants;
     public array $secrets;
     public bool $isAdmin, $isSuperAdmin;
+
+    public function UserBranches(): array
+    {
+        return (Traversable::from($this->restaurants))->selectMany(function ($x) {
+            return $x->branches;
+        })->asArray();
+    }
+
+    public function IsBranchAccessible(Branch $branch): bool
+    {
+        $retval = (Traversable::from($this->restaurants))->selectMany(function ($x) {
+            return $x->branches;
+        })->where(function ($b) use ($branch) {
+            return $b->id === $branch->id;
+        })->asArray();
+        return count($retval) > 0;
+    }
+    public function IsRestaurnatAccessible(Restaurant $restaurant): bool
+    {
+        $retval = (Traversable::from($this->restaurants))->where(function ($r) use ($restaurant) {
+            return $r->id === $restaurant->id;
+        })->asArray();
+        return count($retval) > 0;
+    }
+
     public function usertype()
     {
         if ($this->isSuperAdmin) {

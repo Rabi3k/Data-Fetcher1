@@ -108,10 +108,9 @@ class RestaurantsGateway
                     array()
                 );
                 $branches = json_decode($row["branches"]);
-                
+
                 foreach ($branches as $br) {
-                    if(isset($br->restaurant_id) && $br->restaurant_id === $restaurant->id)
-                    {
+                    if (isset($br->restaurant_id) && $br->restaurant_id === $restaurant->id) {
                         $branch = Branch::GetBranch(
                             $br->id,
                             $br->restaurant_id,
@@ -131,9 +130,8 @@ class RestaurantsGateway
 
                         array_push($restaurant->branches, $branch);
                     }
-                   
                 }
-                
+
                 array_push($restaurants, $restaurant);
             }
             return $restaurants;
@@ -223,7 +221,7 @@ class RestaurantsGateway
 
     function InsertOrUpdateBranch(Branch $input)
     {
-        if (!isset($input->id)||$input->id === 0) {
+        if (!isset($input->id) || $input->id === 0) {
             return $this->InsertBranch($input);
         } else {
             return $this->UpdateBranch($input);
@@ -301,37 +299,36 @@ class RestaurantsGateway
 
     public function InsertOrUpdateBranchSecrets(Branch $input)
     {
-//Password(:password), sha(:secret_key)
-$Dstatment = "DELETE FROM `kbslb_portal`.`restaurant_branch_keys`
+        //Password(:password), sha(:secret_key)
+        $Dstatment = "DELETE FROM `restaurant_branch_keys`
 WHERE `branch_id` = :branch_id;";
 
-$Istatement = "INSERT INTO `restaurant_branch_keys`
+        $Istatement = "INSERT INTO `restaurant_branch_keys`
 (`branch_id`,
 `secret_key`)
 VALUES
 ";
-$secsStatment = array();
-foreach($input->secrets as $secret)
-{
-    $secStatment="($input->id,'$secret')";
-    array_push($secsStatment,$secStatment);
-}
-$Istatement .=implode(",",$secsStatment).";";
-try {
-    $statement = $this->db->prepare("$Dstatment");
-    $this->db->beginTransaction();
-    $statement->execute(array(
-        'branch_id' => $input->id
-    ));
-    $this->db->commit();
-    $statement = $this->db->prepare("$Istatement");
-    $this->db->beginTransaction();
-    $statement->execute(array());
-    $this->db->commit();
+        $secsStatment = array();
+        foreach ($input->secrets as $secret) {
+            $secStatment = "($input->id,'$secret')";
+            array_push($secsStatment, $secStatment);
+        }
+        $Istatement .= implode(",", $secsStatment) . ";";
+        try {
+            $statement = $this->db->prepare("$Dstatment");
+            $this->db->beginTransaction();
+            $statement->execute(array(
+                'branch_id' => $input->id
+            ));
+            $this->db->commit();
+            $statement = $this->db->prepare("$Istatement");
+            $this->db->beginTransaction();
+            $statement->execute(array());
+            $this->db->commit();
 
-    return true;
-} catch (\PDOException $e) {
-    exit($e->getMessage());
-}
+            return true;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
     }
 }

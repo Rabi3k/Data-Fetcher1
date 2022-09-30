@@ -9,7 +9,7 @@ html {
   max-height: 100vh;
   overflow: auto;
 
-  font-family: Verdana,sans-serif;
+  font-family: Verdana, sans-serif;
   font-size: 15px;
   line-height: 1.5;
 }
@@ -99,11 +99,32 @@ a,
 a:hover {
   color: inherit;
 }
-.fa-6{
-  font-size: 5em
 
+.fa-1 {
+  font-size: 1em
 }
-.btn:focus{
-  outline: 0!important;
+
+.fa-2 {
+  font-size: 2em
+}
+
+.fa-3 {
+  font-size: 3em
+}
+
+.fa-4 {
+  font-size: 4em
+}
+
+.fa-5 {
+  font-size: 5em
+}
+
+.fa-6 {
+  font-size: 6em
+}
+
+.btn:focus {
+  outline: 0 !important;
   box-shadow: 0 0 0 0 rgb(0 0 0);
 }

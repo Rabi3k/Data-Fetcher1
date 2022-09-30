@@ -9,7 +9,7 @@ use Src\TableGateways\UserProfilesGateway;
 $SaveType = "";
 $idUrl = "";
 if (isset($_GET['id'])) {
-    $lUser = UserLoginGateway::GetUserClass($_GET['id'])->GetUser();
+    $lUser = UserLoginGateway::GetUserClass($_GET['id'], false)->GetUser();
     $SaveType = "update";
     $idUrl = "id=$lUser->id";
 } else if (isset($_GET['new'])) {
@@ -53,6 +53,38 @@ if (isset($_GET['action'])) {
     }
 }
 
+if (isset($_POST['set-access'])) {
+    $userRelations = array();
+    if (isset($_POST['restaurtants'])) {
+        foreach ($_POST['restaurtants'] as $key => $val) {
+            if (gettype($val) === 'array') {
+                foreach ($val as $bkey => $bval) {
+                    $ur = new stdClass();
+                    $ur->user_id = $lUser->id;
+                    $ur->restaurant_id = $key;
+                    $ur->branch_id = $bkey;
+                    array_push($userRelations, $ur);
+                }
+            } else {
+                $ur = new stdClass();
+                $ur->user_id = $lUser->id;
+                $ur->restaurant_id = $key;
+                $ur->branch_id = null;
+                array_push($userRelations, $ur);
+            }
+        }
+    }
+
+    if (count($userRelations) < 1) {
+        $ur = new stdClass();
+        $ur->user_id = $lUser->id;
+        $ur->restaurant_id = null;
+        $ur->branch_id = null;
+        array_push($userRelations, $ur);
+    }
+    $userLogin->updateUserRelations($userRelations);
+    $lUser = UserLoginGateway::GetUserClass($_GET['id'], false)->GetUser();
+}
 ?>
 <div class="row">
     <div class="col-4">
@@ -138,34 +170,34 @@ if (isset($_GET['action'])) {
                     </select>
                 </div>
             </div>
-            <script type="text/javascript">
-
-            </script>
-
             <button type="submit" class="btn btn-primary">Save</button>
         </form>
     </div>
     <!-- End of User Details Tab -->
     <!-- set Profifle Tab -->
     <div class="tab-pane fade" id="access" role="tabpanel" aria-labelledby="profile-tab">
-        <form method="post" action="?<?php echo $idUrl ?>&action=set-access&tab=access">
+        <form method="post" name="setAccess" action="?<?php echo $idUrl ?>&action=set-access&tab=access">
             <ul class="form-group">
                 <?php foreach ($restaurants as $r) {
                     $restaurant = (new RestaurantsGateway($dbConnection))->GetRestaurant($r->id)[0];
                 ?>
                     <li class="form-check">
-                        <input id="restaurant_<?php echo $r->id ?>" class="form-check-input" type="checkbox" name="restaurtants[]" value="true" 
-                        data-toggle="collapse" data-target="#restaurant_<?php echo $r->id ?>_branches" aria-controls="restaurant_<?php echo $r->id ?>_branches">
+                        <input id="restaurant_<?php echo $r->id ?>" class="form-check-input" level="parent" type="checkbox" name="restaurtants[<?php echo $r->id ?>]" value="<?php echo $r->id ?>" <?php echo $lUser->IsRestaurnatAccessible($r) ? "checked" : "" ?> data-toggle="collapse" data-target="#restaurant_<?php echo $r->id ?>_branches" aria-controls="restaurant_<?php echo $r->id ?>_branches">
                         <label for="restaurant_<?php echo $r->id ?>" class="form-check-label"><?php echo $r->name ?></label>
-                        <ul class="form-group collapse" id="restaurant_<?php echo $r->id ?>_branches">
-                            <?php foreach ($restaurant->branches as $b) { ?>
+                        <ul class="form-group collapse <?php echo $lUser->IsRestaurnatAccessible($r) ? "show" : "" ?>" id="restaurant_<?php echo $r->id ?>_branches">
+                            <?php foreach ($restaurant->branches as $b) {
+
+                            ?>
                                 <li class="form-check">
-                                    <input id="branch_<?php echo $b->id ?>" class="form-check-input" type="checkbox" name="restaurant_<?php echo $r->id ?>[]" value="true" data-toggle="collapse" data-target="#restaurant_<?php echo $r->id ?>_branch_<?php echo $b->id ?>_secrets" aria-controls="restaurant_<?php echo $r->id ?>_branch_<?php echo $b->id ?>_secrets">
+                                    <input id="branch_<?php echo $b->id ?>" class="form-check-input" level="child" type="checkbox" name="restaurtants[<?php echo $r->id ?>][<?php echo $b->id ?>]" value="<?php echo $b->id ?>" <?php echo $lUser->IsBranchAccessible($b) ? "checked" : "" ?> data-toggle="collapse" data-target="#restaurant_<?php echo $r->id ?>_branch_<?php echo $b->id ?>_secrets" aria-controls="restaurant_<?php echo $r->id ?>_branch_<?php echo $b->id ?>_secrets">
                                     <label for="branch_<?php echo $b->id ?>" class="form-check-label"><?php echo $b->cvr . " - " . $b->city ?></label>
-                                    <ul class="form-group collapse" id="restaurant_<?php echo $r->id ?>_branch_<?php echo $b->id ?>_secrets">
-                                        <?php foreach ($b->secrets as $s) { ?>
+                                    <ul class="form-group collapse <?php echo $lUser->IsBranchAccessible($b) ? "show" : "" ?>" id="restaurant_<?php echo $r->id ?>_branch_<?php echo $b->id ?>_secrets">
+                                        <?php foreach ($b->secrets as $s) {
+                                        ?>
                                             <li class="form-check">
-                                                <input id="secret_<?php echo $s ?>" class="form-check-input" type="checkbox" name="restaurant_<?php echo $r->id ?>_branch_<?php echo $b->id ?>[]" value="true">
+                                                <input id="secret_<?php echo $s ?>" class="form-check-input" type="checkbox" <?php echo isset($lUser->secrets) && count(array_filter($lUser->secrets, function ($x) use ($s) {
+                                                                                                                                    return $x === $s;
+                                                                                                                                })) ? "checked" : "" ?> name="restaurtants[<?php echo $r->id ?>][<?php echo $b->id ?>][<?php echo $s ?>]" value="<?php echo $s ?>">
                                                 <label for="secret_<?php echo $s ?>" class="form-check-label"><?php echo $s ?></label>
                                             </li>
                                         <?php } ?>
@@ -176,8 +208,16 @@ if (isset($_GET['action'])) {
                     </li>
                 <?php } ?>
             </ul>
+            <button type="submit" name="set-access" class="btn btn-primary">Save</button>
         </form>
-
+        <script>
+            $($('input[level="parent"]')).on('change', function() {
+                if (this.checked === false) {
+                    $(this).parent().find(':checkbox').prop('checked', false);
+                    $(this).parent().find('ul').removeClass('show');
+                }
+            });
+        </script>
 
     </div>
     <!-- End of Profifle Tab -->
