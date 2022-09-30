@@ -55,6 +55,16 @@ $logoPath = (isset($lRestaurant->logo)
     : "/media/restaurant/no-image.png";
 
 ?>
+<div class="row">
+    <div class="col-4">
+        <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+            <a class="btn btn-primary" role="button" href="/admin/restaurants"><i class="fa-solid fa-circle-chevron-left"></i> Back</a>
+        </div>
+    </div>
+    <div class="col-4"></div>
+    <div class="col-4"></div>
+</div>
+<hr />
 <ul class="nav nav-tabs">
     <li class="nav-item">
         <a class="nav-link" data-toggle="tab" href="#home">User Details</a>

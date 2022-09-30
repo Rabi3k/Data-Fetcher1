@@ -245,9 +245,9 @@ class UserLoginGateway
 
                                     array_push($restaurant->branches, $branch);
                                 }
-                            }
+                            }array_push($restaurants, $restaurant);
                         }
-                        array_push($restaurants, $restaurant);
+                        
                     }
                 }
 

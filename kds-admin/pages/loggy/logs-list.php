@@ -11,7 +11,6 @@
     </div>
     <div class="col-4"></div>
     <div class="col-4">
-        <a class="btn btn-primary float-right" href="?new=" role="button"><i data-feather='plus-circle'></i><span> Ny</span></a>
     </div>
 </div>
 <hr />
