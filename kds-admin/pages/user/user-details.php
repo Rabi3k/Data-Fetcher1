@@ -231,12 +231,10 @@ if (isset($_POST['set-access'])) {
             </div>
             <form method="post" id="SendResetpasswordForm" action="?<?php echo $idUrl ?>&action=change-password&tab=password">
                 <div class="row text-center">
-                    <div class="offset-4 p-2">
-                        <input type="submit" class="btn btn-primary btn-load btn-lg" name="SendRestPaswordEmail" data-loading-text="Sending Email..." value="Send Reset Password Email">
-                    </div>
+                    <input type="submit" class="btn btn-primary btn-load btn-lg" name="SendRestPaswordEmail" data-loading-text="Sending Email..." value="Send Reset Password Email">
                 </div>
             </form>
-            <!-- <hr />
+            <hr />
             <div class="row text-center">
                 <div class="col-12 p-2">
                     <p class="text-center h5">Or</p>
@@ -244,9 +242,9 @@ if (isset($_POST['set-access'])) {
             </div>
             <hr />
             <form method="post" id="passwordForm" action="?<?php echo $idUrl ?>&action=change-password&tab=password">
-                <?php //include "user-password.php" 
+                <?php include "user-password.php" 
                 ?>
-            </form> -->
+            </form> 
 
         </div>
     </div>

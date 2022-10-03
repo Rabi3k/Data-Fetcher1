@@ -28,9 +28,10 @@ function GetNearestVersion(array $versionNumbers)
 {
     $closest = null;
     $idx = 0;
-    $index = 0;
+    $index = -1;
     foreach ($versionNumbers as $item) {
-        if ($closest === null || version_compare($item, getenv('VERSION')) < 1) {
+        if ( version_compare($item, getenv('VERSION')) < 1) {
+            echo"=>1";
             $index = $idx;
             $closest = $item;
         }

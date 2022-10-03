@@ -16,6 +16,8 @@ use Src\Classes\Loggy;
 use Src\System\DatabaseConnector;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\FirePHPHandler;
+use Src\Classes\Options;
+use Src\TableGateways\OptionsGateway;
 use Src\TableGateways\UserLoginGateway;
 
 require_once("config.php");
@@ -35,23 +37,25 @@ if (session_status() === PHP_SESSION_NONE) {
         'DB_PASSWORD',
         'Template_Name',
         'ROOT_PATH',
-        'SMTP_Host',
-        'SMTP_Host',
-        'SMTP_SMTPAuth',
-        'SMTP_Username',
-        'SMTP_Password',
-        'SMTP_Port',
-        'SMTP_SMTPSecure',
         'VERSION'
     ]);
     } catch(Exception $e)
     {
             exit("Site Error please contact !");
         }
+
+
     $template = getenv('Template_Name');
     $rootpath=getenv('ROOT_PATH');
     $dbConnection = (new DatabaseConnector())->getConnection();
+    
+    $smtpA = (new OptionsGateway($dbConnection))->findByType('SMTP');
+    $smtp=Options::classToArray($smtpA);
 
+    $GithubA = (new OptionsGateway($dbConnection))->findByType('Github');
+    $Github=Options::classToArray($GithubA);
+    define('GIT_ACCESS_TOKEN',$Github['GIT_ACCESS_TOKEN']);
+    
     $userLogin = new UserLoginGateway($dbConnection);
     
     $templatePath = "templates/$template";

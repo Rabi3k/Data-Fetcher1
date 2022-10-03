@@ -11,12 +11,16 @@ class RequestsGateway
 
     private $db = null;
     private $tblName = "`requests`";
-
+/**
+ * 
+ */
     public function __construct($db)
     {
         $this->db = $db;
     }
-
+/**
+ * 
+ */
     public function findAll()
     {
         $statement = "SELECT * FROM $this->tblName;";
@@ -29,10 +33,9 @@ class RequestsGateway
             exit($e->getMessage());
         }
     }
-    
-
-
-
+/**
+ * 
+ */
     public function find($id)
     {
         $statement = "SELECT * FROM $this->tblName WHERE id = ?;";
@@ -46,6 +49,9 @@ class RequestsGateway
             exit($e->getMessage());
         }
     }
+/**
+ * 
+ */
     public function insertFromClass(Request $input)
     {
         $statement = "INSERT INTO $this->tblName
@@ -66,25 +72,14 @@ class RequestsGateway
                 'body'  => $input->body,
             ));
             $this->db->commit();
-            /*  $oDate = new \DateTime();
-                $oDate->setTimezone( new \DateTimeZone('Europe/Copenhagen'));
-                if (!file_exists("logs/".$oDate->format('dmY'))) {
-                    mkdir("logs/".$oDate->format('dmY'), 0777, true);
-                }
-                $myfile = fopen("logs/".$oDate->format('dmY')."/Log_".$input->order_id.".txt", "w")
-                                or die("Unable to open file!");
-                $inputStr ="Test 123123:".json_encode($input)."\n\r SqlStatment:".json_encode($statement);
-                fwrite($myfile, $inputStr);
-                fclose($myfile);*/
-
             return $statement->rowCount();
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }
     }
-
-   
-
+/**
+ * 
+ */
     public function update($id, array $input)
     {
         $statement = "
@@ -100,7 +95,7 @@ class RequestsGateway
             $statement = $this->db->prepare($statement);
             $statement->execute(array(
                 'id' => (int) $id,
-                'header' => $input['header'] ,
+                'header' => $input['header'],
                 'body'  => $input['body'],
                 'created_date' => $input['created_date'] ?? null,
             ));
@@ -109,7 +104,9 @@ class RequestsGateway
             exit($e->getMessage());
         }
     }
-
+/**
+ * 
+ */
     public function delete($id)
     {
         $statement = "

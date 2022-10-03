@@ -15,12 +15,15 @@ class KMail
         $getWholeUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] && $_SERVER['HTTPS'] != "off") ? "https" : "http:" . "//" . $_SERVER['HTTP_HOST'];
         $mail = new PHPMailer(true);
         try {
-             $SMTP_Host = getenv('SMTP_Host');
-             $SMTPAuth = boolval(getenv('SMTP_SMTPAuth'));
-             $Username =getenv('SMTP_Username');
-             $Password = strval(getenv('SMTP_Password'));
-             $SMTPSecure = constant('PHPMailer\\PHPMailer\\PHPMailer::'.getenv('SMTP_SMTPSecure'));
-             $SMTP_Port = intval(getenv('SMTP_Port'));
+            $smtp = $GLOBALS['smtp'];
+            
+
+             $SMTP_Host = $smtp['Host'];
+             $SMTPAuth = boolval($smtp['SMTPAuth']);
+             $Username =$smtp['Username'];
+             $Password = strval($smtp['Password']);
+             $SMTPSecure = constant('PHPMailer\\PHPMailer\\PHPMailer::'.$smtp['SecureType']);
+             $SMTP_Port = intval($smtp['Port']);
 
             //Server settings
             //$mail->SMTPDebug = SMTP::DEBUG_SERVER;                //Enable verbose debug output
@@ -57,7 +60,6 @@ class KMail
     </body>
     </html>";
             //$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
-
             $mail->send();
             //echo 'Message has been sent';
         } catch (Exception $e) {
