@@ -15,7 +15,7 @@
 
   <div class="dropdown show">
     <a class="btn btn-lg dropdown-toggle text-light" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      <i class="fa fa-user fa-4" aria-hidden="true"></i>
+      <i class="fa fa-user fa-2" aria-hidden="true"></i>
     </a>
 
     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">

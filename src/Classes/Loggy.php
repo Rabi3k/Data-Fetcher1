@@ -72,10 +72,10 @@ class Loggy
     // {
     //     $this->log(\Monolog\Level::Debug, $msg, $stacktrace);
     // }
-    // public function Info(string $msg, string $stacktrace = "")
-    // {
-    //     $this->log(\Monolog\Level::Info, $msg, $stacktrace);
-    // }
+    public function Info(string $msg, string $stacktrace = "")
+    {
+        $this->log(\Monolog\Level::Info, $msg, $stacktrace);
+    }
     // public function Notice(string $msg, string $stacktrace = "")
     // {
     //     $this->log(\Monolog\Level::Notice, $msg, $stacktrace);
@@ -141,6 +141,10 @@ class Loggy
                 }
             }
         } else if (is_a($e, "Exception")) {
+            $this->log(\Monolog\Level::Error, $msg, $stacktrace, $e);
+        }
+        else
+        {
             $this->log(\Monolog\Level::Error, $msg, $stacktrace, $e);
         }
     }

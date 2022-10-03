@@ -60,22 +60,7 @@ if (session_status() === PHP_SESSION_NONE) {
     
 }
 
-if(!isset($_SESSION['logger']))
-{
-    
 
-    /*$logger = new Logger('logger');
-    $logger->pushHandler(new StreamHandler(__DIR__.'/logs/app.log', Monolog\Level::Debug));
-    $logger->pushHandler(new FirePHPHandler());
-    $_SESSION['logger'] = $logger;
-    $logger->info('Logger is now Ready');*/
-    //echo 'Logger is now Ready';
-}
-else
-{
-    $logger =   $_SESSION['logger'];
-    //$logger->info('Logger is loaded');
-}
 
 if(!isset($rootpath))
 {
@@ -88,7 +73,24 @@ else
 
 
 global $lo;
-$lo = new Loggy();
+
+
+if(!isset($_SESSION['Loggy']))
+{
+    
+    $lo = new Loggy();
+    /*$logger = new Logger('logger');
+    $logger->pushHandler(new StreamHandler(__DIR__.'/logs/app.log', Monolog\Level::Debug));
+    $logger->pushHandler(new FirePHPHandler());
+    $_SESSION['logger'] = $logger;
+    $logger->info('Logger is now Ready');*/
+    //echo 'Logger is now Ready';
+}
+else
+{
+    $lo =   $_SESSION['Loggy'];
+    //$logger->info('Logger is loaded');
+}
 
 function exception_handler(Throwable $exception) {
     global $lo;

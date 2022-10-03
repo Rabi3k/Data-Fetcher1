@@ -37,11 +37,16 @@
 
         foreach ($lines as $lneNum => $line) {
             $val = json_decode($line);
-            $val->lineNum = $lneNum;
+            $val->lineNum = isset($lneNum)?$lneNum:0;
             $val->errorType = isset($val->context->exception->level) ? FriendlyErrorType($val->context->exception->level) : "E_ERROR";
-
-            if (!isset($val->context->exception->error) && isset($val->context->exception->message)) {
-                $val->context->exception->error = $val->context->exception->message;
+            
+            if(empty($val->message) && isset($val->context->exception->error))
+            {
+                $val->message = $val->context->exception->error;
+            }
+            else if(empty($val->message) && isset($val->context->exception->message))
+            {
+                $val->message = $val->context->exception->message;
             }
 
             array_push($liArr, $val);
@@ -88,7 +93,7 @@
                         data: 'lineNum'
                     },
                     {
-                        data: 'context.exception.error'
+                        data: 'message'
                     },
                     {
                         data: 'context.User.Name'

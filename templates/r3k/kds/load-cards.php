@@ -14,21 +14,25 @@ $idOrders = array_column($data, 'id');
 //echo "<span class='card'>".json_encode($data)." Test</span><br/>";
 ?>
 <script>
-    ActiveOrderIds = <?php echo json_encode($idOrders) ?>;
+    ActiveOrderIds =<?php echo json_encode($idOrders) ?>;
 </script>
+<?php $allBranches = $userLogin->GetUser()->UserBranches();
+if(count($allBranches)>1) {
+?>
+<ul class="nav nav-pills nav-fill bg-dark text-light">
+    <?php foreach ($allBranches as $key => $value) {?>
+        <li class="nav-item">
+    <a class="nav-link" href="#sec"><?php echo "$value->city, $value->address<br/>"; ?></a>
+  </li>
+    <?php } ?>
+</ul>
+<?php } ?>
 <div class="card-columns" id="orderCards">
 
-<nav class="nav flex-column bg-light">
-    <li class="nav-item">
-        <a class="nav-link active" href="#">Item 1</a>
-    </li>
-    <li class="nav-item">
-        <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Item 2</a>
-    </li>
-</nav>
+
 
 <?php
     foreach ($data as $row) {
-        include "$templatePath/kds/create-card.php";
+        include "create-card.php";
     } ?>
 </div>

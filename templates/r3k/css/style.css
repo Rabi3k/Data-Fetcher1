@@ -50,12 +50,13 @@ a {
 }
 
 .btPrint {
-  left: 50%;
+  left: 45%;
   position: absolute;
   padding: 0em;
   border: 1px solid gray;
   border-radius: 10px;
   cursor: pointer;
+  z-index: 2;
 }
 
 .tdbody {

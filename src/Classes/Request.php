@@ -3,54 +3,38 @@ namespace Src\Classes;
 
 class Request
 {
-    public $id; //int
-    public $private_key; //String
-    public $order_id; //int
     public $header; //String
     public $body; //String
     public $created_date; //Date
-    public $executed; //int
    
 
 
     #region public functions
-    public function LoadRequest(int $id,
-        string $private_key,
-        string $order_id,
+    public function LoadRequest(
         string $header,
         string $body,
-        string $created_date,
-        int $executed)
+        string $created_date
+        )
     {
         
-        $this->id = $id;
-        $this->private_key = $private_key;
-        $this->order_id = $order_id;
         $this->header = $header;
         $this->body = $body;
         $this->created_date = $created_date;
-        $this->executed=$executed;
     }
 
 #endregion
 #region static function
 
-    public static function GetRequest(int $id,
-    string $private_key,
-    string $order_id,
+    public static function GetRequest(
     string $header,
     string $body,
-    string $created_date,
-    int $executed)
+    string $created_date)
     {
         $request = new Request();
-        $request->LoadRequest($id,
-         $private_key,
-         $order_id,
+        $request->LoadRequest(
          $header,
          $body,
-         $created_date,
-         $executed);
+         $created_date);
          //echo json_encode($restaurant);
         return $request;
     }

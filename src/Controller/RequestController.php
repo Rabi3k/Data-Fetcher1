@@ -1,11 +1,13 @@
 <?php
+
 namespace Src\Controller;
 
 use Src\TableGateways\RequestsGateway;
 use Src\TableGateways\OrdersGateway;
 use Src\Classes\Request;
 
-class RequestController {
+class RequestController
+{
 
     private $db;
     private $requestMethod;
@@ -37,10 +39,8 @@ class RequestController {
                 $response = $this->createRequestFromRequest();
                 break;
             case 'PUT':
-                $response = $this->updateRequestFromRequest($this->reqId);
                 break;
             case 'DELETE':
-                $response = $this->deleteRequest($this->reqId);
                 break;
             default:
                 $response = $this->notFoundResponse();
@@ -63,7 +63,7 @@ class RequestController {
     private function getRequests($id)
     {
         $result = $this->requestsGateway->find($id);
-        if (! $result) {
+        if (!$result) {
             return $this->notFoundResponse();
         }
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
@@ -73,87 +73,31 @@ class RequestController {
 
     private function createRequestFromRequest()
     {
-        $header = json_encode(getallheaders()); 
+        $header = json_encode(getallheaders());
         $body = file_get_contents('php://input');
         $input = (array) json_decode($body, TRUE);
-        $results =array();
-        
-        foreach ($input["orders"] as $order)
-        {
-            $privateKey  = $order["restaurant_key"];
-            $orderId  = $order["id"];
-            $orderId  = $order["id"];
-            $executed = (int)$order["ready"];
+        $results = array();
+        $req = Request::GetRequest(
+            strval($header),
+            strval($body),
+            ""
+        );
+        $result = $this->requestsGateway->insertFromClass($req);
+        array_push($results, $result);
+        foreach ($input["orders"] as $order) {
+
+            $restaurant_refId  = $order["restaurant_id"];
+            $order_id  = $order["id"];
             $body = json_encode($order);
-            $req = Request::GetRequest(0,
-                        strval($privateKey),
-                        intval($orderId),
-                        strval($header),
-                        strval($body),
-                        "",
-                        intval($executed)
-                    );
-            $result = $this->requestsGateway->insertFromClass($req);
-        $this->ordersGateway->insert($req->body);
-        array_push($results,$result);
-       
+            $result =$this->ordersGateway->InsertOrUpdate($body,$order_id,$restaurant_refId);
+            array_push($results, $result);
         }
 
-       // $privateKey  = $input["restaurant_key"];
-
-
-
-        /*if (! $this->validateRequest($input)) {
-            return $this->unprocessableEntityResponse();
-        }*/
-       /* $result = $this->requestsGateway->insert([
-            'private_key' => $privateKey,
-            'body' => $body
-        ]);*/
-        //$this->requestsGateway->insert($input);
         $response['status_code_header'] = 'HTTP/1.1 201 Created';
         $response['body'] = json_encode($results);
         return $response;
     }
 
-    private function updateRequestFromRequest($id)
-    {
-        $result = $this->requestsGateway->find($id);
-        if (! $result) {
-            return $this->notFoundResponse();
-        }
-        $input = (array) json_decode(file_get_contents('php://input'), TRUE);
-        if (! $this->validateRequest($input)) {
-            return $this->unprocessableEntityResponse();
-        }
-        $this->requestsGateway->update($id, $input);
-        $response['status_code_header'] = 'HTTP/1.1 200 OK';
-        $response['body'] = null;
-        return $response;
-    }
-
-    private function deleteRequest($id)
-    {
-        $result = $this->requestsGateway->find($id);
-        if (! $result) {
-            return $this->notFoundResponse();
-        }
-        $this->requestsGateway->delete($id);
-        $response['status_code_header'] = 'HTTP/1.1 200 OK';
-        $response['body'] = null;
-        return $response;
-    }
-
-    private function validateRequest($input)
-    {
-        if (! isset($input['private_key'])) {
-            return false;
-        }
-        if (! isset($input['body'])) {
-            return false;
-        }
-        return true;
-    }
 
     private function unprocessableEntityResponse()
     {

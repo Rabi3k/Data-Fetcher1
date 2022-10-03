@@ -2,8 +2,9 @@
 
 namespace Src\TableGateways;
 
-use Src\System\DbObject;
 use Pinq\Traversable;
+use Src\Classes\Loggy;
+use Src\System\DbObject;
 
 class OrdersGateway extends DbObject
 {
@@ -28,9 +29,7 @@ class OrdersGateway extends DbObject
                 JSON_UNQUOTE(
                     JSON_EXTRACT(data,'$.ready')) = 'true'
                     AND
-                    JSON_UNQUOTE(
-                        JSON_EXTRACT(data,'$.restaurant_id')) = ifnull(:restauntRefId,JSON_UNQUOTE(
-                        JSON_EXTRACT(data,'$.restaurant_id')));";
+                    restaurant_refId = ifnull(:restauntRefId,restaurant_refId);";
 
         try {
             $statement = $this->getDbConnection()->prepare($statment);
@@ -51,7 +50,7 @@ class OrdersGateway extends DbObject
     {
         $tblname = $this->getTableName();
         $statment = "SELECT * FROM `$tblname` 
-        where JSON_EXTRACT(data,'$.restaurant_id') = $id";
+        where restaurant_refId = $id";
         //echo "ID: $id <br/>statment: $statment<br/>";
         try {
             $statement = $this->getDbConnection()->query($statment);
@@ -72,7 +71,7 @@ class OrdersGateway extends DbObject
     {
         $tblname = $this->getTableName();
         $statment = "SELECT * FROM `$tblname` 
-        where JSON_EXTRACT(data,'$.id') = $id";
+        where order_id = $id";
         //echo "ID: $id <br/>statment: $statment<br/>";
         try {
             $statement = $this->getDbConnection()->query($statment);
@@ -178,7 +177,8 @@ class OrdersGateway extends DbObject
                                     And JSON_UNQUOTE(
                                     JSON_EXTRACT(data,'$.status')) in ('accepted')
 
-                                    group by JSON_EXTRACT(data,'$.id') having MAX(ready)=0
+                                    group by order_id,restaurant_refId
+                                    having MAX(ready)=0
                                     ORDER BY   CAST(JSON_UNQUOTE(JSON_EXTRACT(data,'$.fulfill_at')) as DateTime)
                                     ";
         //echo "secretsJ: $secretsJ \nstatment: $statment\n";
@@ -222,7 +222,8 @@ class OrdersGateway extends DbObject
                                     And JSON_UNQUOTE(
                                     JSON_EXTRACT(data,'$.status')) in ('accepted')
 
-                                    group by JSON_EXTRACT(data,'$.id') having MAX(ready)=0
+                                    group by order_id,restaurant_refId
+                                    having MAX(ready)=0
                                     ORDER BY CAST(JSON_UNQUOTE(JSON_EXTRACT(data,'$.fulfill_at')) as DateTime)
                                     ";
         //echo "secretsJ: $secretsJ \nstatment: $statment\n";
@@ -240,15 +241,28 @@ class OrdersGateway extends DbObject
         }
     }
 
-    public function insert($data)
+    public function InsertOrUpdate($data,$order_id,$restaurant_refId)
     {
-        $statement = "INSERT INTO `tbl_order`(`data`) VALUES (:data);";
+
+        $statement = "INSERT INTO `tbl_order`
+        (`data`,
+        `order_id`,
+        `restaurant_refId`)
+        VALUES 
+        (:data,:order_id,:restaurant_refId)
+        ON DUPLICATE KEY UPDATE
+        `data` = :data;";
+
         try {
             $statement = $this->getDbConnection()->prepare($statement);
+            $this->getDbConnection()->beginTransaction();
             $statement->execute(array(
-                'data' => $data
+                'data' => $data,
+                'order_id' => $order_id,
+                'restaurant_refId' => $restaurant_refId,
             ));
-            $_SESSION['logger']->info("new order created: $data");
+            $this->getDbConnection()->commit();
+            (new Loggy())->info("new order Created / Updated: order_id => $order_id, restaurant_refId => $restaurant_refId");
             /*  $oDate = new \DateTime();
                 $oDate->setTimezone( new \DateTimeZone('Europe/Copenhagen'));
                 if (!file_exists("logs/".$oDate->format('dmY'))) {
@@ -262,8 +276,9 @@ class OrdersGateway extends DbObject
 
             return $statement->rowCount();
         } catch (\PDOException $e) {
+            $_SESSION['loggy']->logy($e->getMessage(),$e->getTraceAsString(),$e);
             exit($e->getMessage());
         }
     }
-    #endregion
+        #endregion
 }
