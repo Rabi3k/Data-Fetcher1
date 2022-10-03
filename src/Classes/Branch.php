@@ -20,6 +20,7 @@ class Branch
     public string $country="";
     public string $cvr="";
     public array $secrets;
+    public int $reference_id;
 #endregion
 #region Construct
     public function __construct()
@@ -39,7 +40,8 @@ class Branch
         string $address,
         string $country,
         string $cvr,
-        array $secrets)
+        array $secrets,
+        int $reference_id)
     {
         
         $this->id = $id;
@@ -50,6 +52,7 @@ class Branch
         $this->country = $country;
         $this->cvr = $cvr;
         $this->secrets=$secrets;
+        $this->reference_id=$reference_id;
     }
 
     #endregion
@@ -62,7 +65,8 @@ class Branch
     string $address,
     string $country,
     string $cvr,
-    array $secrets)
+    array $secrets,
+    int $reference_id)
     {
         $branch = new Branch();
         $branch->id = $id;
@@ -73,6 +77,7 @@ class Branch
         $branch->country = $country;
         $branch->cvr = $cvr;
         $branch->secrets=$secrets;
+        $branch->reference_id=$reference_id;
         return $branch;
     }
 #endregion

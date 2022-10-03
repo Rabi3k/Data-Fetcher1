@@ -66,6 +66,7 @@ class RestaurantsGateway
             GROUP_CONCAT(DISTINCT JSON_OBJECT(
                 'id', rb.`id`,
                 'restaurant_id', rb.`restaurant_id`,
+                'reference_id', rb.`reference_id`,
                 'city', rb.`city`,
                 'zip_code', rb.`zip_code`,
                 'address', rb.`address`,
@@ -119,7 +120,8 @@ class RestaurantsGateway
                             $br->address,
                             $br->country,
                             $br->cvr,
-                            array()
+                            array(),
+                            $br->reference_id
                         );
                         $secrets =  json_decode($row["secret_keys"]);
                         foreach ($secrets as $s) {
@@ -270,6 +272,7 @@ class RestaurantsGateway
         $statement = "UPDATE `restaurant_branches`
          SET 
          `restaurant_id` =   :restaurant_id ,
+         `reference_id` =   :reference_id ,
          `city` =   :city ,
          `zip_code` =   :zip_code ,
          `cvr` =   :cvr ,
@@ -288,7 +291,8 @@ class RestaurantsGateway
                 'zip_code' => $input->zip_code,
                 'cvr' => $input->cvr,
                 'address' => $input->address,
-                'country' => $input->country
+                'country' => $input->country,
+                'reference_id'=>$input->reference_id
             ));
             $this->db->commit();
             return $input;

@@ -27,7 +27,7 @@
           <i class="fa fa-user fa-3" aria-hidden="true"></i>
         </a>
 
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+        <div class="dropdown-menu dropdown-menu-right bg-dark text-light" aria-labelledby="dropdownMenuLink">
           <?php $navClass = "navbar-nav";
           include "pages/header-content.php"; ?>
         </div>

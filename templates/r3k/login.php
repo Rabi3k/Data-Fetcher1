@@ -43,7 +43,7 @@ include  $templatePath . '/head.php';
             <input type="checkbox" value="remember-me"> Remember me
           </label>
         </div>
-        <button class="btn btn-lg btn-warning btn-block" type="submit">Sign in</button>
+        <button class="btn btn-lg btn-custom btn-block" type="submit">Sign in</button>
       </form>
 
     </div>

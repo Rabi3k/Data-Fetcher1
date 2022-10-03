@@ -112,6 +112,7 @@
                     targets: 5,
                     render: $.fn.dataTable.render.moment('YYYY-MM-DDTHH:mm:ss.SSSSZ', 'YYYY-MM-DD h:mm:ss a')
                 }],
+                order: [[0, 'desc']],
                 "createdRow": function(row, data, dataIndex) {
                     $(row).addClass('clickable-row');
                     $(row).attr('data-href', "?id=" + dataIndex);

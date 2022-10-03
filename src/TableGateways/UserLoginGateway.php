@@ -158,6 +158,7 @@ class UserLoginGateway
             GROUP_CONCAT(DISTINCT JSON_OBJECT(
                 'id', rb.`id`,
                 'restaurant_id', rb.`restaurant_id`,
+                'reference_id', rb.`reference_id`,
                 'city', rb.`city`,
                 'zip_code', rb.`zip_code`,
                 'address', rb.`address`,
@@ -239,7 +240,8 @@ class UserLoginGateway
                                 $br->address,
                                 $br->country,
                                 $br->cvr,
-                                array()
+                                array(),
+                                $br->reference_id
                             );
                             $secrets =  json_decode($row["secret_keys"]);
                             $brSecrets = array_filter($secrets, function ($x) use ($br) {

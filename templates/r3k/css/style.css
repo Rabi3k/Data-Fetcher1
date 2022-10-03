@@ -70,7 +70,10 @@ a {
 .bg-custom {
   background: linear-gradient(100deg, rgb(0, 0, 0), rgb(230, 223, 16));
 }
-
+.btn-custom {
+  color: #f6faff;
+    background: linear-gradient(100deg, rgb(0, 0, 0), rgb(230, 223, 16));
+}
 .opacity-min {
   opacity: 0.75;
 }

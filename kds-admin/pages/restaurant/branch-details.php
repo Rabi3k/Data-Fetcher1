@@ -47,6 +47,10 @@ if (isset($_GET['action'])) {
             $branch->cvr = $_POST['inputPNR'];
             $anypost = true;
         }
+        if (isset($_POST['inputReferenceId']) && !empty($_POST['inputReferenceId'])) {
+            $branch->reference_id = $_POST['inputReferenceId'];
+            $anypost = true;
+        }
         if ($anypost) {
             $branch = $restaurantsGateway->InsertOrUpdateBranch($branch);
             $idUrl = "rid=$lRestaurant->id&id=$branch->id";
@@ -60,7 +64,7 @@ if (isset($_GET['action'])) {
             }
         }
         if (count($secretList) > 0) {
-            $branch->secrets =array();
+            $branch->secrets = array();
             $branch->secrets = $secretList;
             $restaurantsGateway->InsertOrUpdateBranchSecrets($branch);
         }
@@ -74,7 +78,7 @@ if (isset($_GET['action'])) {
 <div class="row">
     <div class="col-4">
         <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
-            <a class="btn btn-primary" role="button" href="/admin/restaurants?id=<?php echo $lRestaurant->id?>"><i class="fa-solid fa-circle-chevron-left"></i> Back</a>
+            <a class="btn btn-primary" role="button" href="/admin/restaurants?id=<?php echo $lRestaurant->id ?>"><i class="fa-solid fa-circle-chevron-left"></i> Back</a>
         </div>
     </div>
     <div class="col-4"></div>
@@ -108,13 +112,17 @@ if (isset($_GET['action'])) {
                         <label for="inputCountry">Country</label>
                         <input type="text" class="form-control" name="inputCountry" id="inputCountry" value="<?php echo $branch->country ?>" required>
                     </div>
-                    <div class="form-group col-9">
+                    <div class="form-group col-6">
                         <label for="inputAddress">Address</label>
                         <input type="text" class="form-control" name="inputAddress" id="inputAddress" value="<?php echo $branch->address ?>" required>
                     </div>
                     <div class="form-group col-3">
                         <label for="inputPNR">PNR</label>
                         <input type="text" class="form-control" name="inputPNR" id="inputPNR" value="<?php echo $branch->cvr ?>" required>
+                    </div>
+                    <div class="form-group col-3">
+                        <label for="inputReferenceId">Reference Id</label>
+                        <input type="text" class="form-control" name="inputReferenceId" id="inputReferenceId" value="<?php echo $branch->reference_id ?>" required>
                     </div>
                     <div class="form-group col-12 text-right float-right">
                         <button type="submit" class="btn btn-primary">Save</button>
