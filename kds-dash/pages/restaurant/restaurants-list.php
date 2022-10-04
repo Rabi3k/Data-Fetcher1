@@ -2,7 +2,7 @@
 
 use Src\TableGateways\RestaurantsGateway;
 
-$restaurants = (new RestaurantsGateway($dbConnection))->GetAllRestaurants();
+$restaurants = ($userLogin->GetUser())->restaurants;
 ?>
     <div class="row">
         <div class="col-4"></div>

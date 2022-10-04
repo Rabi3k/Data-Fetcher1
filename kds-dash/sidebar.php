@@ -1,19 +1,19 @@
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <li class="nav-item">
-                <a class="nav-link" href="/admin">
+                <a class="nav-link" href="/dash/">
                   <span data-feather="home"></span>
                   Dashboard <span class="sr-only">(current)</span>
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/admin/users">
+                <a class="nav-link" href="/dash/users">
                   <span data-feather="users"></span>
                   Users
                 </a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/admin/restaurants">
+                <a class="nav-link" href="/dash/restaurants">
                   <span data-feather="coffee"></span>
                   Restaurants
                 </a>
@@ -73,7 +73,7 @@
             </h6>
             <ul class="nav flex-column mb-2">
               <li class="nav-item">
-                <a class="nav-link" href="/admin/email-setup">
+                <a class="nav-link" href="/dash/email-setup">
                   <span data-feather="send"></span>
                   Email Setup
                 </a>

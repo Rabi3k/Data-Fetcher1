@@ -28,12 +28,14 @@ class User
     public function UserBranchesId(): array
     {
         return (Traversable::from($this->restaurants))->selectMany(function ($x) {
-            return $x->branches->id;
+            return $x->branches;
+        })->select(function ($b) {
+            return $b->id;
         })->asArray();
     }
     public function UserRestaurantsId(): array
     {
-        return (Traversable::from($this->restaurants))->select(function ($r)  {
+        return (Traversable::from($this->restaurants))->select(function ($r) {
             return $r->id;
         })->asArray();
     }
