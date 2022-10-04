@@ -10,7 +10,7 @@ if (!$userLogin->checkLogin()) {
         exit();
 }
 $loggedUser = $userLogin->GetUser();
-if (!$loggedUser->isSuperAdmin) {
+if (!$loggedUser->isAdmin && !$loggedUser->isSuperAdmin) {
         header("Location: /");
         exit();
 }

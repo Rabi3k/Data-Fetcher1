@@ -113,6 +113,61 @@ class UserLoginGateway
             exit($e->getMessage());
         }
     }
+
+    function GetAllBranchesUsers($branchesId)
+    {
+        $brIds = implode(",",$branchesId);
+        $statement = "SELECT 
+
+        u.`id`, 
+        u.`email`, 
+        u.`user_name`, 
+        u.`full_name`, 
+        u.`password`, 
+        u.`secret_key`, 
+        u.`profile_id`,  
+        u.`IsAdmin`, 
+        u.`isSuperAdmin`,
+        
+        -- Profile
+        p.`name` AS 'profile' ,
+        p.`admin`  ,
+        p.`super-admin`  
+        
+        FROM `users`as u
+        LEFT JOIN `profiles` as p on (u.profile_id = p.id)
+        JOIN `user_relations` as ur on (u.id = ur.user_id )
+        where ur.branch_id in ($brIds) and u.isSuperAdmin=0;";
+
+        try {
+            $statement = $this->db->prepare($statement);
+            $statement->execute();
+            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $users = array();
+            foreach ($result as $row) {
+                $userSecrets = array();
+                $profile = Profile::GetProfile(intval($row["profile_id"]), strval($row["profile"]), boolval($row["super-admin"]), boolval($row["admin"]));
+                $user = User::GetUser(
+                    intval($row["id"]),
+                    strval($row["email"]),
+                    strval($row["user_name"]),
+                    strval($row["full_name"]),
+                    strval($row["password"]),
+                    strval($row["secret_key"]),
+                    $profile,
+                    array(),
+                    array(),
+                    boolval($row["IsAdmin"]),
+                    boolval($row["isSuperAdmin"])
+                );
+                array_push($users, $user);
+            }
+            return $users;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
+
     static function GetUserClass($id, bool $foceRest = true)
     {
         if (!isset($GLOBALS['dbConnection'])) {

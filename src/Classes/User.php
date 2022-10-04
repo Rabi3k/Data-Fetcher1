@@ -25,6 +25,18 @@ class User
             return $x->branches;
         })->asArray();
     }
+    public function UserBranchesId(): array
+    {
+        return (Traversable::from($this->restaurants))->selectMany(function ($x) {
+            return $x->branches->id;
+        })->asArray();
+    }
+    public function UserRestaurantsId(): array
+    {
+        return (Traversable::from($this->restaurants))->select(function ($r)  {
+            return $r->id;
+        })->asArray();
+    }
 
     public function IsBranchAccessible(Branch $branch): bool
     {
