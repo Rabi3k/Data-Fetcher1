@@ -1,6 +1,5 @@
 <?php
-$BranchesId = ($userLogin->GetUser())->UserBranchesId();
-$users = $userLogin->GetAllBranchesUsers($BranchesId);
+
 ?>
     <div class="row">
         <div class="col-4"></div>
