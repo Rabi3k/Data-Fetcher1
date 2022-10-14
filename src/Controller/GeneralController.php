@@ -8,7 +8,7 @@ class GeneralController
     public static function CreateResponser($data)
     {
         $responser = new Responser($data);
-        $response['status_code_header'] = http_response_code();//'HTTP/1.1 200 OK';
+        $response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] =json_encode($responser);
         return $response;
     }
