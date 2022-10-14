@@ -38,8 +38,8 @@ class UsersController {
                         break;
                     case FuncType::All:
                         
-                        // $response['status_code_header'] = 'HTTP/1.1 200 OK';
-                        // $response['body'] = json_encode("[{'all_good':true}]");
+                         $response['status_code_header'] = 'HTTP/1.1 200 OK';
+                         $response['body'] = json_encode("[{'all_good':true}]");
                         break;
                     case FuncType::None:
                         $response = $this->notFoundResponse();
