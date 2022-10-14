@@ -97,7 +97,7 @@ class UsersController {
         }
         /*$response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] = json_encode($user);*/
-        return json_encode($user);
+        return $user;
     }
     #region Header response
     private function unprocessableEntityResponse()
