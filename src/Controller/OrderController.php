@@ -2,6 +2,7 @@
 namespace Src\Controller;
 
 use Src\TableGateways\RequestsGateway;
+use Src\TableGateways\OrdersGateway;
 
 class OrderController {
 
@@ -19,6 +20,7 @@ class OrderController {
         $this->orderId = $orderId??null;
         $this->secrets=$secrets;
         $this->requestsGateway = new RequestsGateway($db);
+        $this->orderGateway = new OrdersGateway($db);
     }
 
     public function processRequest()
@@ -28,7 +30,7 @@ class OrderController {
                 if ($this->orderId) {
                     $response = $this->getOrder($this->orderId);
                 } else {
-                    $response = $this->getAllOrders();
+                    $response = $this->getAllOrders([]);
                 };
                 break;
             case 'POST':
@@ -44,9 +46,9 @@ class OrderController {
         }
     }
 
-    private function getAllOrders()
+    private function getAllOrders(array $restaurantIds)
     {
-        $result = $this->requestsGateway->RetriveAllOrders();
+        $result = $this->orderGateway->FindByRestaurantsRefId($restaurantIds);
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] = json_encode($result);
         return $response;
@@ -55,7 +57,7 @@ class OrderController {
     {
         $sDate =(new \DateTime('midnight',new \DateTimeZone('Europe/Copenhagen')));
         $eDate =(new \DateTime('tomorrow midnight',new \DateTimeZone('Europe/Copenhagen')));
-        $data = $this->requestsGateway->RetriveAllOrdersByDate($sDate,$eDate,$this->secrets);
+        $data = $this->orderGateway->RetriveAllOrdersByDate($sDate,$eDate,$this->secrets);
         $idOrders = array_column($data, 'id');
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] = json_encode($idOrders);
@@ -71,7 +73,7 @@ class OrderController {
         {
             $eDate->setTime(23,59,59,999999);
         }
-        $data = $this->requestsGateway->RetriveAllOrdersByDate($sDate,$eDate,$secrets);
+        $data = $this->orderGateway->RetriveAllOrdersByDate($sDate,$eDate,$secrets);
 
       
         $idOrders = array_column($data, 'id');
@@ -81,14 +83,14 @@ class OrderController {
     }
     private function getAllOrdersByDate($startDate,$endDate)
     {
-        $result = $this->requestsGateway->RetriveAllOrdersByDate($startDate,$endDate,$this->secrets);
+        $result = $this->orderGateway->RetriveAllOrdersByDate($startDate,$endDate,$this->secrets);
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] = json_encode($result);
         return $response;
     }
     private function getOrder($id)
     {
-        $results = $this->requestsGateway->RetriveOrder($id);
+        $results = $this->orderGateway->FindById($id);
        /* $result = array_filter($results,function($e) use (&$id){
             return $e["id"] === $id;
         });*/
@@ -102,71 +104,22 @@ class OrderController {
 
     private function createRequestFromRequest()
     {
-        $body = file_get_contents('php://input');
-        $input = (array) json_decode($body, TRUE);
-        foreach ($input["orders"] as $order)
-        {
-            $privateKey  = $order["restaurant_key"];
-            $body = json_encode($order);
-            $result = $this->requestsGateway->insert([
-                'private_key' => $privateKey,
-                'body' => $body
-        ]);
-        }
-
-       // $privateKey  = $input["restaurant_key"];
-
-
-
-        /*if (! $this->validateRequest($input)) {
-            return $this->unprocessableEntityResponse();
-        }*/
-       /* $result = $this->requestsGateway->insert([
-            'private_key' => $privateKey,
-            'body' => $body
-        ]);*/
-        //$this->requestsGateway->insert($input);
-        $response['status_code_header'] = 'HTTP/1.1 201 Created';
-        $response['body'] = null;
-        return $response;
+        
     }
 
     private function updateRequestFromRequest($id)
     {
-        $result = $this->requestsGateway->find($id);
-        if (! $result) {
-            return $this->notFoundResponse();
-        }
-        $input = (array) json_decode(file_get_contents('php://input'), TRUE);
-        if (! $this->validateRequest($input)) {
-            return $this->unprocessableEntityResponse();
-        }
-        $this->requestsGateway->update($id, $input);
-        $response['status_code_header'] = 'HTTP/1.1 200 OK';
-        $response['body'] = null;
-        return $response;
+        
     }
 
     private function deleteRequest($id)
     {
-        $result = $this->requestsGateway->find($id);
-        if (! $result) {
-            return $this->notFoundResponse();
-        }
-        $this->requestsGateway->delete($id);
-        $response['status_code_header'] = 'HTTP/1.1 200 OK';
-        $response['body'] = null;
-        return $response;
+      
     }
 
     private function validateRequest($input)
     {
-        if (! isset($input['private_key'])) {
-            return false;
-        }
-        if (! isset($input['body'])) {
-            return false;
-        }
+       
         return true;
     }
 

@@ -30,8 +30,8 @@ function GetNearestVersion(array $versionNumbers)
     $idx = 0;
     $index = -1;
     foreach ($versionNumbers as $item) {
-        if ( version_compare($item, getenv('VERSION')) < 1) {
-            echo"=>1";
+        if (version_compare($item, getenv('VERSION')) < 1) {
+            echo "=>1";
             $index = $idx;
             $closest = $item;
         }
@@ -158,4 +158,71 @@ function FriendlyErrorType($type)
             return 'E_USER_DEPRECATED';
     }
     return "";
+}
+/**
+ * Create GUID
+ */
+function GUID()
+{
+    if (function_exists('com_create_guid') === true) {
+        return trim(com_create_guid(), '{}');
+    }
+
+    return sprintf('%04X%04X-%04X-%04X-%04X-%04X%04X%04X', mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(16384, 20479), mt_rand(32768, 49151), mt_rand(0, 65535), mt_rand(0, 65535), mt_rand(0, 65535));
+}
+
+function str_Encrypt(string $str)
+{
+    // Store a string into the variable which
+    // need to be Encrypted
+    $simple_string = $str;
+
+    // Store the cipher method
+    $ciphering = "AES-128-CTR";
+
+    // Use OpenSSl Encryption method
+    $iv_length = openssl_cipher_iv_length($ciphering);
+    $options = 0;
+
+    // Non-NULL Initialization Vector for encryption
+    $encryption_iv = '6684984797599552';
+
+    // Store the encryption key
+    $encryption_key = "BUnnfAPYYYUAJJHe";
+
+    // Use openssl_encrypt() function to encrypt the data
+    $encryption = openssl_encrypt(
+        $simple_string,
+        $ciphering,
+        $encryption_key,
+        $options,
+        $encryption_iv
+    );
+    return $encryption;
+}
+
+function str_Decrypt(string $encryption)
+{
+    // Store the cipher method
+    $ciphering = "AES-128-CTR";
+
+    // Use OpenSSl Encryption method
+    $iv_length = openssl_cipher_iv_length($ciphering);
+    $options = 0;
+    // Non-NULL Initialization Vector for decryption
+    $decryption_iv = '6684984797599552';
+
+    // Store the decryption key
+    $decryption_key = "BUnnfAPYYYUAJJHe";
+
+    // Use openssl_decrypt() function to decrypt the data
+    $decryption = openssl_decrypt(
+        $encryption,
+        $ciphering,
+        $decryption_key,
+        $options,
+        $decryption_iv
+    );
+
+   return $decryption;
 }

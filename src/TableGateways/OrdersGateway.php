@@ -67,6 +67,27 @@ class OrdersGateway extends DbObject
             exit($e->getMessage());
         }
     }
+    public function FindByRestaurantsRefId(array $id)
+    {
+        $tblname = $this->getTableName();
+        $ids = implode(",", $id);
+        $statment = "SELECT * FROM `$tblname` 
+        where restaurant_refId in ($ids)";
+        //echo "ID: $id <br/>statment: $statment<br/>";
+        try {
+            $statement = $this->getDbConnection()->query($statment);
+            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+
+            $results = array();
+            foreach ($result as $row) {
+                $jObj = json_decode($row['data']);
+                array_push($results, $jObj);
+            }
+            return $results;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
     public function FindById($id)
     {
         $tblname = $this->getTableName();

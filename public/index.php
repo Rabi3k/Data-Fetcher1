@@ -4,6 +4,7 @@ require "../bootstrap.php";
 use Src\Controller\RequestController;
 use Src\Controller\OrderController;
 use Src\Controller\ActiveOrderController;
+use Src\Controller\UsersController;
 
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
@@ -19,6 +20,8 @@ $oper = $_GET["q"];
 $id = $_GET["id"] ?? null;
 $startDate = $_GET["s"] ?? NULL;
 $endDate = $_GET["e"] ?? null;
+$username = $_GET["u"] ?? NULL;
+$password = $_GET["p"] ?? null;
 $secrets = $_GET["secrets"] ?? null;
 $secrets = isset($secrets) ? json_decode($secrets) : array();
 //echo file_get_contents('php://input');
@@ -34,8 +37,18 @@ switch ($oper) {
         // pass the request method and user ID to the PersonController and process the HTTP request:
         $controller = new OrderController($dbConnection, $requestMethod, $id);
         $controller->processRequest();
+
         break;
-    case 'Profile':
+    case 'profile':
+        break;
+    case 'user':
+        $params = ([
+            'id'        =>  $id,
+            'u' =>  $username,
+            'p'   =>  $password,
+        ]);
+        $controller = new UsersController($dbConnection, $requestMethod, $params);
+        $controller->processRequest();
         break;
     case 'orders':
         $params = ([

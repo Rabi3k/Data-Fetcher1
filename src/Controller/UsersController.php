@@ -14,11 +14,11 @@ class UsersController {
 
     private $usersGateway;
 
-    public function __construct($db, $requestMethod, $reqId)
+    public function __construct($db, $requestMethod, $params)
     {
         $this->db = $db;
         $this->requestMethod = $requestMethod;
-        $this->reqId = $reqId;
+        $this->params = $params;
         $this->usersGateway = new UserLoginGateway($db);
     }
 
@@ -29,7 +29,9 @@ class UsersController {
                 switch($this->getFunc())
                 {
                     case FuncType::ByDate:
-                        //$response = $this->getActiveOrderIdsByDate($this->params['startDate'],$this->params['endDate'],$this->secrets);
+                        //pO3Mh9hwW01l
+                        $password = str_Decrypt($this->params['p']);
+                        $response = GeneralController::CreateResponser($this->getUser($this->params['u'],$password));
                         break;
                     case FuncType::ById:
                         //$response = $this->getOrderById($this->params['id']);
@@ -65,7 +67,7 @@ class UsersController {
     }
     private function getFunc():FuncType
     {
-       if(!isset($this->params) || !isset($this->secrets) || \count($this->secrets)<1)
+       if(!isset($this->params) || count($this->params)<1)
        {
             return FuncType::None;
        }
@@ -77,11 +79,25 @@ class UsersController {
        {
         return FuncType::ById;
        }
-       if(isset($this->params['startDate']) && isset($this->params['endDate']))
+       if(isset($this->params['u']) && isset($this->params['p']))
        {
         return FuncType::ByDate;
        }
        return FuncType::All;
+    }
+
+    private function getUser(string $username,string $password)
+    {
+        $users = $this->usersGateway->GetUserByUsernamePassword($username,$password);
+        if (count($users) > 0) {
+            $user = $users[0];
+            if (strtolower($user['user_name']) === strtolower($username) || strtolower($user['email']) === strtolower($username)) {
+                return $user;
+            }
+        }
+        /*$response['status_code_header'] = 'HTTP/1.1 200 OK';
+        $response['body'] = json_encode($user);*/
+        return json_encode($user);
     }
     #region Header response
     private function unprocessableEntityResponse()

@@ -55,9 +55,9 @@ class RequestController
     private function getAllRequests()
     {
         $result = $this->requestsGateway->findAll();
-        $response['status_code_header'] = 'HTTP/1.1 200 OK';
-        $response['body'] = json_encode($result);
-        return $response;
+        // $response['status_code_header'] = http_response_code();//'HTTP/1.1 200 OK';
+        // $response['body'] = json_encode($result);
+        return GeneralController::CreateResponser($result);
     }
 
     private function getRequests($id)
