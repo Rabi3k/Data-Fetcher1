@@ -90,8 +90,10 @@ class UsersController {
     {
         $users = $this->usersGateway->GetUserByUsernamePassword($username,$password);
         if (count($users) > 0) {
-            $user = $users[0];
-            if (strtolower($user['user_name']) === strtolower($username) || strtolower($user['email']) === strtolower($username)) {
+            //$user = $users[0];
+            $user  = UserLoginGateway::GetUserClass($users[0]["id"]);
+
+            if (strtolower($user->user_name) === strtolower($username) || strtolower($user->email) === strtolower($username)) {
                 return $user;
             }
         }

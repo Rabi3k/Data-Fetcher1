@@ -175,7 +175,7 @@ class UserLoginGateway
         }
         $ul = new UserLoginGateway($GLOBALS['dbConnection']);
         $ul->LoadUserClass($id, $foceRest);
-        return $ul;
+        return $ul->GetUser();
     }
 
     function LoadUserClass($id, bool $foceRest = true)
