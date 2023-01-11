@@ -21,6 +21,7 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     $branch = new Branch();
     $branch->restaurantId = $lRestaurant->id;
     $SaveType = "add";
+    // echo $branch->reference_id=0;
     $idUrl = "rid=$lRestaurant->id&new";
 }
 

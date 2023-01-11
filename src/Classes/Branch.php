@@ -13,14 +13,14 @@ class Branch
     rb.`cvr` as 'branch_cvr',*/
 #region Private props
     public int $id=0;
-    public int $restaurantId;
+    public int $restaurantId = 0;
     public string $city="";
     public string $zip_code="";
     public string $address="";
     public string $country="";
     public string $cvr="";
     public array $secrets;
-    public int $reference_id;
+    public int $reference_id = 0;
 #endregion
 #region Construct
     public function __construct()
@@ -52,7 +52,7 @@ class Branch
         $this->country = $country;
         $this->cvr = $cvr;
         $this->secrets=$secrets;
-        $this->reference_id=$reference_id;
+        $this->reference_id = $reference_id;
     }
 
     #endregion
