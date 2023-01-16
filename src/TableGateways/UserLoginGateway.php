@@ -77,6 +77,7 @@ class UserLoginGateway
         u.`profile_id`,  
         u.`IsAdmin`, 
         u.`isSuperAdmin`,
+        u.`screen_type`,
         
         -- Profile
         p.`name` AS 'profile' ,
@@ -104,7 +105,8 @@ class UserLoginGateway
                     array(),
                     array(),
                     boolval($row["IsAdmin"]),
-                    boolval($row["isSuperAdmin"])
+                    boolval($row["isSuperAdmin"]),
+                    intval($row["screen_type"])
                 );
                 array_push($users, $user);
             }
@@ -128,6 +130,7 @@ class UserLoginGateway
         u.`profile_id`,  
         u.`IsAdmin`, 
         u.`isSuperAdmin`,
+        u.`screen_type`,
         
         -- Profile
         p.`name` AS 'profile' ,
@@ -158,7 +161,8 @@ class UserLoginGateway
                     array(),
                     array(),
                     boolval($row["IsAdmin"]),
-                    boolval($row["isSuperAdmin"])
+                    boolval($row["isSuperAdmin"]),
+                    intval($row["screen_type"])
                 );
                 array_push($users, $user);
             }
@@ -191,6 +195,7 @@ class UserLoginGateway
         u.`profile_id`,  
         u.`IsAdmin`, 
         u.`isSuperAdmin`,
+        u.`screen_type`,
         
         -- Profile
         p.`name` AS 'profile' ,
@@ -251,6 +256,7 @@ class UserLoginGateway
                 $userSecrets = array();
                 $restaurants = array();
                 $profile = Profile::GetProfile(intval($row["profile_id"]), strval($row["profile"]), boolval($row["super-admin"]), boolval($row["admin"]));
+
                 $this->user = User::GetUser(
                     intval($row["id"]),
                     strval($row["email"]),
@@ -262,9 +268,9 @@ class UserLoginGateway
                     $userSecrets,
                     $restaurants,
                     boolval($row["IsAdmin"]),
-                    boolval($row["isSuperAdmin"])
+                    boolval($row["isSuperAdmin"]),
+                    intval($row["screen_type"]),
                 );
-                //echo "<li><span> User => " . json_encode($this->user) . "<span></li>";
                 $rests = json_decode($row["restaurants"]);
                 $rests = array_filter($rests, function ($r) {
                     return isset($r->id);
@@ -315,7 +321,7 @@ class UserLoginGateway
                     $this->user->secrets = $userSecrets;
                 }
 
-
+                
                 //echo "<li><span> User => " . json_encode($this->user) . "<span></li>";
 
                 break;
@@ -431,7 +437,8 @@ VALUES
                     array(),
                     array(),
                     boolval($rval['IsAdmin']),
-                    boolval($rval['isSuperAdmin'])
+                    boolval($rval['isSuperAdmin']),
+                    intval($rval['screen_type']),
                 );
             }
             return  null;
@@ -469,8 +476,8 @@ VALUES
     {
         //Password(:password), sha(:secret_key)
         $statement = "INSERT INTO $this->tblName
-        (`email`, `user_name`, `full_name`, `password`, `secret_key`, `profile_id`, `IsAdmin`, `isSuperAdmin`)
-         VALUES (:email, :user_name, :full_name, SHA2(:secret_key,224), SHA(:secret_key), :profile_id, :IsAdmin, :isSuperAdmin)";
+        (`email`, `user_name`, `full_name`, `password`, `secret_key`, `profile_id`, `IsAdmin`, `isSuperAdmin`,`screen_type`)
+         VALUES (:email, :user_name, :full_name, SHA2(:secret_key,224), SHA(:secret_key), :profile_id, :IsAdmin, :isSuperAdmin, :screen_type)";
 
         try {
             $statement = $this->db->prepare($statement);
@@ -483,6 +490,7 @@ VALUES
                 'profile_id' => $input->profile->id,
                 'IsAdmin' => $input->isAdmin,
                 'isSuperAdmin' => $input->isSuperAdmin,
+                'screen_type' => $input->screen_type,
             ));
             $input->id = intval($this->db->lastInsertId());
             $this->db->commit();
@@ -501,7 +509,8 @@ VALUES
          `full_name` =   :full_name ,
          `profile_id` =   :profile_id ,
          `IsAdmin` =   :IsAdmin ,
-         `isSuperAdmin` =   :isSuperAdmin 
+         `isSuperAdmin` =   :isSuperAdmin,
+         `screen_type` =   :screen_type 
 
          WHERE id   = :id;";
 
@@ -516,6 +525,7 @@ VALUES
                 'profile_id' => $input->profile->id,
                 'IsAdmin' => $input->isAdmin ?? false,
                 'isSuperAdmin' => $input->isSuperAdmin ?? false,
+                'screen_type' => $input->screen_type ?? 1,
             ));
             $this->db->commit();
             return $input;

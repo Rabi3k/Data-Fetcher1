@@ -9,7 +9,7 @@ use Src\TableGateways\UserProfilesGateway;
 $SaveType = "";
 $idUrl = "";
 if (isset($_GET['id'])) {
-    $lUser = UserLoginGateway::GetUserClass($_GET['id'], false)->GetUser();
+    $lUser = UserLoginGateway::GetUserClass($_GET['id'], false);
     $SaveType = "update";
     $idUrl = "id=$lUser->id";
 } else if (isset($_GET['new'])) {
@@ -44,6 +44,23 @@ if (isset($_GET['action'])) {
         // Activate user
         if (isset($_POST['userType']) && !empty($_POST['userType'])) {
             $lUser->SetUsertype(strval($_POST['userType']));
+        }
+        if (isset($_POST['screenType']) && !empty($_POST['screenType'])) {
+            //$lUser->SetUsertype(strval($_POST['userType']));
+            switch($_POST['screenType'])
+            {
+                case "OrderDisplay":
+                    $lUser->screen_type = 1;
+                    break;
+                    
+                case "ItemDisplay":
+                        $lUser->screen_type = 2;
+                        break;
+                
+                default:
+                    $lUser->screen_type = 1;
+                    break;
+            }
         }
         if (isset($_POST['inputProfile']) && !empty($_POST['inputProfile'])) {
             $lUser->profile->id = intval($_POST['inputProfile']);
@@ -83,7 +100,7 @@ if (isset($_POST['set-access'])) {
         array_push($userRelations, $ur);
     }
     $userLogin->updateUserRelations($userRelations);
-    $lUser = UserLoginGateway::GetUserClass($_GET['id'], false)->GetUser();
+    $lUser = UserLoginGateway::GetUserClass($_GET['id'], false);
 }
 ?>
 <div class="row">
@@ -150,7 +167,23 @@ if (isset($_POST['set-access'])) {
                         </div>
                     </div>
                 </fieldset>
-                <div class="form-group col-md-5"></div>
+                <fieldset class="form-group col-md-5">
+                    <label>Screen Type</label>
+                    <div class="card p-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="screenType" id="rb_ods" value="OrderDisplay">
+                            <label class="form-check-label" for="OrderDisplay">
+                            Order Display
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="screenType" id="rb_ids" value="ItemDisplay">
+                            <label class="form-check-label" for="ItemDisplay">
+                            Item Display
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
                 <div class="form-group col-md-4">
                     <label for="inputProfile">Profile</label>
                     <select id="inputProfile" name="inputProfile" class="form-control">
@@ -277,6 +310,7 @@ if (isset($_POST['set-access'])) {
     $('#inputProfile option').hide();
     $('#inputProfile option[name=<?php echo $lUser->UserType() ?>]').show();
     $("#rb_<?php echo $lUser->UserType()   ?>").prop("checked", true);
+    $("#rb_<?php echo $lUser->GetScreenType()   ?>").prop("checked", true);
     $("#inputProfile").val("<?php echo $lUser->profile->id   ?>");
     $("#userDetails").validate({
         rules: {

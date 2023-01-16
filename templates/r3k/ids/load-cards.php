@@ -16,6 +16,7 @@ $idOrders = array_column($data, 'id');
 <script>
     ActiveOrderIds = <?php echo json_encode($idOrders) ?>;
 </script>
+<center class=" bg-primary opacity-90 p2 text-light">Item Panel</center>
 <?php $allBranches = $userLogin->GetUser()->UserBranches();
 if (count($allBranches) > 1) {
 ?>

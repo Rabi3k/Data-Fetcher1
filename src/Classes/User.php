@@ -3,7 +3,7 @@
 namespace Src\Classes;
 
 use Pinq\Traversable;
-
+use Src\Enums\ScreenType;
 class User
 {
     /*  `id`, `email`, `user_name`, `full_name`, `password`, `secret_key`, `profile_id`, `restaurant_id` */
@@ -18,6 +18,7 @@ class User
     public array $restaurants;
     public array $secrets;
     public bool $isAdmin, $isSuperAdmin;
+    public int $screen_type =2;
 
     public function UserBranches(): array
     {
@@ -25,6 +26,11 @@ class User
             return $x->branches;
         })->asArray();
     }
+    public function GetScreenType(): string
+    {
+        return strtolower(ScreenType::from($this->screen_type)->name);
+    }
+    
     public function UserBranchesId(): array
     {
         return (Traversable::from($this->restaurants))->selectMany(function ($x) {
@@ -94,11 +100,13 @@ class User
         $this->full_name = "";
         $this->password = "";
         $this->secret_key = "";
+        //$this->screen_type = 2;
         $this->isAdmin = false;
         $this->isSuperAdmin = false;
         $this->profile = new Profile();
         $this->restaurants = array();
         $this->secrets = array();
+
     }
     #endregion
 
@@ -117,7 +125,8 @@ class User
         array $secrets,
         array $restaurants,
         bool $isAdmin,
-        bool $isSuperAdmin
+        bool $isSuperAdmin,
+        int $screen_type
     ) {
 
         $this->id = $id;
@@ -131,6 +140,7 @@ class User
         $this->secrets = $secrets;
         $this->isAdmin = $isAdmin;
         $this->isSuperAdmin = $isSuperAdmin;
+        $this->screen_type = $screen_type;
     }
 
     #endregion
@@ -146,8 +156,10 @@ class User
         array $secrets,
         array $restaurants,
         bool $isAdmin,
-        bool $isSuperAdmin
+        bool $isSuperAdmin,
+        int $screen_type
     ) {
+
         $user = new User();
         $user->LoadUser(
             $id,
@@ -160,7 +172,8 @@ class User
             $secrets,
             $restaurants,
             $isAdmin,
-            $isSuperAdmin
+            $isSuperAdmin,
+            $screen_type
         );
 
         return $user;

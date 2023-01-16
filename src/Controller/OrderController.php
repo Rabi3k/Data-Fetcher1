@@ -11,7 +11,8 @@ class OrderController {
     private $orderId;
     private Array $secrets;
 
-    private $requestsGateway;
+    private RequestsGateway $requestsGateway;
+    private OrdersGateway $orderGateway;
 
     public function __construct($db, $requestMethod, int $orderId=null, array $secrets=array())
     {
@@ -57,8 +58,8 @@ class OrderController {
     {
         $sDate =(new \DateTime('midnight',new \DateTimeZone('Europe/Copenhagen')));
         $eDate =(new \DateTime('tomorrow midnight',new \DateTimeZone('Europe/Copenhagen')));
-        $data = $this->orderGateway->RetriveAllOrdersByDate($sDate,$eDate,$this->secrets);
-        $idOrders = array_column($data, 'id');
+        $idOrders = $this->orderGateway->FindActiveIdsByDate($sDate,$eDate,$this->secrets);
+       // $idOrders = array_column($data, 'id');
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] = json_encode($idOrders);
         return $response;
@@ -73,17 +74,17 @@ class OrderController {
         {
             $eDate->setTime(23,59,59,999999);
         }
-        $data = $this->orderGateway->RetriveAllOrdersByDate($sDate,$eDate,$secrets);
+        $idOrders = $this->orderGateway->FindActiveIdsByDate($sDate,$eDate,$secrets);
 
       
-        $idOrders = array_column($data, 'id');
+        //$idOrders = array_column($data, 'id');
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] = json_encode($idOrders);
         return $response;
     }
     private function getAllOrdersByDate($startDate,$endDate)
     {
-        $result = $this->orderGateway->RetriveAllOrdersByDate($startDate,$endDate,$this->secrets);
+        $result = $this->orderGateway->FindByDate($startDate,$endDate,$this->secrets);
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] = json_encode($result);
         return $response;

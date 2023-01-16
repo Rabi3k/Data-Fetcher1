@@ -19,6 +19,7 @@ class ActiveOrderController {
     private array $params;
     private array $secrets;
     private $requestsGateway;
+    private $orderGateway;
 #endregion
 
 #region constructor

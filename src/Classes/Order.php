@@ -37,7 +37,7 @@ protected function LoadDataObject($data)
     public static function GetOrder($orderObj)
     {
         $order = new Order();
-        $order->LoadOrder(orderObj);
+        $order->LoadOrder($orderObj);
         return $order;
     }
 #endregion
