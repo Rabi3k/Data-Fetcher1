@@ -1,4 +1,4 @@
 <?php
 require_once("../bootstrap.php");
-
-include "../$templatePath/kds/create-card.php";
+$screentype = $userLogin->GetUser()->GetScreenType();
+include "../$templatePath/$screentype/create-card.php";
