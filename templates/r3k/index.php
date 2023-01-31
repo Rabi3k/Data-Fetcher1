@@ -16,13 +16,16 @@ include  $templatePath . '/header.php';
 
 
 
-<body class="wide  bgimg">
-  <div class="full-div opacity-min bg-secondary">
+<body class="wide  bg-dark" id="main">
+
+
+<div class="full-div opacity-min bg-secondary" >
     <?php include "$templatePath/kds/index.php" ?>
 
   </div>
 
   <?php
+  include  $templatePath . '/sidepanel.php';
   include  $templatePath . '/footer.php';
   ?>
 </body>

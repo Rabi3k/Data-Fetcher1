@@ -33,7 +33,7 @@ function updateTime() {
   const CopenhagenTime = getTimeByTimezone(now, 'Europe/Copenhagen', 'da-DK');
   //(new Date()).toLocaleString('da-DK',{timeZone:'Europe/Copenhagen',timeStyle:"long"});
 
-  $('#time').html(firstLetterCapitalize(CopenhagenDate) + "<br/>" + CopenhagenTime);
+  $('.time-text').html(firstLetterCapitalize(CopenhagenDate) + "<br/>" + CopenhagenTime);
 }
 $(function () {
   setInterval(updateTime, 1000);

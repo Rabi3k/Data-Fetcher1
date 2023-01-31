@@ -4,6 +4,7 @@ namespace Src\Classes;
 
 use Pinq\Traversable;
 use Src\Enums\ScreenType;
+
 class User
 {
     /*  `id`, `email`, `user_name`, `full_name`, `password`, `secret_key`, `profile_id`, `restaurant_id` */
@@ -18,7 +19,7 @@ class User
     public array $restaurants;
     public array $secrets;
     public bool $isAdmin, $isSuperAdmin;
-    public int $screen_type =2;
+    public int $screen_type = 2;
 
     public function UserBranches(): array
     {
@@ -30,7 +31,17 @@ class User
     {
         return strtolower(ScreenType::from($this->screen_type)->name);
     }
-    
+    public function GetScreenTypeText(): string
+    {
+        switch ($this->screen_type) {
+            case ScreenType::ODS:
+                return "Order Panel";
+            case ScreenType::IDS:
+                return "Item Panel";
+            default:
+                return "Order Panel";
+        }
+    }
     public function UserBranchesId(): array
     {
         return (Traversable::from($this->restaurants))->selectMany(function ($x) {
@@ -106,7 +117,6 @@ class User
         $this->profile = new Profile();
         $this->restaurants = array();
         $this->secrets = array();
-
     }
     #endregion
 

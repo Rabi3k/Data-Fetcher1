@@ -16,11 +16,24 @@ function setEnv($key, $value)
 
 function GetStatmentsToExecute(array $statments)
 {
-    $version = GetNearestVersion(array_keys($statments));
 
-    $idx = intval($version['index']);
-    $output = array_slice($statments, $idx + 1);
-    return  $output;
+    $retval = array();
+    foreach ($statments as $Key => $Value) {
+        // echo "{$Key} : ".getenv('VERSION')." => ".version_compare($Key, getenv('VERSION'))."<br/>";
+        if (version_compare($Key, getenv('VERSION')) > 0) {
+            //echo "=>1";
+        $retval[$Key] =  $Value;
+            
+        }
+        
+    }
+    return $retval;
+
+    // $version = GetNearestVersion(array_keys($statments));
+
+    // $idx = intval($version['index']);
+    // $output = array_slice($statments, $idx + 1);
+    // return  $output;
 }
 
 

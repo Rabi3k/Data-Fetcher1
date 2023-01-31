@@ -14,6 +14,7 @@ class RequestController
     private $reqId;
 
     private $requestsGateway;
+    private $ordersGateway;
 
     public function __construct($db, $requestMethod, $reqId)
     {

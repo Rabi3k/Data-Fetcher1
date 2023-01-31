@@ -68,11 +68,11 @@ a {
 }
 
 .bg-custom {
-  background: linear-gradient(100deg, rgb(0, 0, 0), rgb(230, 223, 16));
+  background: linear-gradient(100deg, rgb(230, 223, 16), rgb(0, 0, 0));
 }
 .btn-custom {
   color: #f6faff;
-    background: linear-gradient(100deg, rgb(0, 0, 0), rgb(230, 223, 16));
+    background: linear-gradient(100deg, rgb(230, 223, 16), rgb(0, 0, 0));
 }
 .opacity-min {
   opacity: 0.75;
@@ -131,4 +131,10 @@ a:hover {
 .btn:focus {
   outline: 0 !important;
   box-shadow: 0 0 0 0 rgb(0 0 0);
+}
+
+footer
+{
+  box-shadow: inset 0 3px 6px  rgba(0,0,0,0.16), 0 4px 6px rgba(0,0,0,0.45);
+  /* border-radius: 10px; */
 }

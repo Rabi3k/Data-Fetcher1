@@ -40,9 +40,9 @@ $bgClass = 'bg-info';
             <p>Shipment: <?php echo $row->type ?><br />
                 Payment: <?php echo $row->payment ?></p>
         </div>
-        <div class='col-12'></div>
+        <div class='col-12'>Til: <?php echo $oDate ?></div>
     </div>
-    <div id='collapse_<?php echo $row->id ?>' class='collapse card-body text-center bg-light' aria-labelledby='headingOne' data-parent='#accordion_<?php echo $row->id ?>'>
+    <div id='collapse_<?php echo $row->id ?>' class='collapse card-body text-center' aria-labelledby='headingOne' data-parent='#accordion_<?php echo $row->id ?>'>
         <ul class='list-group text-white'>
             <?php foreach ($row->items as $item) {
                 if ($item->type === "item") { ?>
@@ -75,8 +75,5 @@ $bgClass = 'bg-info';
                 <?php } ?>
             <?php } ?>
         </ul>
-    </div>
-    <div class="card-footer text-right">
-      <small class="">Til: <?php echo $oDate ?></small>
     </div>
 </div>

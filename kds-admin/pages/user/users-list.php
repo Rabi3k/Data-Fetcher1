@@ -1,13 +1,43 @@
 <?php
 $users = $userLogin->GetAllUsers();
+
+
 ?>
     <div class="row">
         <div class="col-4"></div>
         <div class="col-4"></div>
         <div class="col-4">
+            <a class="btn btn-primary float-right" href="#print" role="button"><i data-feather='printer'></i><span> print</span></a>    
             <a class="btn btn-primary float-right" href="?new=" role="button"><i data-feather='plus-circle'></i><span> Ny</span></a>
         </div>
     </div>
+    <script>
+var hash = window.location.hash, //get the hash from url
+    cleanhash = hash.replace("#", ""); //remove the #
+    //alert(cleanhash);
+</script>
+
+<?php
+$hash = "<script>document.writeln(cleanhash);</script>";
+echo $hash;
+?>
+    <?php 
+    
+    if($_GET['fragment'])
+    {
+        echo $_GET['fragment']; //This variable contains the fragment
+    }
+
+    $url=parse_url($_SERVER["REQUEST_URI"]);
+    if($url['fragment'])
+    {
+        echo $url["fragment"]; //This variable contains the fragment
+    }else
+    {
+        var_dump($url);
+    }
+ //This variable contains the fragment
+    ?>
 <hr/>
 <div class="table-responsive ">
     <table class="table table-bordered table-hover" id="tblUsers">

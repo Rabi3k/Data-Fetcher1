@@ -275,6 +275,11 @@ class OrdersGateway extends DbObject
         `data` = :data;";
 
         try {
+            $order = json_decode($data);
+            foreach ($order->items as $item) {
+                # code...
+                $item->completed = ($order->ready != true && $item->completed != true)?false:true;
+            }
             $statement = $this->getDbConnection()->prepare($statement);
             $this->getDbConnection()->beginTransaction();
             $statement->execute(array(
