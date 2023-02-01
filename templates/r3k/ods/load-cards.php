@@ -121,9 +121,7 @@ $idOrders = array_column($data, 'id');
     <div class="carousel-inner">
         <?php
         foreach ($data as $key => $row) { ?>
-            <div class="carousel-item" data-interval="<?php echo $key ?>">
                 <?php include "create-card.php"; ?>
-            </div>
         <?php } ?>
     </div>
     <div class="controls-container"> <a class="btn-prev" href="#carouselExampleInterval" role="button" data-slide="prev">
