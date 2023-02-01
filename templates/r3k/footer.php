@@ -17,6 +17,7 @@
     </div>
   </div>
 </footer>
+<script type="text/javascript" src="<?php echo $rootpath . "/" . $templatePath ?>/js/post-script.min.js"></script>
 <script>
   updateTime();
 </script>

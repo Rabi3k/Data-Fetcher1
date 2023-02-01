@@ -46,7 +46,6 @@
     </script>
     <script type="text/javascript" src="<?php echo $rootpath . "/" . $templatePath ?>/js/playsound.min.js"></script>
     <script type="text/javascript" src="<?php echo $rootpath . "/" . $templatePath ?>/js/script.min.js"></script>
-    <script type="text/javascript" src="<?php echo $rootpath . "/" . $templatePath ?>/js/jquery.bcSwipe.min.js"></script>
 
 
 </head>

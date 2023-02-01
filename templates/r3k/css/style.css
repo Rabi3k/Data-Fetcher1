@@ -70,10 +70,12 @@ a {
 .bg-custom {
   background: linear-gradient(100deg, rgb(230, 223, 16), rgb(0, 0, 0));
 }
+
 .btn-custom {
   color: #f6faff;
-    background: linear-gradient(100deg, rgb(230, 223, 16), rgb(0, 0, 0));
+  background: linear-gradient(100deg, rgb(230, 223, 16), rgb(0, 0, 0));
 }
+
 .opacity-min {
   opacity: 0.75;
 }
@@ -133,8 +135,81 @@ a:hover {
   box-shadow: 0 0 0 0 rgb(0 0 0);
 }
 
-footer
-{
-  box-shadow: inset 0 3px 6px  rgba(0,0,0,0.16), 0 4px 6px rgba(0,0,0,0.45);
+footer {
+  box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.16), 0 4px 6px rgba(0, 0, 0, 0.45);
   /* border-radius: 10px; */
+}
+
+.h-90 {
+  height: 90vh;
+}
+
+.carousel-inner {
+  padding: 1em;
+}
+
+.card {
+  margin: 0 0.5em;
+  box-shadow: 2px 6px 8px 0 rgba(22, 22, 26, 0.18);
+  border: none;
+}
+
+.btn-next,
+.btn-prev {
+  width: 5vh;
+  height: 5vh;
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.controls-container {
+  display: flex;
+  position: absolute;
+  top: 85%;
+
+  left: 48vw
+}
+
+@media (min-width: 1260px) {
+  .carousel-item {
+    margin-right: 0;
+    flex: 0 0 33.333333%;
+    display: block;
+  }
+
+  .carousel-inner {
+    display: flex;
+  }
+}
+
+@media (max-width: 1260px) {
+  .carousel-item {
+    margin-right: 0;
+    flex: 0 0 50%;
+    display: block;
+  }
+
+  .carousel-inner {
+    display: flex;
+  }
+
+  .controls-container {
+    top: 80vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .carousel-item {
+    margin-right: 0;
+    flex: 0 0 100%;
+    display: block;
+  }
+
+  .carousel-inner {
+    display: flex;
+  }
+
+  .controls-container {
+    top: 75vh;
+  }
 }

@@ -110,6 +110,11 @@ function myFunction() {
       });
     }
     ActiveOrderIds = r;
+    if(carouselWidth)
+    {
+      carouselWidth = $(".carousel-inner")[0].scrollWidth;
+      cardWidth = $(".carousel-item").width();
+    }
   });
 
 }
