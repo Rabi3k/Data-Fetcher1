@@ -2,6 +2,7 @@
 
 use Src\TableGateways\OrdersGateway;
 use Src\Classes\Order;
+
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
     $orderstGateway = new OrdersGateway($dbConnection);
@@ -25,14 +26,17 @@ $today->setTimezone(new \DateTimeZone($row->restaurant_timezone));
 $bgClass = 'bg-info';
 
 ?>
-<div id='accordion_<?php echo $row->id ?>' tag="<?php echo $row->restaurant_id ?>" class='card opacity-90 <?php echo $bgClass ?>'>
+<div id='accordion_<?php echo $row->id ?>' tag="<?php echo $row->restaurant_id ?>" class='card opacity-90 '>
     <!-- <input type='hidden' id='bgClass_<?php echo $row->id ?>' value='<?php echo $bgClass ?>'/> -->
-    <input type='hidden' name="OrderDate" id='OrderDate_<?php echo $row->id ?>' value='<?php echo $jDate ?>' />
+    
     <!-- <input type='hidden' id='printValue' value='$printValue'/> -->
-    <button class='btPrint bg-secondary text-light p-2' id='print_<?php echo $row->id ?>' onclick='<?php echo "PrintElem(" . $row->id . ")" ?>'><i class='fa fa-print' aria-hidden='true'></i></button>
 
-    <div class='card-header row ' data-toggle='collapse' data-target='#collapse_<?php echo $row->id ?>' aria-expanded='true' aria-controls='collapse_<?php echo $row->id ?>'>
-        <div class='col-6'>
+
+    <div class='card-header row '  aria-expanded='true' aria-controls='collapse_<?php echo $row->id ?>'>
+        <div class='col-1 <?php echo $bgClass ?>'>
+        <input type='hidden' name="OrderDate" id='OrderDate_<?php echo $row->id ?>' value='<?php echo $jDate ?>' />
+        </div>
+        <div class='col-5'>
             <span>Id: <?php echo $row->id ?><br />
                 Name: <?php echo $row->client_first_name . " " . $row->client_last_name; ?></span>
         </div>
@@ -42,7 +46,7 @@ $bgClass = 'bg-info';
         </div>
         <div class='col-12'></div>
     </div>
-    <div id='collapse_<?php echo $row->id ?>' class='collapse card-body text-center bg-light' aria-labelledby='headingOne' data-parent='#accordion_<?php echo $row->id ?>'>
+    <div id='collapse_<?php echo $row->id ?>' class=' card-body text-center bg-light' >
         <ul class='list-group text-white'>
             <?php foreach ($row->items as $item) {
                 if ($item->type === "item") { ?>
@@ -76,7 +80,14 @@ $bgClass = 'bg-info';
             <?php } ?>
         </ul>
     </div>
-    <div class="card-footer text-right">
-      <small class="">Til: <?php echo $oDate ?></small>
+    <div class="card-footer">
+        <div class="row">
+            <div class="col-6">
+                <button class='btn-sm bg-secondary text-light p-2' id='print_<?php echo $row->id ?>' onclick='<?php echo "PrintElem(" . $row->id . ")" ?>'><i class='fa fa-print' aria-hidden='true'></i></button>
+            </div>
+            <div class="col-6 text-right">
+                <small class="">Til: <?php echo $oDate ?></small>
+            </div>
+        </div>
     </div>
 </div>

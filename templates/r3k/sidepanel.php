@@ -9,7 +9,7 @@
     overflow-x: hidden;
     transition: 0.5s;
     padding-top: 60px;
-    box-shadow: inset 0 3px 6px rgba(0,0,0,0.16), 0 4px 6px rgba(0,0,0,0.45);
+    box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.16), 0 4px 6px rgba(0, 0, 0, 0.45);
   }
 
   .sidebar a {
@@ -62,7 +62,8 @@
     }
   }
 </style>
-<?php 
+<?php
+
 $user = $userLogin->GetUser();
 $screentypeText = $user->GetScreenTypeText();
 
@@ -70,8 +71,8 @@ $screentypeText = $user->GetScreenTypeText();
 <div id="mySidebar" class="sidebar opacity-min">
   <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">×</a>
   <center class="bg-primary opacity-70 text-center text-light">
-   <?php echo $screentypeText ?> 
-</center>
+    <?php echo $screentypeText ?>
+  </center>
   <section class="branches">
     <?php $allBranches = $userLogin->GetUser()->UserBranches();
     if (count($allBranches) > 1) {
@@ -93,8 +94,8 @@ $screentypeText = $user->GetScreenTypeText();
   <hr />
   <section class="Menu">
     <ul class="nav">
-      <?php echo $user->isSuperAdmin ? '<li class="nav-item"><a href="/admin">Admin</a></li>':"" ;
-       echo $user->isAdmin ? '<li class="nav-item"><a href="/dash">Dashboard</a></li>':""; ?>
+      <?php echo $user->isSuperAdmin ? '<li class="nav-item"><a href="/admin">Admin</a></li>' : "";
+      echo $user->isAdmin ? '<li class="nav-item"><a href="/dash">Dashboard</a></li>' : ""; ?>
       <li class="nav-item">
         <a class="nav-link" href="<?php echo $rootpath ?>/logout.php">logout</a>
       </li>

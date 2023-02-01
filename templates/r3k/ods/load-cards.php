@@ -21,14 +21,36 @@ $idOrders = array_column($data, 'id');
 </center> -->
 
 
-<div class="card-columns" id="orderCards">
+<!-- <div class="card-columns" id="orderCards">
 
 
 
     <?php
+    //foreach ($data as $row) {
+        //include "create-card.php";
+    //} ?>
+</div> -->
+<style>
+.card {
+    min-width: 30em;
+    margin-right: 5px;
+}
+.overflow-div-x
+{
+overflow-x: auto !important;
+height: -webkit-fill-available;
+}
+.h-90 {
+    height: 90vh;
+}
+</style>
+<div class="container-fluid py-2 h-90">
+    <div class="d-flex flex-row flex-nowrap overflow-div-x" id="orderCards">
+    <?php
     foreach ($data as $row) {
         include "create-card.php";
     } ?>
+    </div>
 </div>
 <script>
     $(document).ready(function() {

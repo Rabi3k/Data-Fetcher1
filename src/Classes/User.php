@@ -19,7 +19,7 @@ class User
     public array $restaurants;
     public array $secrets;
     public bool $isAdmin, $isSuperAdmin;
-    public int $screen_type = 2;
+    public int $screen_type = 1;
 
     public function UserBranches(): array
     {
