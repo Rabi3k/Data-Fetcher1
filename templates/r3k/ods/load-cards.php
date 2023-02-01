@@ -110,6 +110,7 @@ $idOrders = array_column($data, 'id');
         .carousel-inner {
             display: flex;
         }
+
         .controls-container {
             top: 75vh;
         }
@@ -121,7 +122,7 @@ $idOrders = array_column($data, 'id');
     <div class="carousel-inner">
         <?php
         foreach ($data as $key => $row) { ?>
-                <?php include "create-card.php"; ?>
+            <?php include "create-card.php"; ?>
         <?php } ?>
     </div>
     <div class="controls-container"> <a class="btn-prev" href="#carouselExampleInterval" role="button" data-slide="prev">
@@ -148,12 +149,17 @@ $idOrders = array_column($data, 'id');
                 $("div[tag=" + tag + "]").hide()
             }
         });
-
+        $(document).on('swiperight','#carouselExampleInterval', function(e) {
+            $("#carouselExampleInterval .btn-prev").click();
+        });
+        $(document).on("swipeleft","#carouselExampleInterval", function(e) {
+            $("#carouselExampleInterval .btn-next").click();
+        });
+       
     });
     var multipleCardCarousel = document.querySelector(
         "#carouselExampleInterval"
     );
-
 
     var carouselWidth = $(".carousel-inner")[0].scrollWidth;
     var cardWidth = $(".carousel-item").width();
@@ -178,4 +184,22 @@ $idOrders = array_column($data, 'id');
             );
         }
     });
+    $('#carouselExampleInterval').bcSwipe({ threshold: 50 });
+    // $('.carousel').on('touchstart', function(event){
+    // const xClick = event.originalEvent.touches[0].pageX;
+    // $(this).one('touchmove', function(event){
+    //     const xMove = event.originalEvent.touches[0].pageX;
+    //     const sensitivityInPx = 5;
+
+    //     if( Math.floor(xClick - xMove) > sensitivityInPx ){
+    //         $(this).carousel('next');
+    //     }
+    //     else if( Math.floor(xClick - xMove) < -sensitivityInPx ){
+    //         $(this).carousel('prev');
+    //     }
+    // });
+    // $(this).on('touchend', function(){
+    //     $(this).off('touchmove');
+    // });
+    //});
 </script>
