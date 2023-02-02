@@ -19,7 +19,8 @@
     <link rel="stylesheet" href="<?php echo "/$templatePath" ?>/css/style.min.css">
 
     <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> -->
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
 
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
@@ -45,7 +46,7 @@
         var userSecrets = JSON.parse('<?php echo $userLogin->GetSecrets() ?>')
     </script>
     <script type="text/javascript" src="<?php echo $rootpath . "/" . $templatePath ?>/js/playsound.min.js"></script>
-    <script type="text/javascript" src="<?php echo $rootpath . "/" . $templatePath ?>/js/script.min.js"></script>
+    <script type="text/javascript" src="<?php echo $rootpath . "/" . $templatePath ?>/js/script.js"></script>
 
 
 </head>

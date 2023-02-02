@@ -12,26 +12,26 @@ $(document).ready(function () {
     });
 });
 
-var carouselWidth = $(".carousel-inner")[0].scrollWidth;
-var cardWidth = $(".carousel-item").width();
-var scrollPosition = 0;
-$("#carouselExampleInterval .btn-next").on("click", function () {
-    if (scrollPosition < carouselWidth - cardWidth * 4) {
-        scrollPosition += cardWidth;
-        $("#carouselExampleInterval .carousel-inner").animate({
-            scrollLeft: scrollPosition
-        },
-            600
-        );
-    }
-});
-$("#carouselExampleInterval .btn-prev").on("click", function () {
-    if (scrollPosition > 0) {
-        scrollPosition -= cardWidth;
-        $("#carouselExampleInterval .carousel-inner").animate({
-            scrollLeft: scrollPosition
-        },
-            600
-        );
-    }
-});
+// var carouselWidth = $(".carousel-inner")[0].scrollWidth;
+// var cardWidth = $(".carousel-item").width();
+// var scrollPosition = 0;
+// $("#carouselExampleInterval .btn-next").on("click", function () {
+//     if (scrollPosition < carouselWidth - cardWidth * 4) {
+//         scrollPosition += cardWidth;
+//         $("#carouselExampleInterval .carousel-inner").animate({
+//             scrollLeft: scrollPosition
+//         },
+//             600
+//         );
+//     }
+// });
+// $("#carouselExampleInterval .btn-prev").on("click", function () {
+//     if (scrollPosition > 0) {
+//         scrollPosition -= cardWidth;
+//         $("#carouselExampleInterval .carousel-inner").animate({
+//             scrollLeft: scrollPosition
+//         },
+//             600
+//         );
+//     }
+// });

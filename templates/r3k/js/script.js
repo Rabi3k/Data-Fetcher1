@@ -34,6 +34,47 @@ function updateTime() {
   //(new Date()).toLocaleString('da-DK',{timeZone:'Europe/Copenhagen',timeStyle:"long"});
 
   $('.time-text').html(firstLetterCapitalize(CopenhagenDate) + "<br/>" + CopenhagenTime);
+var nowD = new Date(getDateTimeByTimezone(now, 'Europe/Copenhagen', 'da-DK'));
+  var later = new Date()
+  later.setMinutes(now.getMinutes() + 10);
+
+  $("input[name='OrderDate']").each(function () {
+    var oDate = new Date($(this).val());
+    var parent = $(this).parents('.card');
+    var parentHeader = $(this).parents('.card-header');
+    var timeRTxt = $(parent).find('.time-remaining');
+    var timeR = (oDate.getTime()-now.getTime() )/1000;
+    if (now > oDate) { timeR = (now.getTime()-oDate.getTime() )/1000;}
+    
+    const hours = Math.floor(timeR / 3600);
+    timeR = timeR - hours * 3600;
+    const minutes = Math.floor(timeR / 60);
+    const seconds = Math.floor(timeR - minutes * 60);
+    
+    var t = "";
+    if (hours > 0) {
+      t += hours +"h";
+    }
+    if (minutes > 0) {
+      t += minutes+"m";
+    }
+    if (seconds > 0) {
+      t += seconds+"s";
+    }
+
+    if (now > oDate) {
+      $(parentHeader).toggleClass('bg-danger text-white');
+      $(timeRTxt).text("+"+t);
+    }
+    else if (later > oDate) {
+      $(parentHeader).toggleClass('bg-warning');
+      $(timeRTxt).text(t);
+    }
+    else {
+      $(timeRTxt).text(t);
+    }
+
+  })
 }
 $(function () {
   setInterval(updateTime, 1000);
@@ -52,20 +93,10 @@ function getdatestr(date, seperator) {
 function myFunction() {
   //console.log('Executed!');
   var now = new Date();
-  var later = new Date()
-  later.setMinutes(now.getMinutes() + 10);
 
 
-  $("input[name='OrderDate']").each(function () {
-    var oDate = new Date($(this).val());
-    if (now > oDate) {
-      $($(this).parent()).toggleClass('bg-danger text-white');
-    }
-    else if (later > oDate) {
-      $($(this).parent()).toggleClass('bg-warning');
-    }
 
-  })
+
   var s = getdatestr(now, '');
   //console.log(userSecrets);
   var secrets = JSON.stringify(userSecrets);
@@ -110,8 +141,7 @@ function myFunction() {
       });
     }
     ActiveOrderIds = r;
-    if(carouselWidth)
-    {
+    if (carouselWidth) {
       carouselWidth = $(".carousel-inner")[0].scrollWidth;
       cardWidth = $(".carousel-item").width();
     }
