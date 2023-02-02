@@ -165,7 +165,7 @@ footer {
 .controls-container {
   display: flex;
   position: absolute;
-  top: 85%;
+  bottom: 10vh;
 
   left: 48vw
 }
@@ -194,7 +194,7 @@ footer {
   }
 
   .controls-container {
-    top: 80vh;
+    bottom: 20vh;
   }
 }
 
@@ -210,6 +210,6 @@ footer {
   }
 
   .controls-container {
-    top: 75vh;
+    bottom: 20vh;
   }
 }
