@@ -12,6 +12,9 @@ $(document).ready(function () {
     });
 });
 var selectedSlide = null;
+$('#print-btn').on("click",function(e){
+    PrintElem(selectedSlide,e);
+});
 $('.cards-wrapper').on('click', function () {
     //alert($(this).attr('tag'))
     if (selectedSlide === $(this).attr('tag')) {
@@ -21,10 +24,115 @@ $('.cards-wrapper').on('click', function () {
         selectedSlide = $(this).attr('tag');
     }
     if (selectedSlide === null) {
-        alert('bottombar is not showed => card unselected');
+        closeBottomBar();
     } else {
-        alert('bottombar is showed => card #'+selectedSlide);
+        openBottomBar();
     }
+});
+function openBottomBar()
+{
+    $('.bottom-bar').css("bottom",$("footer").height());
+    $('.bottom-bar').collapse('show')
+
+    $('#main-swiper').addClass('h-80');
+    $('#main-swiper').removeClass('h-90');
+}
+function closeBottomBar()
+{
+    $('.bottom-bar').collapse('hide')
+    $('#main-swiper').addClass('h-90');
+    $('#main-swiper').removeClass('h-80');
+}
+
+var navStatus = false;
+
+function toogleNav() {
+  if (navStatus === false) {
+    openNav();
+  } else {
+    closeNav();
+  }
+}
+
+function openNav() {
+  document.getElementById("mySidebar").style.width = "250px";
+  document.getElementById("main").style.marginLeft = "250px";
+  navStatus = true;
+
+}
+
+function closeNav() {
+  document.getElementById("mySidebar").style.width = "0";
+  document.getElementById("main").style.marginLeft = "0";
+  navStatus = false;
+
+}
+var swiperCar = new Swiper('.swiper', {
+    pagination: {
+        el: '.swiper-pagination',
+    },
+    slidesPerGroup: 1,
+    spaceBetween: 10,
+    slidesPerView: 1,
+    slidesPerColumn: 1,
+    cssMode: false,
+
+
+    // Breakpoints
+   breakpoints: {
+    // when window width is >= 320px
+    
+    850: {
+      slidesPerView: 2,
+      spaceBetween: 10
+    },
+    // when window width is >= 480px
+    1296: {
+      slidesPerView: 3,
+      spaceBetween: 10
+    },
+    // when window width is >= 640px
+    1680: {
+      slidesPerView: 4,
+      spaceBetween: 10
+    }
+   },
+
+
+    // To support iOS's swipe-to-go-back gesture (when being used in-app).
+    edgeSwipeDetection: false,
+    edgeSwipeThreshold: 20,
+
+    effect: 'slide',
+    // Unique Navigation Elements
+    uniqueNavElements: true,
+
+    // Resistance
+    resistance: true,
+    resistanceRatio: 0.85,
+
+     // Round length
+    roundLengths:false,
+
+    // Options for touch events
+    touchRatio: 1,
+    touchAngle: 45,
+    simulateTouch: true,
+    shortSwipes: true,
+    longSwipes: true,
+    longSwipesRatio: 0.5,
+    longSwipesMs: 300,
+    followFinger: true,
+    allowTouchMove: true,
+    threshold: 0,
+    touchMoveStopPropagation: false,
+    touchStartPreventDefault: true,
+    touchStartForcePreventDefault: false,
+    touchReleaseOnEdges: false,
+
+    // Use ResizeObserver (if supported by browser) on swiper container to detect container resize (instead of watching for window resize)
+resizeObserver:true,
+
 });
 
 // var carouselWidth = $(".carousel-inner")[0].scrollWidth;

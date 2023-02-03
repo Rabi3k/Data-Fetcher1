@@ -40,7 +40,8 @@ $bgClass = 'bg-info';
                         <span><?php echo $row->type ?></span>
                     </div>
                     <div class='col-6 text-right'>
-                        <span>Payment: <?php echo $row->payment ?></span>
+                        <!-- <span>Payment: <?php //echo $row->payment ?></span> -->
+                        <span><?php echo $OrderDate->format('h:i a'); ?></span>
                     </div>
                     <div class='col-12 text-right'>
                         <span>Kunder: <?php echo $row->client_first_name . " " . $row->client_last_name; ?></span>
@@ -49,9 +50,9 @@ $bgClass = 'bg-info';
             </div>
             <div id='collapse_<?php echo $row->id ?>' class=' card-body bg-white'>
                 <div class="d-flex justify-content-center">
-                    <button class='btn-sm rounded-circle' id='print_<?php echo $row->id ?>' onclick='<?php echo "PrintElem(" . $row->id . ",event)" ?>'>
+                    <!-- <button class='btn-md rounded-circle' id='print_<?php //echo $row->id ?>' onclick='<?php //echo "PrintElem(" . $row->id . ",event)" ?>'>
                         <i class='h3 fa fa-print' aria-hidden='true'></i>
-                    </button>
+                    </button> -->
                 </div>
                 <ul class='list-group list-group-flush text-dark'>
                     <?php foreach ($row->items as $item) {

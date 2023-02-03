@@ -90,6 +90,9 @@ function updateTime() {
 }
 $(function () {
   setInterval(updateTime, 1000);
+  var interval = setInterval(function() {
+    myFunction();
+  }, 5 * 1000);
 });
 function getdatestr(date, seperator) {
   const year = date.getFullYear();
