@@ -1,6 +1,7 @@
 var ActiveOrderIds = [];
 
-function PrintElem(id) {
+function PrintElem(id,event) {
+  event.stopPropagation();
   var mywindow = window.open('/order/' + id, 'PRINT');
   mywindow.document.close(); // necessary for IE >= 10
   mywindow.focus(); // necessary for IE >= 10
@@ -34,7 +35,6 @@ function updateTime() {
   //(new Date()).toLocaleString('da-DK',{timeZone:'Europe/Copenhagen',timeStyle:"long"});
 
   $('.time-text').html(firstLetterCapitalize(CopenhagenDate) + "<br/>" + CopenhagenTime);
-  var nowD = new Date(getDateTimeByTimezone(now, 'Europe/Copenhagen', 'da-DK'));
   var later = new Date()
   later.setMinutes(now.getMinutes() + 10);
 
@@ -63,11 +63,23 @@ function updateTime() {
     }
 
     if (now > oDate) {
-      $(parentHeader).toggleClass('bg-danger text-white');
+      if(!$(parentHeader).hasClass('bg-danger'))
+      {
+        $(parentHeader).removeClass('bg-warning');
+        $(parentHeader).removeClass('bg-info');
+        $(parentHeader).addClass('bg-danger text-white');
+        $(timeRTxt).addClass('text-danger');
+      }
+      
       $(timeRTxt).text("+" + t);
     }
     else if (later > oDate) {
       $(parentHeader).toggleClass('bg-warning');
+      if(!$(parentHeader).hasClass('bg-warning'))
+      {
+        $(parentHeader).addClass('bg-warning text-white');
+        $(timeRTxt).addClass('text-warning');
+      }
       $(timeRTxt).text(t);
     }
     else {

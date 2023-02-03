@@ -11,6 +11,21 @@ $(document).ready(function () {
         }
     });
 });
+var selectedSlide = null;
+$('.cards-wrapper').on('click', function () {
+    //alert($(this).attr('tag'))
+    if (selectedSlide === $(this).attr('tag')) {
+        selectedSlide = null;
+    }
+    else {
+        selectedSlide = $(this).attr('tag');
+    }
+    if (selectedSlide === null) {
+        alert('bottombar is not showed => card unselected');
+    } else {
+        alert('bottombar is showed => card #'+selectedSlide);
+    }
+});
 
 // var carouselWidth = $(".carousel-inner")[0].scrollWidth;
 // var cardWidth = $(".carousel-item").width();
