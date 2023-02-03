@@ -29,15 +29,9 @@ $bgClass = 'bg-info';
 <div id='accordion_<?php echo $row->id ?>' class="swiper-slide" tag="<?php echo $row->restaurant_id ?>">
     <div class="cards-wrapper">
         <div class='card opacity-90'>
-            <!-- <input type='hidden' id='bgClass_<?php echo $row->id ?>' value='<?php echo $bgClass ?>'/> -->
-
-            <!-- <input type='hidden' id='printValue' value='$printValue'/> -->
-
-
             <div class='card-header <?php echo $bgClass ?>' aria-expanded='true' aria-controls='collapse_<?php echo $row->id ?>'>
                 <input type='hidden' name="OrderDate" id='OrderDate_<?php echo $row->id ?>' value='<?php echo $jDate ?>' />
                 <input type='hidden' name="OrderStatus" id='OrderStatus_<?php echo $row->id ?>' value='<?php echo $bgClass ?>' />
-
                 <div class="row">
 
                     <div class='col-5 '>
