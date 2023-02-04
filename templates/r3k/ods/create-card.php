@@ -23,6 +23,32 @@ $today = new \DateTime();
 $today->setTimezone(new \DateTimeZone($row->restaurant_timezone));
 $bgClass = 'bg-info';
 
+$orderTypeIcon = "<span></span>";
+$orderTypeText = "<span></span>";
+switch ($row->type) {
+    case 'pickup':
+        $orderTypeIcon = '<i class="h3 fa fa-shopping-basket"></i>';
+        $orderTypeText = 'Afhentning';
+        break;
+    case 'delivery':
+        $orderTypeIcon = '<i class="h3 fa fa-truck"></i>';
+        $orderTypeText = 'Levering';
+        break;
+    case 'order_ahead':
+        $orderTypeIcon = '<i class="h3 fa fa-coffee"></i>';
+        $orderTypeText = 'Bordreservation';
+        break;
+    case 'table_reservation':
+        $orderTypeIcon = '<i class="h3 fa fa-coffee"></i>';
+        $orderTypeText = 'Bordreservation';
+        break;
+    case 'dine_in':
+        $orderTypeIcon = '<i class="h3 fa fa-user"></i>';
+        $orderTypeText = 'Spise i';
+        break;
+    default:
+        break;
+}
 ?>
 <div id='accordion_<?php echo $row->id ?>' class="swiper-slide" tag="<?php echo $row->restaurant_id ?>">
     <div class="cards-wrapper" tag="<?php echo $row->id ?>">
@@ -31,16 +57,18 @@ $bgClass = 'bg-info';
                 <input type='hidden' name="OrderDate" id='OrderDate_<?php echo $row->id ?>' value='<?php echo $jDate ?>' />
                 <input type='hidden' name="OrderStatus" id='OrderStatus_<?php echo $row->id ?>' value='<?php echo $bgClass ?>' />
                 <div class="row">
-                    <div class='col-2 '>
-                        <span class="h2">
-                            <i class="fa fa-shopping-basket"></i>
-                        </span>
+                    <div class='col-1 '>
+
+                        <?php echo $orderTypeIcon ?>
                     </div>
-                    <div class='col-4 '>
-                        <span><?php echo $row->type ?></span>
+                    <div class='col-6 '>
+                        <span><?php echo $orderTypeText ?></span><br/>
+                        <span>Gæster:<?php echo $row->persons ?></span>
                     </div>
-                    <div class='col-6 text-right'>
-                        <!-- <span>Payment: <?php //echo $row->payment ?></span> -->
+
+                    <div class='col-5 text-right'>
+                        <!-- <span>Payment: <?php //echo $row->payment 
+                                            ?></span> -->
                         <span><?php echo $OrderDate->format('h:i a'); ?></span>
                     </div>
                     <div class='col-12 text-right'>
@@ -49,13 +77,24 @@ $bgClass = 'bg-info';
                 </div>
             </div>
             <div id='collapse_<?php echo $row->id ?>' class=' card-body bg-white'>
-                <div class="d-flex justify-content-center">
-                    <!-- <button class='btn-md rounded-circle' id='print_<?php //echo $row->id ?>' onclick='<?php //echo "PrintElem(" . $row->id . ",event)" ?>'>
-                        <i class='h3 fa fa-print' aria-hidden='true'></i>
-                    </button> -->
-                </div>
+                
                 <ul class='list-group list-group-flush text-dark'>
-                    <?php foreach ($row->items as $item) {
+                    <?php
+                    if ($row->instructions != '') { ?>
+                        <li class='list-group-item'>
+                            <div class="row d-flex justify-content-center">
+                                <div class="12"><span class="text-danger"><strong>=! <?php echo $row->instructions ?> !=</strong></span></div>
+                            </div>
+                        </li>
+                        <?php }
+                    if (count($row->items) == 0) { ?>
+                        <li class='list-group-item'>
+                            <div class="row d-flex justify-content-center">
+                                <div class="12"><span class="text-dark"><strong>Ingen ordre endnu!</strong></span></div>
+                            </div>
+                        </li>
+                        <?php }
+                    foreach ($row->items as $item) {
                         if ($item->type === "item") { ?>
                             <li class='list-group-item'>
                                 <div class="row">
