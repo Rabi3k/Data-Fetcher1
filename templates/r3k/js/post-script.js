@@ -1,15 +1,26 @@
 
 $(document).ready(function () {
-    $(".btn-branch").click(function () {
-        var tag = $(this).attr("tag");
-        if ($(this).attr("aria-pressed") === 'false') {
-            //show cards
-            $("div[tag=" + tag + "]").show()
-        } else {
-            //hide cards
-            $("div[tag=" + tag + "]").hide()
-        }
-    });
+    
+});
+$(".btn-branch").click(function () {
+  var tag = $(this).attr("tag");
+  if ($(this).attr("aria-pressed") === 'false') {
+      //show cards
+      $("div[tag=" + tag + "]").show()
+  } else {
+      //hide cards
+      $("div[tag=" + tag + "]").hide()
+  }
+});
+$(".btn-type").click(function () {
+  var tag = $(this).attr("tag");
+  if ($(this).attr("aria-pressed") === 'false') {
+      //show cards
+      $("div[order-type=" + tag + "]").show()
+  } else {
+      //hide cards
+      $("div[order-type=" + tag + "]").hide()
+  }
 });
 var selectedSlide = null;
 $('#print-btn').on("click",function(e){
@@ -31,17 +42,17 @@ $('.cards-wrapper').on('click', function () {
 });
 function openBottomBar()
 {
-    $('.bottom-bar').css("bottom",$("footer").height());
+    $('.bottom-bar').css("bottom",$("footer").height()+$("header").height());
     $('.bottom-bar').collapse('show')
 
-    $('#main-swiper').addClass('h-80');
-    $('#main-swiper').removeClass('h-90');
+    //$('#main-swiper').addClass('h-80');
+    //$('#main-swiper').removeClass('h-90');
 }
 function closeBottomBar()
 {
     $('.bottom-bar').collapse('hide')
-    $('#main-swiper').addClass('h-90');
-    $('#main-swiper').removeClass('h-80');
+    //$('#main-swiper').addClass('h-90');
+    //$('#main-swiper').removeClass('h-80');
 }
 
 var navStatus = false;

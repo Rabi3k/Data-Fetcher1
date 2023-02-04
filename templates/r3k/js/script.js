@@ -1,6 +1,6 @@
 var ActiveOrderIds = [];
 
-function PrintElem(id,event) {
+function PrintElem(id, event) {
   event.stopPropagation();
   var mywindow = window.open('/order/' + id, 'PRINT');
   mywindow.document.close(); // necessary for IE >= 10
@@ -63,20 +63,18 @@ function updateTime() {
     }
 
     if (now > oDate) {
-      if(!$(parentHeader).hasClass('bg-danger'))
-      {
+      if (!$(parentHeader).hasClass('bg-danger')) {
         $(parentHeader).removeClass('bg-warning');
         $(parentHeader).removeClass('bg-info');
         $(parentHeader).addClass('bg-danger');
         $(timeRTxt).addClass('text-danger');
       }
-      
+
       $(timeRTxt).text("+" + t);
     }
     else if (later > oDate) {
       $(parentHeader).toggleClass('bg-warning');
-      if(!$(parentHeader).hasClass('bg-warning'))
-      {
+      if (!$(parentHeader).hasClass('bg-warning')) {
         $(parentHeader).addClass('bg-warning');
         $(timeRTxt).addClass('text-warning');
       }
@@ -88,10 +86,25 @@ function updateTime() {
 
   })
 }
+function updateOrderTypeBtn()
+{
+  $(".btn-type").each
+  (function () {
+    $(this).children(".type-count").text("(" + $("div[order-type=" + $(this).attr("tag") + "]").length + ")");
+    if ($("div[order-type=" + $(this).attr("tag") + "]").length > 0) {
+      $(this).prop('hidden', false);
+    }
+    else {
+      $(this).prop('hidden', true);
+    }
+  });
+}
 $(function () {
+  updateOrderTypeBtn();
   setInterval(updateTime, 1000);
-  var interval = setInterval(function() {
+  var interval = setInterval(function () {
     myFunction();
+    updateOrderTypeBtn();
   }, 5 * 1000);
 });
 function getdatestr(date, seperator) {
@@ -126,8 +139,8 @@ function myFunction() {
     let toRemove = ActiveOrderIds.filter(x => !r.includes(x));
     let toAdd = r.filter(x => !ActiveOrderIds.includes(x));
     if (toRemove && toRemove.length > 0) {
-      
-      toRemove.forEach(x => { 
+
+      toRemove.forEach(x => {
         let index = ActiveOrderIds.findIndex(object => {
           return object === x;
         });
@@ -150,7 +163,7 @@ function myFunction() {
               //$('#orderCards').prepend(resp);
               break;
             case r.length - 1:
-              swiperCar.appendSlide( htmlObject);
+              swiperCar.appendSlide(htmlObject);
               //$('#orderCards').append(resp);
               break;
             default:
@@ -171,6 +184,7 @@ function myFunction() {
       });
     }
     ActiveOrderIds = r;
+
     // if (carouselWidth) {
     //   carouselWidth = $(".carousel-inner")[0].scrollWidth;
     //   cardWidth = $(".carousel-item").width();

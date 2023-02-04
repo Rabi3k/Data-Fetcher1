@@ -50,7 +50,7 @@ switch ($row->type) {
         break;
 }
 ?>
-<div id='accordion_<?php echo $row->id ?>' class="swiper-slide" tag="<?php echo $row->restaurant_id ?>">
+<div id='accordion_<?php echo $row->id ?>' class="swiper-slide" tag="<?php echo $row->restaurant_id ?>" order-type="<?php echo $orderTypeText?>">
     <div class="cards-wrapper" tag="<?php echo $row->id ?>">
         <div class='card opacity-90'>
             <div class='card-header <?php echo $bgClass ?> text-light py-0' aria-expanded='true' aria-controls='collapse_<?php echo $row->id ?>'>

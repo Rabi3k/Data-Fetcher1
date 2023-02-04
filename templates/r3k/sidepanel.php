@@ -18,11 +18,9 @@ $screentypeText = $user->GetScreenTypeText();
     ?>
       <div class="section-title text-center p-2">
         <span class="h3 text-light p-2">Branches</span>
-
       </div>
       <ul class="nav nav-pills text-light">
         <?php foreach ($allBranches as $key => $value) { ?>
-
           <li class="nav-item btn-branch btn btn-outline-light m-2" data-toggle="button" aria-pressed="true" tag="<?php echo $value->reference_id ?>">
             <?php echo "$value->city, $value->address"; ?>
           </li>

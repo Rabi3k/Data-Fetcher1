@@ -17,7 +17,7 @@ $idOrders = array_column($data, 'id');
     ActiveOrderIds = <?php echo json_encode($idOrders) ?>;
 </script>
 
-<div id="main-swiper" class="swiper h-90">
+<div id="main-swiper" class="swiper h-80">
     <div class="swiper-pagination"></div>
 
     <div class="swiper-wrapper" id="orderCards">
