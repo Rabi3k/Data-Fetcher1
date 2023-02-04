@@ -53,7 +53,7 @@ switch ($row->type) {
 <div id='accordion_<?php echo $row->id ?>' class="swiper-slide" tag="<?php echo $row->restaurant_id ?>">
     <div class="cards-wrapper" tag="<?php echo $row->id ?>">
         <div class='card opacity-90'>
-            <div class='card-header <?php echo $bgClass ?> py-0' aria-expanded='true' aria-controls='collapse_<?php echo $row->id ?>'>
+            <div class='card-header <?php echo $bgClass ?> text-light py-0' aria-expanded='true' aria-controls='collapse_<?php echo $row->id ?>'>
                 <input type='hidden' name="OrderDate" id='OrderDate_<?php echo $row->id ?>' value='<?php echo $jDate ?>' />
                 <input type='hidden' name="OrderStatus" id='OrderStatus_<?php echo $row->id ?>' value='<?php echo $bgClass ?>' />
                 <div class="row">
@@ -72,7 +72,7 @@ switch ($row->type) {
                         <span><?php echo $OrderDate->format('h:i a'); ?></span>
                     </div>
                     <div class='col-12 text-right'>
-                        <span>Kunder: <?php echo $row->client_first_name . " " . $row->client_last_name; ?></span>
+                        <span>Kunde: <?php echo $row->client_first_name . " " . $row->client_last_name; ?></span>
                     </div>
                 </div>
             </div>

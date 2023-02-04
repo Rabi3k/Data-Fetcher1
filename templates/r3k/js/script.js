@@ -67,7 +67,7 @@ function updateTime() {
       {
         $(parentHeader).removeClass('bg-warning');
         $(parentHeader).removeClass('bg-info');
-        $(parentHeader).addClass('bg-danger text-white');
+        $(parentHeader).addClass('bg-danger');
         $(timeRTxt).addClass('text-danger');
       }
       
@@ -77,7 +77,7 @@ function updateTime() {
       $(parentHeader).toggleClass('bg-warning');
       if(!$(parentHeader).hasClass('bg-warning'))
       {
-        $(parentHeader).addClass('bg-warning text-white');
+        $(parentHeader).addClass('bg-warning');
         $(timeRTxt).addClass('text-warning');
       }
       $(timeRTxt).text(t);
