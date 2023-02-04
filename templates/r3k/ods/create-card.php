@@ -50,7 +50,7 @@ switch ($row->type) {
         break;
 }
 ?>
-<div id='accordion_<?php echo $row->id ?>' class="swiper-slide" tag="<?php echo $row->restaurant_id ?>" order-type="<?php echo $orderTypeText?>">
+<div id='accordion_<?php echo $row->id ?>' class="swiper-slide" tag="<?php echo $row->restaurant_id ?>" order-type="<?php echo $orderTypeText ?>">
     <div class="cards-wrapper" tag="<?php echo $row->id ?>">
         <div class='card opacity-90'>
             <div class='card-header <?php echo $bgClass ?> text-light py-0' aria-expanded='true' aria-controls='collapse_<?php echo $row->id ?>'>
@@ -62,7 +62,7 @@ switch ($row->type) {
                         <?php echo $orderTypeIcon ?>
                     </div>
                     <div class='col-6 '>
-                        <span><?php echo $orderTypeText ?></span><br/>
+                        <span><?php echo $orderTypeText ?></span><br />
                         <span>Gæster:<?php echo $row->persons ?></span>
                     </div>
 
@@ -77,8 +77,8 @@ switch ($row->type) {
                 </div>
             </div>
             <div id='collapse_<?php echo $row->id ?>' class=' card-body bg-white'>
-                
-                <ul class='list-group list-group-flush text-dark'>
+
+                <ul class='list-group list-group-flush text-dark '>
                     <?php
                     if ($row->instructions != '') { ?>
                         <li class='list-group-item'>
@@ -86,7 +86,7 @@ switch ($row->type) {
                                 <div class="12"><span class="text-danger"><strong>=! <?php echo $row->instructions ?> !=</strong></span></div>
                             </div>
                         </li>
-                        <?php }
+                    <?php }
                     if (count($row->items) == 0) { ?>
                         <li class='list-group-item'>
                             <div class="row d-flex justify-content-center">
@@ -97,9 +97,9 @@ switch ($row->type) {
                     foreach ($row->items as $item) {
                         if ($item->type === "item") { ?>
                             <li class='list-group-item'>
-                                <div class="row">
-                                    <div class="3"><?php echo $item->quantity ?> - </div>
-                                    <div class="9"><span><?php echo $item->name ?></span></div>
+                                <div class="row font-weight-bold">
+                                    <div class="col-9"><span><?php echo $item->name ?></span></div>
+                                    <div class="col-3 text-right"> <span><?php echo $item->quantity ?> stk.</span> </div>
                                 </div>
                                 <div class='row'>
                                     <ul class='list-group list-group-flush bg-white text-secondary'>
