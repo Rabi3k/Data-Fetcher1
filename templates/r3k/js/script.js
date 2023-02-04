@@ -90,8 +90,8 @@ function updateOrderTypeBtn()
 {
   $(".btn-type").each
   (function () {
-    $(this).children(".type-count").text("(" + $("div[order-type=" + $(this).attr("tag") + "]").length + ")");
-    if ($("div[order-type=" + $(this).attr("tag") + "]").length > 0) {
+    $(this).children(".type-count").text("(" + $("div[order-type=" + $(this).attr("title") + "]").length + ")");
+    if ($("div[order-type=" + $(this).attr("title") + "]").length > 0) {
       $(this).prop('hidden', false);
     }
     else {
