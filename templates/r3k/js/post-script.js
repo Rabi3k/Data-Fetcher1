@@ -26,7 +26,7 @@ $(".btn-branch").click(function () {
   }
 });
 $(".btn-type").click(function () {
-  var tag = $(this).attr("tag");
+  var tag = $(this).attr("title");
   if ($(this).attr("aria-pressed") === 'false') {
       //show cards
       $("div[order-type=" + tag + "]").show()
