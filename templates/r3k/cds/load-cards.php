@@ -62,7 +62,10 @@
         text-align: center;
     }
 
-
+tbody td .red
+{
+    background-color: red !important;
+}
     thead th,
     tfoot th {
         font-family: OpenSans-Regular;
@@ -123,7 +126,7 @@
 
 
         var table = $('#example').DataTable({
-            
+
             scrollY: '60vh',
             scrollCollapse: true,
             fixedHeader: true,
@@ -161,6 +164,11 @@
                     data: 'timeToEnd'
                 },
             ],
+            "createdRow": function(row, data, dataIndex) {
+                if (data[4] == "Nu") {
+                    $(row).addClass('red');
+                }
+            }
         });
         setInterval(function() {
             table.ajax.reload();
