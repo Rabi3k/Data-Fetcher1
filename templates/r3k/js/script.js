@@ -86,26 +86,20 @@ function updateTime() {
 
   })
 }
-function updateOrderTypeBtn()
-{
+function updateOrderTypeBtn() {
   $(".btn-type").each
-  (function () {
-    $(this).children(".type-count").text("(" + $("div[order-type=" + $(this).attr("title") + "]").length + ")");
-    if ($("div[order-type=" + $(this).attr("title") + "]").length > 0) {
-      $(this).prop('hidden', false);
-    }
-    else {
-      $(this).prop('hidden', true);
-    }
-  });
+    (function () {
+      $(this).children(".type-count").text("(" + $("div[order-type='" + $(this).attr("title") + "']").length + ")");
+      if ($("div[order-type='" + $(this).attr("title") + "']").length > 0) {
+        $(this).prop('hidden', false);
+      }
+      else {
+        $(this).prop('hidden', true);
+      }
+    });
 }
 $(function () {
-  updateOrderTypeBtn();
   setInterval(updateTime, 1000);
-  var interval = setInterval(function () {
-    myFunction();
-    updateOrderTypeBtn();
-  }, 5 * 1000);
 });
 function getdatestr(date, seperator) {
   const year = date.getFullYear();
@@ -124,17 +118,10 @@ function createElementFromHTML(htmlString) {
   // Change this to div.childNodes to support multiple top-level nodes.
   return div.firstChild;
 }
-function myFunction() {
-  //console.log('Executed!');
+function GetNewOrder() {
   var now = new Date();
-
-
-
-
   var s = getdatestr(now, '');
-  //console.log(userSecrets);
   var secrets = JSON.stringify(userSecrets);
-
   $.getJSON('../api/orders/' + s + '-' + s + '?secrets=' + secrets).then(r => {
     let toRemove = ActiveOrderIds.filter(x => !r.includes(x));
     let toAdd = r.filter(x => !ActiveOrderIds.includes(x));
@@ -145,10 +132,8 @@ function myFunction() {
           return object === x;
         });
         swiperCar.removeSlide(index);
-        //$('#accordion_' + x).remove(); 
       });
     }
-
     if (toAdd && toAdd.length > 0) {
       toAdd.forEach(x => {
         let index = r.findIndex(object => {
@@ -160,35 +145,19 @@ function myFunction() {
           switch (index) {
             case 0:
               swiperCar.prependSlide(htmlObject);
-              //$('#orderCards').prepend(resp);
               break;
             case r.length - 1:
               swiperCar.appendSlide(htmlObject);
-              //$('#orderCards').append(resp);
               break;
             default:
               swiperCar.addSlide(index, htmlObject);
               break;
           }
         });
-        // if (index === 0) { $.get('/card/' + x, function (resp) {  $('#orderCards').prepend(resp); });}
-        // else if (index === r.length - 1) {
-        //   $.get('/card/' + x, function (resp) { $('#orderCards').append(resp) });
-        // }
-        // else {
-        //   var idx = r[index + 1];
-        //   $.get('/card/' + x, function (resp) { $('#accordion_' + idx).before(resp) });
-        // }
-
         playSound();
       });
     }
     ActiveOrderIds = r;
-
-    // if (carouselWidth) {
-    //   carouselWidth = $(".carousel-inner")[0].scrollWidth;
-    //   cardWidth = $(".carousel-item").width();
-    // }
   });
 
 }

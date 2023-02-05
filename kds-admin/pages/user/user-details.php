@@ -47,16 +47,19 @@ if (isset($_GET['action'])) {
         }
         if (isset($_POST['screenType']) && !empty($_POST['screenType'])) {
             //$lUser->SetUsertype(strval($_POST['userType']));
-            switch($_POST['screenType'])
-            {
+            switch ($_POST['screenType']) {
                 case "OrderDisplay":
                     $lUser->screen_type = 1;
                     break;
-                    
+
                 case "ItemDisplay":
-                        $lUser->screen_type = 2;
-                        break;
-                
+                    $lUser->screen_type = 2;
+                    break;
+
+                case "CustomerDisplay":
+                    $lUser->screen_type = 3;
+                    break;
+
                 default:
                     $lUser->screen_type = 1;
                     break;
@@ -172,14 +175,20 @@ if (isset($_POST['set-access'])) {
                     <div class="card p-2">
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="screenType" id="rb_ods" value="OrderDisplay">
-                            <label class="form-check-label" for="OrderDisplay">
-                            Order Display
+                            <label class="form-check-label" for="rb_ods">
+                                Order Display
                             </label>
                         </div>
                         <div class="form-check">
                             <input class="form-check-input" type="radio" name="screenType" id="rb_ids" value="ItemDisplay">
-                            <label class="form-check-label" for="ItemDisplay">
-                            Item Display
+                            <label class="form-check-label" for="rb_ids">
+                                Item Display
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="screenType" id="rb_cds" value="CustomerDisplay">
+                            <label class="form-check-label" for="rb_cds">
+                                Customer Display
                             </label>
                         </div>
                     </div>
@@ -275,9 +284,9 @@ if (isset($_POST['set-access'])) {
             </div>
             <hr />
             <form method="post" id="passwordForm" action="?<?php echo $idUrl ?>&action=change-password&tab=password">
-                <?php include "user-password.php" 
+                <?php include "user-password.php"
                 ?>
-            </form> 
+            </form>
 
         </div>
     </div>

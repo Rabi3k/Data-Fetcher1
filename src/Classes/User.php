@@ -38,6 +38,8 @@ class User
                 return "Order Panel";
             case ScreenType::IDS:
                 return "Item Panel";
+            case ScreenType::CDS:
+                return "Customer Panel";
             default:
                 return "Order Panel";
         }

@@ -1,58 +1,59 @@
 
 $(document).ready(function () {
-  $('body').on('click','.cards-wrapper', function () {
+  $('body').on('click', '.cards-wrapper', function () {
     //alert($(this).attr('tag'))
     if (selectedSlide === $(this).attr('tag')) {
-        selectedSlide = null;
+      selectedSlide = null;
     }
     else {
-        selectedSlide = $(this).attr('tag');
+      selectedSlide = $(this).attr('tag');
     }
     if (selectedSlide === null) {
-        closeBottomBar();
+      closeBottomBar();
     } else {
-        openBottomBar();
+      openBottomBar();
     }
-});
-});
-$(".btn-branch").click(function () {
-  var tag = $(this).attr("tag");
-  if ($(this).attr("aria-pressed") === 'false') {
+  });
+
+  $('body').on('click', ".btn-branch", function () {
+    var tag = $(this).attr("tag");
+    if ($(this).attr("aria-pressed") === 'false') {
       //show cards
-      $("div[tag=" + tag + "]").show()
-  } else {
+      $("div[tag='" + tag + "']").show()
+    } else {
       //hide cards
-      $("div[tag=" + tag + "]").hide()
-  }
-});
-$(".btn-type").click(function () {
-  var tag = $(this).attr("title");
-  if ($(this).attr("aria-pressed") === 'false') {
+      $("div[tag='" + tag + "']").hide()
+    }
+  });
+  $('body').on('click', ".btn-type", function () {
+    var tag = $(this).attr("title");
+    if ($(this).attr("aria-pressed") === 'false') {
       //show cards
-      $("div[order-type=" + tag + "]").show()
-  } else {
+      $("div[order-type='" + tag + "']").show()
+    } else {
       //hide cards
-      $("div[order-type=" + tag + "]").hide()
-  }
+      $("div[order-type='" + tag + "']").hide()
+    }
+  });
+
 });
+
 var selectedSlide = null;
-$('#print-btn').on("click",function(e){
-    PrintElem(selectedSlide,e);
+$('#print-btn').on("click", function (e) {
+  PrintElem(selectedSlide, e);
 });
 
-function openBottomBar()
-{
-    $('.bottom-bar').css("bottom",$("footer").height()+$("header").height());
-    $('.bottom-bar').collapse('show')
+function openBottomBar() {
+  $('.bottom-bar').css("bottom", $("footer").height() + $("header").height());
+  $('.bottom-bar').collapse('show')
 
-    //$('#main-swiper').addClass('h-80');
-    //$('#main-swiper').removeClass('h-90');
+  //$('#main-swiper').addClass('h-80');
+  //$('#main-swiper').removeClass('h-90');
 }
-function closeBottomBar()
-{
-    $('.bottom-bar').collapse('hide')
-    //$('#main-swiper').addClass('h-90');
-    //$('#main-swiper').removeClass('h-80');
+function closeBottomBar() {
+  $('.bottom-bar').collapse('hide')
+  //$('#main-swiper').addClass('h-90');
+  //$('#main-swiper').removeClass('h-80');
 }
 
 var navStatus = false;
@@ -79,20 +80,20 @@ function closeNav() {
 
 }
 var swiperCar = new Swiper('.swiper', {
-    pagination: {
-        el: '.swiper-pagination',
-    },
-    slidesPerGroup: 1,
-    spaceBetween: 10,
-    slidesPerView: 1,
-    slidesPerColumn: 1,
-    cssMode: false,
+  pagination: {
+    el: '.swiper-pagination',
+  },
+  slidesPerGroup: 1,
+  spaceBetween: 10,
+  slidesPerView: 1,
+  slidesPerColumn: 1,
+  cssMode: false,
 
 
-    // Breakpoints
-   breakpoints: {
+  // Breakpoints
+  breakpoints: {
     // when window width is >= 320px
-    
+
     850: {
       slidesPerView: 2,
       spaceBetween: 10
@@ -107,42 +108,42 @@ var swiperCar = new Swiper('.swiper', {
       slidesPerView: 4,
       spaceBetween: 10
     }
-   },
+  },
 
 
-    // To support iOS's swipe-to-go-back gesture (when being used in-app).
-    edgeSwipeDetection: false,
-    edgeSwipeThreshold: 20,
+  // To support iOS's swipe-to-go-back gesture (when being used in-app).
+  edgeSwipeDetection: false,
+  edgeSwipeThreshold: 20,
 
-    effect: 'slide',
-    // Unique Navigation Elements
-    uniqueNavElements: true,
+  effect: 'slide',
+  // Unique Navigation Elements
+  uniqueNavElements: true,
 
-    // Resistance
-    resistance: true,
-    resistanceRatio: 0.85,
+  // Resistance
+  resistance: true,
+  resistanceRatio: 0.85,
 
-     // Round length
-    roundLengths:false,
+  // Round length
+  roundLengths: false,
 
-    // Options for touch events
-    touchRatio: 1,
-    touchAngle: 45,
-    simulateTouch: true,
-    shortSwipes: true,
-    longSwipes: true,
-    longSwipesRatio: 0.5,
-    longSwipesMs: 300,
-    followFinger: true,
-    allowTouchMove: true,
-    threshold: 0,
-    touchMoveStopPropagation: false,
-    touchStartPreventDefault: true,
-    touchStartForcePreventDefault: false,
-    touchReleaseOnEdges: false,
+  // Options for touch events
+  touchRatio: 1,
+  touchAngle: 45,
+  simulateTouch: true,
+  shortSwipes: true,
+  longSwipes: true,
+  longSwipesRatio: 0.5,
+  longSwipesMs: 300,
+  followFinger: true,
+  allowTouchMove: true,
+  threshold: 0,
+  touchMoveStopPropagation: false,
+  touchStartPreventDefault: true,
+  touchStartForcePreventDefault: false,
+  touchReleaseOnEdges: false,
 
-    // Use ResizeObserver (if supported by browser) on swiper container to detect container resize (instead of watching for window resize)
-resizeObserver:true,
+  // Use ResizeObserver (if supported by browser) on swiper container to detect container resize (instead of watching for window resize)
+  resizeObserver: true,
 
 });
 

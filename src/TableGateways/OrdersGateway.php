@@ -40,7 +40,9 @@ class OrdersGateway extends DbObject
             $this->getDbConnection()->commit();
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
             $itemsTr = Traversable::from($result);
-            $itemsarray = $itemsTr->selectMany(function($x){return json_decode($x['items']);})->asArray();
+            $itemsarray = $itemsTr->selectMany(function ($x) {
+                return json_decode($x['items']);
+            })->asArray();
             return $itemsarray;
         } catch (\PDOException $e) {
             exit($e->getMessage());
@@ -261,8 +263,100 @@ class OrdersGateway extends DbObject
             exit($e->getMessage());
         }
     }
+    public function FindInHouseActiveIdsByDate($startDate, $endDate, array $secrets)
+    {
 
-    public function InsertOrUpdate($data,$order_id,$restaurant_refId)
+        $tblname = $this->getTableName();
+        $secretsJ = implode("','", $secrets);
+        $sDate = $startDate->format('Y-m-d H:i:s');
+        $eDate = $endDate->format('Y-m-d H:i:s');
+        $statment = "SELECT JSON_EXTRACT(data,'$.id') as id,JSON_UNQUOTE(JSON_EXTRACT(data,'$.ready'))='true' as 'ready'
+                     FROM `$tblname` 
+                        WHERE
+                        IFNULL(
+                            CAST(
+                                JSON_UNQUOTE(
+                                    JSON_EXTRACT(data,'$.fulfill_at')) as DateTime),
+                            CAST(
+                                JSON_UNQUOTE(
+                                    JSON_EXTRACT(data,'$.updated_at')) AS DATETIME))
+                                    BETWEEN CAST('$sDate' as DateTime) 
+                                    AND CAST('$eDate' as DateTime)
+                                    
+                                    And JSON_UNQUOTE(
+                                    JSON_EXTRACT(data,'$.restaurant_key')) in ('$secretsJ')
+                                    And JSON_UNQUOTE(
+                                    JSON_EXTRACT(data,'$.status')) in ('accepted')
+                                    And JSON_UNQUOTE(
+                                    JSON_EXTRACT(data,'$.type')) in ('table_reservation','dine_in','order_ahead','pickup')
+                                    
+                                    group by order_id,restaurant_refId
+                                    having MAX(ready)=0
+                                    ORDER BY   CAST(JSON_UNQUOTE(JSON_EXTRACT(data,'$.fulfill_at')) as DateTime)
+                                    ";
+        //echo "secretsJ: $secretsJ \nstatment: $statment\n";
+        try {
+            $query = $this->getDbConnection()->query($statment);
+            $result = $query->fetchAll(\PDO::FETCH_ASSOC);
+            $results = array();
+            foreach ($result as $row) {
+                array_push($results, intval($row['id']));
+            }
+            return $results;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
+    public function FindInHouseActiveByDate($startDate, $endDate, array $secrets)
+    {
+
+        $tblname = $this->getTableName();
+        $secretsJ = implode("','", $secrets);
+        $sDate = $startDate->format('Y-m-d H:i:s');
+        $eDate = $endDate->format('Y-m-d H:i:s');
+        $statment = "SELECT 
+                        JSON_UNQUOTE(JSON_EXTRACT(data,'$.ready'))='true' as 'ready',
+                        o.* 
+                        FROM `$tblname` o
+                        WHERE
+                        IFNULL(
+                            CAST(
+                                JSON_UNQUOTE(
+                                    JSON_EXTRACT(data,'$.fulfill_at')) as DateTime),
+                            CAST(
+                                JSON_UNQUOTE(
+                                    JSON_EXTRACT(data,'$.updated_at')) AS DATETIME))
+                                    BETWEEN CAST('$sDate' as DateTime) 
+                                    AND CAST('$eDate' as DateTime)
+                                    
+                                    And JSON_UNQUOTE(
+                                    JSON_EXTRACT(data,'$.restaurant_key')) in ('$secretsJ')
+
+                                    And JSON_UNQUOTE(
+                                    JSON_EXTRACT(data,'$.status')) = 'accepted'
+
+                                    And JSON_UNQUOTE(
+                                    JSON_EXTRACT(data,'$.type')) in ('table_reservation','dine_in','order_ahead','pickup')
+
+                                    group by order_id,restaurant_refId
+                                    having MAX(ready)=0
+                                    ORDER BY CAST(JSON_UNQUOTE(JSON_EXTRACT(data,'$.fulfill_at')) as DateTime)
+                                    ";
+        //echo "secretsJ: $secretsJ \nstatment: $statment\n";
+        try {
+            $query = $this->getDbConnection()->query($statment);
+            $result = $query->fetchAll(\PDO::FETCH_ASSOC);
+            $results = array();
+            foreach ($result as $row) {
+                $jObj = json_decode($row['data']);
+                array_push($results, $jObj);
+            }
+            return $results;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
+    public function InsertOrUpdate($data, $order_id, $restaurant_refId)
     {
 
         $statement = "INSERT INTO `tbl_order`
@@ -278,7 +372,7 @@ class OrdersGateway extends DbObject
             $order = json_decode($data);
             foreach ($order->items as $item) {
                 # code...
-                $item->completed = ($order->ready != true && $item->completed != true)?false:true;
+                $item->completed = ($order->ready != true && $item->completed != true) ? false : true;
             }
             $statement = $this->getDbConnection()->prepare($statement);
             $this->getDbConnection()->beginTransaction();
@@ -302,9 +396,9 @@ class OrdersGateway extends DbObject
 
             return $statement->rowCount();
         } catch (\PDOException $e) {
-            $_SESSION['loggy']->logy($e->getMessage(),$e->getTraceAsString(),$e);
+            $_SESSION['loggy']->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
-        #endregion
+    #endregion
 }
