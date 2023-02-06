@@ -20,15 +20,16 @@ if (isset($_GET['id'])) {
 $profiles = (new UserProfilesGateway($dbConnection))->GetAllProfiles();
 $restaurants = (new RestaurantsGateway($dbConnection))->GetAllRestaurants();
 
-
+$userSecret = $userLogin->GetEncryptedKey($lUser->email);
+$secretKey =  bin2hex($userSecret);
 if (isset($_GET['action'])) {
     if ($_GET['action'] == 'change-password') {
         if (isset($_POST['password1'])) {
             $userLogin->UpdateUserPassword($lUser, $_POST['password1']);
         } else if (array_key_exists('SendRestPaswordEmail', $_POST)) {
 
-            $secret = $userLogin->GetEncryptedKey($lUser->email);
-            KMail::sendResetPasswordMail($lUser, $secret);
+            //$secret = $userLogin->GetEncryptedKey($lUser->email);
+            KMail::sendResetPasswordMail($lUser, $userSecret);
         }
     } else if ($_GET['action'] == 'edit-details') {
 
@@ -113,7 +114,11 @@ if (isset($_POST['set-access'])) {
         </div>
     </div>
     <div class="col-4"></div>
-    <div class="col-4"></div>
+    <div class="col-4 pull-right">
+        <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+            <a class="btn btn-primary" role="button" target="_blank" href="/login.php?secret=0x<?php echo $secretKey ?>"><i class="fa fa-solid fa-sign-in"></i>Login with this user</a>
+        </div>
+    </div>
 </div>
 <hr />
 <ul class="nav nav-tabs">

@@ -9,7 +9,7 @@ use Src\TableGateways\UserProfilesGateway;
 $SaveType = "";
 $idUrl = "";
 if (isset($_GET['id'])) {
-    $lUser = UserLoginGateway::GetUserClass($_GET['id'], false)->GetUser();
+    $lUser = UserLoginGateway::GetUserClass($_GET['id'], false);
     $SaveType = "update";
     $idUrl = "id=$lUser->id";
 } else if (isset($_GET['new'])) {
@@ -20,6 +20,7 @@ if (isset($_GET['id'])) {
 $profiles = (new UserProfilesGateway($dbConnection))->GetAllProfiles();
 $restaurants = (new RestaurantsGateway($dbConnection))->GetAllRestaurants();
 
+$userSecret = $userLogin->GetEncryptedKey($lUser->email);
 
 if (isset($_GET['action'])) {
     if ($_GET['action'] == 'change-password') {
@@ -27,8 +28,8 @@ if (isset($_GET['action'])) {
             $userLogin->UpdateUserPassword($lUser, $_POST['password1']);
         } else if (array_key_exists('SendRestPaswordEmail', $_POST)) {
 
-            $secret = $userLogin->GetEncryptedKey($lUser->email);
-            KMail::sendResetPasswordMail($lUser, $secret);
+            //$secret = $userLogin->GetEncryptedKey($lUser->email);
+            KMail::sendResetPasswordMail($lUser, $userSecret);
         }
     } else if ($_GET['action'] == 'edit-details') {
 
@@ -83,7 +84,7 @@ if (isset($_POST['set-access'])) {
         array_push($userRelations, $ur);
     }
     $userLogin->updateUserRelations($userRelations);
-    $lUser = UserLoginGateway::GetUserClass($_GET['id'], false)->GetUser();
+    $lUser = UserLoginGateway::GetUserClass($_GET['id'], false);
 }
 ?>
 <div class="row">
@@ -93,7 +94,11 @@ if (isset($_POST['set-access'])) {
         </div>
     </div>
     <div class="col-4"></div>
-    <div class="col-4"></div>
+    <div class="col-4 pull-right">
+        <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
+            <a class="btn btn-primary" role="button" target="_blank" href="/login.php?secret=x<?php echo $userSecret ?>"><i class="fa fa-solid fa-sign-in"></i> Back</a>
+        </div>
+    </div>
 </div>
 <hr />
 <ul class="nav nav-tabs">
@@ -242,9 +247,9 @@ if (isset($_POST['set-access'])) {
             </div>
             <hr />
             <form method="post" id="passwordForm" action="?<?php echo $idUrl ?>&action=change-password&tab=password">
-                <?php include "user-password.php" 
+                <?php include "user-password.php"
                 ?>
-            </form> 
+            </form>
 
         </div>
     </div>

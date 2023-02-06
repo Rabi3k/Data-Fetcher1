@@ -34,7 +34,7 @@ echo $hash;
         echo $url["fragment"]; //This variable contains the fragment
     }else
     {
-        var_dump($url);
+        //var_dump($url);
     }
  //This variable contains the fragment
     ?>

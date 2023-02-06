@@ -43,6 +43,23 @@ class UserLoginGateway
 
         return false;
     }
+    function ValidateLoginBySecretKey($username, $secretKey)
+    {
+
+        $user = $this->GetUserByUsernameSecretKey($username, $secretKey);
+
+        if ($user) {
+            if (strtolower($user->user_name) === strtolower($username) || strtolower($user->email) === strtolower($username)) {
+                $_SESSION["loggedin"] = true;
+                $_SESSION["UserId"] = $user->id;
+                $_SESSION["username"] = $user->user_name;
+                //$this->LoadUserClass($user['id']);
+                return true;
+            }
+        }
+
+        return false;
+    }
     function checkLogin()
     {
         if (isset($this->loggedIn)) {
