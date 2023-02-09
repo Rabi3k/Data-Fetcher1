@@ -23,7 +23,7 @@ class OrderItemGateway extends DbObject
     }
     public function UpdateOrderItemStatus(int $orderItemId, string $status)
     {
-        $statment = "UPDATE `kbslb_portal`.`order_items`
+        $statment = "UPDATE `order_items`
         SET
         `status` = :status
         WHERE 

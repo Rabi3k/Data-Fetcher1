@@ -233,7 +233,6 @@ class OrdersGateway extends DbObject
             $query = $this->getDbConnection()->query($statment);
             $result = $query->fetchAll(\PDO::FETCH_ASSOC);
             $query->closeCursor();
-            $o = new Order($result[0]);
             $results = array();
             foreach ($result as $row) {
                 $jObj = new Order($row);
