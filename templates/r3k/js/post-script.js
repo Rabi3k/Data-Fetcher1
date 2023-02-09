@@ -13,9 +13,7 @@ $(document).ready(function () {
     } else {
       openBottomBar();
     }
-  });
-
-  $('body').on('click', ".btn-branch", function () {
+  }).on('click', ".btn-branch", function () {
     var tag = $(this).attr("tag");
     if ($(this).attr("aria-pressed") === 'false') {
       //show cards
@@ -24,8 +22,7 @@ $(document).ready(function () {
       //hide cards
       $("div[tag='" + tag + "']").hide()
     }
-  });
-  $('body').on('click', ".btn-type", function () {
+  }).on('click', ".btn-type", function () {
     var tag = $(this).attr("title");
     if ($(this).attr("aria-pressed") === 'false') {
       //show cards
@@ -34,19 +31,85 @@ $(document).ready(function () {
       //hide cards
       $("div[order-type='" + tag + "']").hide()
     }
-  });
+  }).on("click", ".order-item", function (event) //Replace 4000 with your desired milliseconds
+  {
+    event.stopPropagation();
+    //alert($(this).attr("tag") + ", " + $(this).attr("id"));
+    /*ToDo->name ? "bg-white" : ($item->status == ItemStatus::InProgress->name ? "bg-info" : "bg-success */
+    var status = "ToDo";
+    switch ($(this).attr("tag")) {
+      case "ToDo":
+        status = "InProgress";
+        break;
+      case "InProgress":
+        status = "Complete";
+        break;
+      case "Complete":
+        status = "ToDo";
+        break;
+      default:
+        return;
+    }
 
+    var settings = {
+      "url": "/api/item/",
+      "method": "PUT",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "data": JSON.stringify({
+        "id": $(this).attr("id"),
+        "status": status
+      }),
+      "success": function (response) {
+        switch ($("#" + response.id).attr("tag")) {
+          case "ToDo":
+            bgColor = "bg-info bg-white ";
+            break;
+          case "InProgress":
+            bgColor = "bg-info bg-success text-dark text-white";
+            break;
+          case "Complete":
+            bgColor = "bg-white text-dark text-white bg-success";
+            break;
+          default:
+            return;
+        }
+        $("#" + response.id).attr("tag", status);
+        $("#" + response.id).toggleClass(bgColor);
+        $("#" + response.id).find(".item-options").toggleClass(bgColor);
+
+      },
+      "error": function (jqXHR, textStatus, errorThrown) { console.log(textStatus) }
+    };
+
+    $.ajax(settings);
+
+  });
 });
 
 var selectedSlide = null;
 $('#print-btn').on("click", function (e) {
   PrintElem(selectedSlide, e);
 });
+$('#complete-btn').on("click", function (e) {
+  var settings = {
+    "url": "/api/order/"+selectedSlide,
+    "method": "PUT",
+    "success": function (response) {
+      console.log(response);
+      closeBottomBar();
+    },
+    "error": function (jqXHR, textStatus, errorThrown) { console.log(textStatus) }  
+  };
+  
+  $.ajax(settings);
+});
 
 function openBottomBar() {
   $('.bottom-bar').css("bottom", $("footer").height() + $("header").height());
   $('.bottom-bar').collapse('show')
-
+  $('#info-lbl').text("order#" + selectedSlide);
   //$('#main-swiper').addClass('h-80');
   //$('#main-swiper').removeClass('h-90');
 }

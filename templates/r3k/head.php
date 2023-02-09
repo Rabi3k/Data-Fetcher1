@@ -27,9 +27,9 @@ https://cdn.datatables.net/1.13.2/js/dataTables.bootstrap4.min.js-->
     <script src="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.js"></script>
     
 
-
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
-    <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <!-- <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
+    <script src="https://code.jquery.com/jquery-3.6.3.min.js" integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU=" crossorigin="anonymous"></script>
 
     <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" charset="utf8"src="https://cdn.datatables.net/1.13.2/js/dataTables.bootstrap4.min.js"></script>
@@ -54,8 +54,11 @@ https://cdn.datatables.net/1.13.2/js/dataTables.bootstrap4.min.js-->
         var templatePath = '<?php echo $templatePath ?>';
         var userSecrets = JSON.parse('<?php echo $userLogin->GetSecrets() ?>')
     </script>
+        
     <script type="text/javascript" src="<?php echo $rootpath . "/" . $templatePath ?>/js/playsound.min.js"></script>
     <script type="text/javascript" src="<?php echo $rootpath . "/" . $templatePath ?>/js/script.min.js"></script>
+
+
 
 
 </head>

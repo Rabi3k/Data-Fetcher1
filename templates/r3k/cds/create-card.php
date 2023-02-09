@@ -17,6 +17,7 @@ $now = (new \DateTime('now', new \DateTimeZone('Europe/Copenhagen')));
 
 $retval = array();
 foreach ($data as $order) {
+   // echo ($order->getJsonStr());
     $OrderDate = new \DateTime($order->fulfill_at ?? $order->updated_at);
     $OrderDate->setTimezone(new \DateTimeZone($order->restaurant_timezone));
 

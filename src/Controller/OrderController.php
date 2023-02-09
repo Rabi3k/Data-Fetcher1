@@ -36,6 +36,8 @@ class OrderController {
                 break;
             case 'POST':
             case 'PUT':
+                $response = $this->CompleteOrder($this->orderId);
+                break;
             case 'DELETE':
             default:
                 $response = $this->notFoundResponse();
@@ -47,6 +49,13 @@ class OrderController {
         }
     }
 
+    private function CompleteOrder(int $orderId)
+    {
+        $result = $this->orderGateway->UpdateOrderStatus($orderId,true);
+        $response['status_code_header'] = 'HTTP/1.1 200 OK';
+        $response['body'] = json_encode(array('id'=>$orderId,'status'=>'complete','result'=>$result));
+        return $response;
+    }
     private function getAllOrders(array $restaurantIds)
     {
         $result = $this->orderGateway->FindByRestaurantsRefId($restaurantIds);
@@ -99,7 +108,7 @@ class OrderController {
             return $this->notFoundResponse();
         }
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
-        $response['body'] = json_encode($results);
+        $response['body'] = $results->getJsonStr();
         return $response;
     }
 

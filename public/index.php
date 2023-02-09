@@ -4,6 +4,7 @@ require "../bootstrap.php";
 use Src\Controller\RequestController;
 use Src\Controller\OrderController;
 use Src\Controller\ActiveOrderController;
+use Src\Controller\OrderItemController;
 use Src\Controller\UsersController;
 
 header("Access-Control-Allow-Origin: *");
@@ -40,6 +41,15 @@ switch ($oper) {
 
         break;
     case 'profile':
+        break;
+    case 'item':
+        $params = ([
+            'id'        =>  $id,
+            'u' =>  $username,
+            'p'   =>  $password,
+        ]);
+        $controller = new OrderItemController($dbConnection, $requestMethod);
+        $controller->processRequest();
         break;
     case 'user':
         $params = ([

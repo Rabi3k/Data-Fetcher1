@@ -8,11 +8,11 @@ abstract class ClassObj
     /**  Location for overloaded data.  */
     private $data = array();
 
-    public function getJsonStr()
+    public function getJsonStr():string
     {
         return json_encode($this->data);
     }
-    public function getJson()
+    public function getJson():object
     {
         $jsonStr= json_encode($this->data);
         return \json_decode($jsonStr);

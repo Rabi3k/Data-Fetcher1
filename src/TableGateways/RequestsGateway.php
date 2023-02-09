@@ -4,7 +4,7 @@ namespace Src\TableGateways;
 
 use DateTime;
 use Src\Classes\Request;
-
+use Src\Classes\Loggy;
 
 class RequestsGateway
 {
@@ -72,8 +72,10 @@ class RequestsGateway
                 'body'  => $input->body,
             ));
             $this->db->commit();
+            $statement->closeCursor();
             return $statement->rowCount();
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }

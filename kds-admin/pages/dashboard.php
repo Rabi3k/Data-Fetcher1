@@ -16,7 +16,7 @@
 <script>
   
 var jsonfile  = JSON.parse('<?php echo json_encode($orderstGateway->GetItemsSold()); ?>');
-//[{"id":11052316,"qty":1,s"name":"Pizza Prosciutto"},{"id":11052319,"qty":3,"name":"Coffee"},{"id":11052321,"qty":9,"name":"Lemonade"},{"id":11052318,"qty":3,"name":"Spaghetti Carbonara"}];
+//[{"id":11052316,"qty":1,"name":"Pizza Prosciutto"},{"id":11052319,"qty":3,"name":"Coffee"},{"id":11052321,"qty":9,"name":"Lemonade"},{"id":11052318,"qty":3,"name":"Spaghetti Carbonara"}];
 
 var labels = jsonfile.map(function(e) {
    return e.name;

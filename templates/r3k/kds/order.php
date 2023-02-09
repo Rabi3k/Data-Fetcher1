@@ -21,10 +21,10 @@ if(!isset($orderId))
     exit();
 }
 $orderstGateway = new OrdersGateway($dbConnection);
-$datas =$orderstGateway->FindById($orderId);
-$dataE = (array)end($datas);
+$OrderClass = $orderstGateway->FindById($orderId);
+//$dataE = (array)end($datas);
 //$datasJ = (array)json_decode($dataE,true);
-if(!isset($dataE))
+if(!isset($OrderClass))
 {
     $PageTitle = "Order Not Found!";
     $code =404;
@@ -35,7 +35,7 @@ if(!isset($dataE))
     include "../$templatePath/footer.php";
     exit();
 }
-$OrderClass = new Order($dataE);
+//$OrderClass = new Order($dataE);
 //echo json_encode($OrderClass->items[0]["id"])."<br/>";
 $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 

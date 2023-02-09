@@ -83,8 +83,8 @@ class RequestController
             strval($body),
             ""
         );
-        $result = $this->requestsGateway->insertFromClass($req);
-        array_push($results, $result);
+        //$result = $this->requestsGateway->insertFromClass($req);
+        //array_push($results, $result);
         foreach ($input["orders"] as $order) {
 
             $restaurant_refId  = $order["restaurant_id"];

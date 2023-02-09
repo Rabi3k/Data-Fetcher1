@@ -2,13 +2,14 @@
 
 use Src\TableGateways\OrdersGateway;
 use Src\Classes\Order;
+use Src\Enums\ItemStatus;
 
+$orderstGateway = new OrdersGateway($dbConnection);
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
-    $orderstGateway = new OrdersGateway($dbConnection);
-    $datas = $orderstGateway->FindById($id);
-    $dataE = (array)end($datas);
-    $row = new Order($dataE);
+    $row = $orderstGateway->FindById($id);
+} else if (isset($row)) {
+    $row = $orderstGateway->FindById($row->id);
 }
 if (!isset($row)) {
     die();
@@ -95,27 +96,29 @@ switch ($row->type) {
                         </li>
                         <?php }
                     foreach ($row->items as $item) {
-                        if ($item->type === "item") { ?>
-                            <li class='list-group-item'>
+                        if ($item->type === "item") {
+                            $bgColor = $item->status == ItemStatus::ToDo->name ? "bg-white" : ($item->status == ItemStatus::InProgress->name ? "bg-info" : "bg-success text-white");
+                        ?>
+                            <span id="<?php echo  $item->id?>" tag="<?php echo  $item->status ?>" class='list-group-item order-item <?php echo $bgColor?>'>
                                 <div class="row font-weight-bold">
                                     <div class="col-9"><span><?php echo $item->name ?></span></div>
                                     <div class="col-3 text-right"> <span><?php echo $item->quantity ?> stk.</span> </div>
                                 </div>
-                                <div class='row'>
-                                    <ul class='list-group list-group-flush bg-white text-secondary'>
+                                <div class='row '>
+                                    <ul class='list-group list-group-flush text-muted '>
                                         <?php if ($item->instructions) { ?>
-                                            <li class='list-group-item'>
+                                            <li class='list-group-item item-options <?php echo $bgColor?>'>
                                                 <span><?php echo $item->instructions ?></span>
                                             </li>
                                         <?php }
                                         foreach ($item->options as $option) { ?>
-                                            <li class='list-group-item'>
+                                            <li class='list-group-item item-options <?php echo $bgColor?>'>
                                                 <span><?php echo $option->quantity . "-" . $option->group_name . " / " . $option->name ?></span>
                                             </li>
                                         <?php } ?>
                                     </ul>
                                 </div>
-                            </li>
+                            </span>
                         <?php } ?>
                     <?php } ?>
                 </ul>
