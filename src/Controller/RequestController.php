@@ -83,7 +83,7 @@ class RequestController
             strval($body),
             ""
         );
-        //$result = $this->requestsGateway->insertFromClass($req);
+        $result = $this->requestsGateway->insertFromClass($req);
         //array_push($results, $result);
         foreach ($input["orders"] as $order) {
 
