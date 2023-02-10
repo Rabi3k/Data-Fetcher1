@@ -4,6 +4,7 @@ require "../bootstrap.php";
 use Src\Controller\RequestController;
 use Src\Controller\OrderController;
 use Src\Controller\ActiveOrderController;
+use Src\Controller\GeneralController;
 use Src\Controller\OrderItemController;
 use Src\Controller\UsersController;
 
@@ -73,7 +74,10 @@ switch ($oper) {
         //$GLOBALS['http_response_code'] = 404;
         //http_response_code(404);
         //header('X-PHP-Response-Code: 404', true, 404);
-        setResponseHead(404, 'Not Found');
+        http_response_code(404);
+        echo GeneralController::CreateResponserBody(array("message"=>"$oper Not found"));
+        echo $response['body'];
+        //setResponseHead(404, 'Not Found');
         //header("HTTP/1.1 404 Not Found");
         //exit();
         //die("$oper Not Found");

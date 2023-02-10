@@ -123,8 +123,9 @@ function GetNewOrder() {
   var s = getdatestr(now, '');
   var secrets = JSON.stringify(userSecrets);
   $.getJSON('../api/orders/' + s + '-' + s + '?secrets=' + secrets).then(r => {
-    let toRemove = ActiveOrderIds.filter(x => !r.includes(x));
-    let toAdd = r.filter(x => !ActiveOrderIds.includes(x));
+    let fetchedIds = r.data;
+    let toRemove = ActiveOrderIds.filter(x => !fetchedIds.includes(x));
+    let toAdd = fetchedIds.filter(x => !ActiveOrderIds.includes(x));
     if (toRemove && toRemove.length > 0) {
 
       toRemove.forEach(x => {
@@ -136,7 +137,7 @@ function GetNewOrder() {
     }
     if (toAdd && toAdd.length > 0) {
       toAdd.forEach(x => {
-        let index = r.findIndex(object => {
+        let index = fetchedIds.findIndex(object => {
           return object === x;
         });
 
@@ -146,7 +147,7 @@ function GetNewOrder() {
             case 0:
               swiperCar.prependSlide(htmlObject);
               break;
-            case r.length - 1:
+            case fetchedIds.length - 1:
               swiperCar.appendSlide(htmlObject);
               break;
             default:
@@ -157,7 +158,7 @@ function GetNewOrder() {
         playSound();
       });
     }
-    ActiveOrderIds = r;
+    ActiveOrderIds = fetchedIds;
   });
 
 }

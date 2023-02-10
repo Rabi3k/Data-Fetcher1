@@ -49,8 +49,7 @@ class ActiveOrderController {
                         $response = $this->getOrderById($this->params['id']);
                         break;
                     case FuncType::All:
-                        $response['status_code_header'] = 'HTTP/1.1 200 OK';
-                        $response['body'] = json_encode("[{'all_good':true}]");
+                        $response = GeneralController::CreateResponser(array());
                         break;
                     case FuncType::None:
                         $response = $this->notFoundResponse();
@@ -100,9 +99,7 @@ class ActiveOrderController {
             $eDate->setTime(23,59,59,999999);
         }
         $data = $this->orderGateway->FindActiveIdsByDate($sDate,$eDate,$secrets);
-        $response['status_code_header'] = 'HTTP/1.1 200 OK';
-        $response['body'] = json_encode($data);
-        return $response;
+        return GeneralController::CreateResponser($data);
     }
     private function getOrderById($id)
     {
@@ -116,7 +113,7 @@ class ActiveOrderController {
             return $this->notFoundResponse();
         }
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
-        $response['body'] = json_encode($results);
+        $response['body'] = GeneralController::CreateResponser($results);
         return $response;
     }
 #endregion

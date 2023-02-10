@@ -67,9 +67,7 @@ class RequestController
         if (!$result) {
             return $this->notFoundResponse();
         }
-        $response['status_code_header'] = 'HTTP/1.1 200 OK';
-        $response['body'] = json_encode($result);
-        return $response;
+        return GeneralController::CreateResponser($result);
     }
 
     private function createRequestFromRequest()
@@ -94,9 +92,7 @@ class RequestController
             array_push($results, $result);
         }
 
-        $response['status_code_header'] = 'HTTP/1.1 201 Created';
-        $response['body'] = json_encode($results);
-        return $response;
+        return GeneralController::CreateResponser($results);
     }
 
 

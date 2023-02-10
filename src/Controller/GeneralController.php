@@ -12,6 +12,11 @@ class GeneralController
         $response['body'] =json_encode($responser);
         return $response;
     }
+    public static function CreateResponserBody($data)
+    {
+        $responser = new Responser($data);
+        return json_encode($responser);
+    }
 }
 class Responser {
     public string $id ;
