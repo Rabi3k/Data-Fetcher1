@@ -102,7 +102,7 @@ class OrdersGateway extends DbObject
             exit($e->getMessage());
         }
     }
-    public function FindById($id): Order
+    public function FindById($id): Order|null
     {
         $tblname = $this->getTableName();
         $statment = "SELECT * FROM `order_head` 
@@ -116,6 +116,10 @@ class OrdersGateway extends DbObject
             $statement = $this->getDbConnection()->query($statment);
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
             $statement->closeCursor();
+            if(count($result)<1)
+            {
+                return null;
+            }
             $o = new Order($result[0]);
 
 

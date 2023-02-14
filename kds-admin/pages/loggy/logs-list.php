@@ -4,20 +4,23 @@
             <label for="min">Minimum date:</label>
             <input type="text" id="min" name="min">
         </div>
+
+    </div>
+    <div class="col-4">
         <div class="form-group">
             <label for="max">Maximum date:</label>
             <input type="text" id="max" name="min">
         </div>
     </div>
-    <div class="col-4"></div>
-    <div class="col-4">
+    <div class="col-4 d-flex justify-content-end">
+        <button name="reload-btn" id="reload-btn" class="btn btn-primary" role="button"><i class="fa fa-refresh" aria-hidden="true"></i></button>
     </div>
 </div>
 <hr />
 <div class="row">
     <div class="table-responsive px-2">
-        <table class="table table-bordered table-hover" id="tblLogs">
-            <thead>
+        <table class="table table-bordered table-striped table-hover" id="tblLogs">
+            <thead class="thead-dark">
                 <tr>
                     <th>#</th>
                     <th>Detail</th>
@@ -33,27 +36,28 @@
 
     <script>
         <?php
-        $liArr = array();
+        // $liArr = array();
 
-        foreach ($lines as $lneNum => $line) {
-            $val = json_decode($line);
-            $val->lineNum = isset($lneNum)?$lneNum:0;
-            $val->errorType = isset($val->context->exception->level) ? FriendlyErrorType($val->context->exception->level) : "E_ERROR";
-            
-            if(empty($val->message) && isset($val->context->exception->error))
-            {
-                $val->message = $val->context->exception->error;
-            }
-            else if(empty($val->message) && isset($val->context->exception->message))
-            {
-                $val->message = $val->context->exception->message;
-            }
+        // foreach ($lines as $lneNum => $line) {
+        //     $val = json_decode($line);
+        //     $val->lineNum = isset($lneNum)?$lneNum:0;
+        //     $val->errorType = isset($val->context->exception->level) ? FriendlyErrorType($val->context->exception->level) : "E_ERROR";
 
-            array_push($liArr, $val);
-        }
+        //     if(empty($val->message) && isset($val->context->exception->error))
+        //     {
+        //         $val->message = $val->context->exception->error;
+        //     }
+        //     else if(empty($val->message) && isset($val->context->exception->message))
+        //     {
+        //         $val->message = $val->context->exception->message;
+        //     }
+
+        //     array_push($liArr, $val);
+        // }
         ?>
-        var jstr = '<?php echo addslashes(json_encode($liArr)) ?>';
-        var jsonfile = JSON.parse(jstr);
+        // var jstr = '<?php //echo addslashes(json_encode($liArr)) 
+                        ?>';
+        // var jsonfile = JSON.parse(jstr);
 
 
         var minDate, maxDate;
@@ -88,7 +92,19 @@
 
             // DataTables initialisation
             var table = $('#tblLogs').DataTable({
-                data: jsonfile,
+                // dom: 'Blfrtip',
+                // buttons: [{
+                //     text: 'reload',
+                //     action: function(e, dt, node, config) {
+                //         reload();
+                //     }
+                // }],
+                ajax: {
+                    url: "/api/logs",
+                    dataType: 'json',
+                    type: 'GET',
+                },
+                //data: jsonfile,
                 columns: [{
                         data: 'lineNum'
                     },
@@ -112,7 +128,9 @@
                     targets: 5,
                     render: $.fn.dataTable.render.moment('YYYY-MM-DDTHH:mm:ss.SSSSZ', 'YYYY-MM-DD h:mm:ss a')
                 }],
-                order: [[0, 'desc']],
+                order: [
+                    [0, 'desc']
+                ],
                 "createdRow": function(row, data, dataIndex) {
                     $(row).addClass('clickable-row');
                     $(row).attr('data-href', "?id=" + dataIndex);
@@ -123,10 +141,12 @@
             $('#min, #max').on('change', function() {
                 table.draw();
             });
-            $('#tblLogs tbody').on('click', 'tr', function() {
+            $('#tblLogs tbody').on('click', 'tr.clickable-row', function() {
                 //$(this).toggleClass('selected');
                 window.location = $(this).data("href");
             });
+            $("#reload-btn").click(function(){table.ajax.reload();})
+            
         });
     </script>
 </div>

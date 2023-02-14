@@ -70,6 +70,9 @@ switch ($oper) {
         $controller = new ActiveOrderController($dbConnection, $requestMethod, $params, $secrets);
         $controller->processRequest();
         break;
+        case "logs":
+            include($_SERVER["DOCUMENT_ROOT"] . '/logs/index.php');
+            break;
     default:
         //$GLOBALS['http_response_code'] = 404;
         //http_response_code(404);

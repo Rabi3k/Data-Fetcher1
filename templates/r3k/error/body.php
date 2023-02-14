@@ -1,6 +1,6 @@
 
 <body class="wide bgimg">
-<div class="full-div opacity-min bg-danger">
+<div class="full-div opacity-min bg-dark">
   <div class="display-middle text-white text-center ">
     <span class="text-jumbo">
         Error</span><br/><span class="h3">Code: 
@@ -10,7 +10,7 @@
             } else {
             die('Unknown error');
             }*/
-            echo $code."<br/> Page ".$httpResponseMessage;
+            echo $code."<br/> Page: ".$httpResponseMessage;
         ?>
     </span>
     
