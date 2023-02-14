@@ -551,7 +551,7 @@ class OrdersGateway extends DbObject
                 'client_email' => $order->client_email,
                 'client_phone' => $order->client_phone,
                 'client_address' => $order->client_address,
-                'client_address_parts' => $order->client_address_parts,
+                'client_address_parts' => json_encode($order->client_address_parts),
                 'client_marketing_consent' => $order->client_marketing_consent,
                 'client_language' => $order->client_language,
                 'fulfillment_option' => $order->fulfillment_option,
