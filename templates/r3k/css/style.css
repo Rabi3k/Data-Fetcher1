@@ -181,6 +181,22 @@ footer {
   position: absolute;
   bottom: 5em;
 }
+.ToDo span
+{
+  color: #444;
+}
+.InProgress span
+{
+  color: #4444ffcc;
+}
+.Complete span
+{
+  color: #ddd;
+  text-decoration: line-through;
+
+}
+
+
 @media (min-width: 1260px) {
   .carousel-item {
     margin-right: 0;

@@ -62,22 +62,13 @@ $(document).ready(function () {
         "status": status
       }),
       "success": function (response) {
-        switch ($("#" + response.id).attr("tag")) {
-          case "ToDo":
-            bgColor = "bg-info bg-white ";
-            break;
-          case "InProgress":
-            bgColor = "bg-info bg-success text-dark text-white";
-            break;
-          case "Complete":
-            bgColor = "bg-white text-dark text-white bg-success";
-            break;
-          default:
-            return;
-        }
+        let oldStatus = $("#" + response.id).attr("tag");
         $("#" + response.id).attr("tag", status);
-        $("#" + response.id).toggleClass(bgColor);
-        $("#" + response.id).find(".item-options").toggleClass(bgColor);
+        $("#" + response.id).removeClass(oldStatus);
+        $("#" + response.id).addClass(status);
+        let childs = $("#" + response.id).find(".item-options");
+        $(childs).removeClass(oldStatus);
+        $(childs).addClass(status);
 
       },
       "error": function (jqXHR, textStatus, errorThrown) { console.log(textStatus) }
@@ -94,15 +85,15 @@ $('#print-btn').on("click", function (e) {
 });
 $('#complete-btn').on("click", function (e) {
   var settings = {
-    "url": "/api/order/"+selectedSlide,
+    "url": "/api/order/" + selectedSlide,
     "method": "PUT",
     "success": function (response) {
       console.log(response);
       closeBottomBar();
     },
-    "error": function (jqXHR, textStatus, errorThrown) { console.log(textStatus) }  
+    "error": function (jqXHR, textStatus, errorThrown) { console.log(textStatus) }
   };
-  
+
   $.ajax(settings);
 });
 

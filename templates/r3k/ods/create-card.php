@@ -14,13 +14,13 @@ if (isset($_GET['id'])) {
 if (!isset($row)) {
     die();
 }
-$OrderDate = new \DateTime($row->fulfill_at ?? $row->updated_at);
+$OrderDate = new \DateTime($row->fulfill_at ?? $row->updated_at,new DateTimeZone("UTC"));
 $OrderDate->setTimezone(new \DateTimeZone($row->restaurant_timezone));
 $jDate = $OrderDate->format('Y/m/d H:i:s');
 $oDate = $OrderDate->format('l-M-y  H:i:s');
-$todayW = (new \DateTime())->setTimestamp(strtotime("-10 minutes"));
+$todayW = (new \DateTime("now",new DateTimeZone("UTC")))->setTimestamp(strtotime("-10 minutes"));
 $todayW->setTimezone(new \DateTimeZone($row->restaurant_timezone));
-$today = new \DateTime();
+$today = new \DateTime("now",new DateTimeZone("UTC"));
 $today->setTimezone(new \DateTimeZone($row->restaurant_timezone));
 $bgClass = 'bg-info';
 
@@ -97,9 +97,10 @@ switch ($row->type) {
                         <?php }
                     foreach ($row->items as $item) {
                         if ($item->type === "item") {
-                            $bgColor = $item->status == ItemStatus::ToDo->name ? "bg-white" : ($item->status == ItemStatus::InProgress->name ? "bg-info" : "bg-success text-white");
+                            
+                            $bgColor = $item->status ;//== ItemStatus::ToDo->name ? "bg-white" : ($item->status == ItemStatus::InProgress->name ? "bg-info" : "bg-success text-white");
                         ?>
-                            <span id="<?php echo  $item->id?>" tag="<?php echo  $item->status ?>" class='list-group-item order-item <?php echo $bgColor?>'>
+                            <li id="<?php echo  $item->id?>" tag="<?php echo  $item->status ?>" class='list-group-item order-item <?php echo $bgColor?>'>
                                 <div class="row font-weight-bold">
                                     <div class="col-9"><span><?php echo $item->name ?></span></div>
                                     <div class="col-3 text-right"> <span><?php echo $item->quantity ?> stk.</span> </div>
@@ -118,7 +119,7 @@ switch ($row->type) {
                                         <?php } ?>
                                     </ul>
                                 </div>
-                            </span>
+                            </li>
                         <?php } ?>
                     <?php } ?>
                 </ul>

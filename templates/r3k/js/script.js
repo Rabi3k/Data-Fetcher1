@@ -35,7 +35,10 @@ function updateTime() {
   //(new Date()).toLocaleString('da-DK',{timeZone:'Europe/Copenhagen',timeStyle:"long"});
 
   $('.time-text').html(firstLetterCapitalize(CopenhagenDate) + "<br/>" + CopenhagenTime);
-  var later = new Date()
+  
+  var nowT = new Date(now.toLocaleString('en',{ timeZone:'Europe/Copenhagen'}));
+  //new Date(getDateTimeByTimezone(now, 'Europe/Copenhagen', 'da-DK'));
+  var later = new Date();
   later.setMinutes(now.getMinutes() + 10);
 
   $("input[name='OrderDate']").each(function () {
@@ -43,8 +46,8 @@ function updateTime() {
     var parent = $(this).parents('.card');
     var parentHeader = $(this).parents('.card-header');
     var timeRTxt = $(parent).find('.time-remaining');
-    var timeR = (oDate.getTime() - now.getTime()) / 1000;
-    if (now > oDate) { timeR = (now.getTime() - oDate.getTime()) / 1000; }
+    var timeR = (oDate.getTime() - nowT.getTime()) / 1000;
+    if (nowT > oDate) { timeR = (nowT.getTime() - oDate.getTime()) / 1000; }
 
     const hours = Math.floor(timeR / 3600);
     timeR = timeR - hours * 3600;
@@ -62,7 +65,7 @@ function updateTime() {
       t += seconds + "s";
     }
 
-    if (now > oDate) {
+    if (nowT > oDate) {
       if (!$(parentHeader).hasClass('bg-danger')) {
         $(parentHeader).removeClass('bg-warning');
         $(parentHeader).removeClass('bg-info');
@@ -132,6 +135,10 @@ function GetNewOrder() {
         let index = ActiveOrderIds.findIndex(object => {
           return object === x;
         });
+        if (selectedSlide == x) {
+          selectedSlide = null
+          closeBottomBar();
+        }
         swiperCar.removeSlide(index);
       });
     }
