@@ -51,4 +51,7 @@ abstract class DbObject
     }
     
     #endregion
+    #region Static Functions
+    
+    #endregion
 }

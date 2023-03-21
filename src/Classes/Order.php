@@ -40,5 +40,13 @@ protected function LoadDataObject($data)
         $order->LoadOrder($orderObj);
         return $order;
     }
+    public static function GetOrderList(array $orders)
+    {
+        $retval =array();
+        foreach ($orders as $o) {
+            $retval []= new Order($o);
+        }
+        return $retval;
+    }
 #endregion
 }

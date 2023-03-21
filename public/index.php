@@ -20,6 +20,7 @@ $query = explode('/', strtolower($_SERVER['QUERY_STRING']));
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 $oper = $_GET["q"];
 $id = $_GET["id"] ?? null;
+$uid = $_GET["uid"] ?? null;
 $startDate = $_GET["s"] ?? NULL;
 $endDate = $_GET["e"] ?? null;
 $username = $_GET["u"] ?? NULL;
@@ -70,16 +71,42 @@ switch ($oper) {
         $controller = new ActiveOrderController($dbConnection, $requestMethod, $params, $secrets);
         $controller->processRequest();
         break;
-        case "logs":
-            include($_SERVER["DOCUMENT_ROOT"] . '/logs/index.php');
-            break;
+
+    case "logs":
+        include($_SERVER["DOCUMENT_ROOT"] . '/logs/index.php');
+        break;
+
+    case 'restaurant':
+        
+            $curl = curl_init();
+
+            curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://www.restaurantlogin.com/api/restaurant/$uid/",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'GET',
+            ));
+
+            $retval = curl_exec($curl);
+
+            curl_close($curl);
+            http_response_code(200);
+            echo GeneralController::CreateResponserBody(json_decode($retval));
+//            echo $retval;
+
+        break;
+
     default:
         //$GLOBALS['http_response_code'] = 404;
         //http_response_code(404);
         //header('X-PHP-Response-Code: 404', true, 404);
         http_response_code(404);
-        echo GeneralController::CreateResponserBody(array("message"=>"$oper Not found"));
-        echo $response['body'];
+        echo GeneralController::CreateResponserBody(array("message" => "$oper Not found"));
+       //echo $response['body'];
         //setResponseHead(404, 'Not Found');
         //header("HTTP/1.1 404 Not Found");
         //exit();

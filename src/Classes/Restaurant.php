@@ -1,74 +1,75 @@
 <?php
 namespace Src\Classes;
+use Src\Classes\ClassObj;
 
-class Restaurant
+class Restaurant extends ClassObj
 {
-#region public props
-    public int $id=0;
-    public string $email='';
-    public string $name='';
-    public string $phone='';
-    public string $cvr='';
-    public string $logo='';
-    public string $reference_id='';
-    public array $branches;
+
+#region Private props
 #endregion
 
 #region Construct
-    public function __construct()
+    public function __construct($data =new \stdClass())
     {
-        $this->branches=array();
+        $this->LoadDataObject($data);
     }
 #endregion
 
 #region private functions
 #endregion
 
+#region protected functions
+protected function LoadDataObject($data)
+{
+    $this->data = $data;
+}
+#endregion
+
 #region public functions
-    public function LoadRestaurant(int $id,
-        string $email,
-        string $name,
-        string $phone,
-        string $cvr,
-        string $logo,
-        string $reference_id,
-        array $branches)
+    public function LoadRestaurant($restaurantObj)
     {
         
-        $this->id = $id;
-        $this->email = $email;
-        $this->name = $name;
-        $this->phone = $phone;
-        $this->cvr = $cvr;
-        $this->logo = $logo;
-        $this->reference_id = $reference_id;
-        $this->branches=$branches;
+        $this->LoadDataObject($restaurantObj);
     }
-
+  
 #endregion
 #region static function
-
-    public static function GetRestaurant(int $id,
-        string $email,
-        string $name,
-        string $phone,
-        string $cvr,
-        string $logo,
-        string $reference_id,
-        array $branches)
+    public static function GetRestaurant($restaurantObj)
     {
         $restaurant = new Restaurant();
-        $restaurant->LoadRestaurant($id,
-         $email,
-         $name,
-         $phone,
-         $cvr,
-         $logo,
-         $reference_id,
-         $branches);
-         //echo json_encode($restaurant);
+        $restaurant->LoadRestaurant($restaurantObj);
         return $restaurant;
     }
+    public static function GetRestaurantList(array $restaurants)
+    {
+        $retval =array();
+        foreach ($restaurants as $c) {
+            $retval []= new Restaurant($c);
+        }
+        return $retval;
+    }
+    public static function NewRestaurant()
+    {
+        $r = new Restaurant();
+        $r->setFromJsonStr('{
+            "id": 0,
+            "city": "",
+            "name": "",
+            "p_nr": "",
+            "alias": "",
+            "email": "",
+            "phone": null,
+            "post_nr": null,
+            "address": null,
+            "country": null,
+            "is_gf": false,
+            "gf_urid": null,
+            "gf_refid": null,
+            "company_id": null,
+            "is_managed": null,
+            "gf_cdn_base_path": null
+        }');
+        return $r;
+    }
 #endregion
-
 }

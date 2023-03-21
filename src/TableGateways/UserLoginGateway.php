@@ -4,10 +4,11 @@ namespace Src\TableGateways;
 
 use Src\Classes\User;
 use Src\Classes\Profile;
-use Src\Classes\Restaurant;
+
 use Src\Classes\Branch;
 
 use Pinq\Traversable;
+use Src\Classes\Restaurant_o;
 
 class UserLoginGateway
 {
@@ -295,7 +296,7 @@ class UserLoginGateway
                 //var_dump($rests);
                 if (isset($rests)) {
                     foreach ($rests as $r) {
-                        $restaurant = Restaurant::Getrestaurant(
+                        $restaurant = Restaurant_o::Getrestaurant(
                             intval($r->id), //id
                             strval($r->email), //email
                             strval($r->name), //name

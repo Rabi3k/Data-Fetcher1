@@ -2,337 +2,340 @@
 
 namespace Src\TableGateways;
 
-use Pinq\Traversable;
 
-use Src\Classes\Branch;
 use Src\Classes\Restaurant;
+use Src\System\DbObject;
 
-class RestaurantsGateway
+class RestaurantsGateway extends DbObject
 {
-    private $db = null;
-    private $tblName = "`restaurants`";
 
-    public function __construct($db)
+    protected function SetSelectStatment()
     {
-        $this->db = $db;
+        $this->selectStatment = "SELECT * FROM $this->tblName;";
     }
-    function GetAllRestaurants()
+    protected function SetTableName()
     {
-        $statement = "SELECT `id`,
-        `name`,
-        `phone`,
-        `email`,
-        `cvr`,
-        `logo`,
-        `reference_id`
-    FROM $this->tblName;";
+        $this->tblName = "`tbl_restaurants`";
+    }
+    #endregion
+    public function FindById($id): Restaurant|null
+    {
+        $tblname = $this->getTableName();
+        $statment = "SELECT * FROM $tblname 
+        where id = $id";
+        //echo "ID: $id <br/>statment: $statment<br/>";
         try {
-            $statement = $this->db->prepare($statement);
-            $statement->execute();
+            $statement = $this->getDbConnection()->query($statment);
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            $restaurants = array();
-            foreach ($result as $row) {
-                $restaurant = Restaurant::GetRestaurant(
-                    intval($row["id"]),
-                    strval($row["email"]),
-                    strval($row["name"]),
-                    strval($row["phone"]),
-                    strval($row["cvr"]),
-                    strval($row["logo"]),
-                    strval($row["reference_id"]),
-                    array()
-                );
-                array_push($restaurants, $restaurant);
+            $statement->closeCursor();
+            if (count($result) < 1) {
+                return null;
             }
-            return $restaurants;
+            return Restaurant::GetRestaurant($result[0]);
         } catch (\PDOException $e) {
-
             exit($e->getMessage());
         }
     }
-    function GetRestaurant($id)
+    public function FindByCompanyId($companyId): array|null
     {
-        $statement = "SELECT 
-        r.`id`,
-        r.`name`,
-        r.`phone`,
-        r.`email`,
-        r.`cvr`,
-        r.`logo`,
-        r.`reference_id`,
-        
-        -- restaurant_branches
-        CONCAT('[',
-            GROUP_CONCAT(DISTINCT JSON_OBJECT(
-                'id', rb.`id`,
-                'restaurant_id', rb.`restaurant_id`,
-                'reference_id', rb.`reference_id`,
-                'city', rb.`city`,
-                'zip_code', rb.`zip_code`,
-                'address', rb.`address`,
-                'country', rb.`country`,
-                'cvr', rb.`cvr`)
-            SEPARATOR ','),
-            ']') AS 'branches',
-            
-	    -- restaurant_branch_keys
-        CONCAT('[',
-            GROUP_CONCAT(DISTINCT JSON_OBJECT(
-                'branch_id', rbs.`branch_id`,
-                'secret_key', rbs.`secret_key`)
-            SEPARATOR ','),
-            ']') AS 'secret_keys'
-    FROM
-        `restaurants` r
-            LEFT JOIN
-        `restaurant_branches` rb ON (r.`id` = rb.restaurant_id)
-            LEFT JOIN
-        `restaurant_branch_keys` AS rbs ON (rbs.branch_id = rb.id)
-    WHERE
-        r.`id` = :id
-    GROUP BY r.`id`
-    ;";
+        $tblname = $this->getTableName();
+        $statment = "SELECT * FROM $tblname 
+        where company_id = $companyId";
+        //echo "ID: $id <br/>statment: $statment<br/>";
         try {
-            $statement = $this->db->prepare($statement);
-            $statement->execute(array("id" => intval($id)));
+            $statement = $this->getDbConnection()->query($statment);
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
-            $restaurants = array();
-            foreach ($result as $row) {
-                $restaurant = Restaurant::GetRestaurant(
-                    intval($row["id"]),
-                    strval($row["email"]),
-                    strval($row["name"]),
-                    strval($row["phone"]),
-                    strval($row["cvr"]),
-                    strval($row["logo"]),
-                    strval($row["reference_id"]),
-                    array()
-                );
-                $branches = json_decode($row["branches"]);
-
-                foreach ($branches as $br) {
-                    if (isset($br->restaurant_id) && $br->restaurant_id === $restaurant->id) {
-                        $branch = Branch::GetBranch(
-                            $br->id,
-                            $br->restaurant_id,
-                            $br->city,
-                            $br->zip_code,
-                            $br->address,
-                            $br->country,
-                            $br->cvr,
-                            array(),
-                            $br->reference_id
-                        );
-                        $secrets =  json_decode($row["secret_keys"]);
-                        foreach ($secrets as $s) {
-                            if ($branch->id === $s->branch_id) {
-                                array_push($branch->secrets, $s->secret_key);
-                            }
-                        }
-
-                        array_push($restaurant->branches, $branch);
-                    }
-                }
-
-                array_push($restaurants, $restaurant);
+            $statement->closeCursor();
+            if (count($result) < 1) {
+                return null;
             }
-            return $restaurants;
+            return Restaurant::GetRestaurantList($result);
         } catch (\PDOException $e) {
-
             exit($e->getMessage());
         }
     }
+    public function GetAll(): array|null
+    {
+        try {
+            $statement = $this->getDbConnection()->query($this->selectStatment);
+            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $statement->closeCursor();
+            if (count($result) < 1) {
+                return array();
+            }
+            return Restaurant::GetRestaurantList($result);
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
+
+
     function InsertOrUpdate(Restaurant $input)
     {
-        if ($input->id === 0) {
+        if ($input->id == 0) {
             return $this->InsertRestaurant($input);
         } else {
-            return $this->UpdateRestaurant($input);
+            return $this->InsertOrUpdateRestaurant($input);
         }
     }
     private function InsertRestaurant(Restaurant $input)
     {
-        //Password(:password), sha(:secret_key)
         $statement = "INSERT INTO $this->tblName
-        (`name`,
-        `phone`,
-        `email`,
-        `cvr`,
-        `logo`,
-        `reference_id`)
-        VALUES 
-        (:name,
-        :phone,
-        :email,
-        :cvr,
-        :logo,
-        :reference_id);
-        ";
-
-        try {
-            $statement = $this->db->prepare($statement);
-            $this->db->beginTransaction();
-            $st = $statement->execute(array(
-                'name' => $input->name,
-                'phone' => $input->phone,
-                'email' => $input->email,
-                'cvr' => $input->cvr,
-                'logo' => $input->logo,
-                'reference_id' => $input->reference_id
-            ));
-            $input->id = intval($this->db->lastInsertId());
-            $this->db->commit();
-
-            return $input;
-        } catch (\PDOException $e) {
-            exit($e->getMessage());
-        }
-    }
-    private function UpdateRestaurant(Restaurant $input)
-    {
-        //Password(:password), sha(:secret_key)
-        $statement = "UPDATE $this->tblName
-         SET 
-         `name` =   :name ,
-         `phone` =   :phone ,
-         `email` =   :email ,
-         `cvr` =   :cvr ,
-         `logo` =   :logo ,
-         `reference_id` =   :reference_id
-
-         WHERE id   = :id;";
-
-        try {
-            $statement = $this->db->prepare($statement);
-            $this->db->beginTransaction();
-            $statement->execute(array(
-                'id' => (int)$input->id,
-                'name' => $input->name,
-                'phone' => $input->phone,
-                'email' => $input->email,
-                'cvr' => $input->cvr,
-                'logo' => $input->logo,
-                'reference_id' => $input->reference_id
-            ));
-            $this->db->commit();
-            return $input;
-        } catch (\PDOException $e) {
-            exit($e->getMessage());
-        }
-    }
-
-    function InsertOrUpdateBranch(Branch $input)
-    {
-        if (!isset($input->id) || $input->id === 0) {
-            return $this->InsertBranch($input);
-        } else {
-            return $this->UpdateBranch($input);
-        }
-    }
-    private function InsertBranch(Branch $input)
-    {
-        //Password(:password), sha(:secret_key)
-        $statement = "INSERT INTO `restaurant_branches`
-        (`restaurant_id`,
-        `city`,
-        `zip_code`,
+        (
+        `company_id`,
+        `name`,
+        `alias`,
+        `p_nr`,
         `address`,
-        `country`,
-        `cvr`)
-        VALUES 
-        (:restaurant_id,
-        :city,
-        :zip_code,
+        `post_nr`,
+        `city`,
+        `email`,
+        `phone`,
+        `is_gf`,
+        `is_managed`,
+        `gf_refid`,
+        `gf_urid`,
+        `gf_cdn_base_path`)
+        VALUES
+        (
+        :company_id,
+        :name,
+        :alias,
+        :p_nr,
         :address,
-        :country,
-        :cvr);";
+        :post_nr,
+        :city,
+        :email,
+        :phone,
+        :is_gf,
+        :is_managed,
+        :gf_refid,
+        :gf_urid,
+        :gf_cdn_base_path)";
+
 
         try {
-            $statement = $this->db->prepare($statement);
-            $this->db->beginTransaction();
+            $statement = $this->getDbConnection()->prepare($statement);
+            $this->getDbConnection()->beginTransaction();
             $statement->execute(array(
-                'restaurant_id' => $input->restaurantId,
-                'city' => $input->city,
-                'zip_code' => $input->zip_code,
-                'cvr' => $input->cvr,
+                'company_id' => $input->company_id,
+                'name' => $input->name,
+                'alias' => $input->alias,
+                'p_nr' => $input->p_nr,
                 'address' => $input->address,
-                'country' => $input->country
+                'post_nr' => $input->post_nr,
+                'city' => $input->city,
+                'email' => $input->email,
+                'phone' => $input->phone,
+                'is_gf' => $input->is_gf,
+                'is_managed' => $input->is_managed,
+                'gf_refid' => $input->gf_refid,
+                'gf_urid' => $input->gf_urid,
+                'gf_cdn_base_path' => $input->gf_cdn_base_path,
             ));
-            $input->id = intval($this->db->lastInsertId());
-            $this->db->commit();
+            $input->id = intval($this->getDbConnection()->lastInsertId());
+            $this->getDbConnection()->commit();
 
             return $input;
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }
     }
-    private function UpdateBranch(Branch $input)
+    private function InsertOrUpdateRestaurant(Restaurant $input)
     {
-        //Password(:password), sha(:secret_key)
-        $statement = "UPDATE `restaurant_branches`
-         SET 
-         `restaurant_id` =   :restaurant_id ,
-         `reference_id` =   :reference_id ,
-         `city` =   :city ,
-         `zip_code` =   :zip_code ,
-         `cvr` =   :cvr ,
-         `address` =   :address ,
-         `country` =   :country
-
-         WHERE id   = :id;";
+        $statement = "INSERT INTO $this->tblName
+        (`id`,
+        `company_id`,
+        `name`,
+        `alias`,
+        `p_nr`,
+        `address`,
+        `post_nr`,
+        `city`,
+        `email`,
+        `phone`,
+        `is_gf`,
+        `is_managed`,
+        `gf_refid`,
+        `gf_urid`,
+        `gf_cdn_base_path`)
+        VALUES
+        (:id,
+        :company_id,
+        :name,
+        :alias,
+        :p_nr,
+        :address,
+        :post_nr,
+        :city,
+        :email,
+        :phone,
+        :is_gf,
+        :is_managed,
+        :gf_refid,
+        :gf_urid,
+        :gf_cdn_base_path)
+          ON DUPLICATE KEY UPDATE
+        `company_id` = :company_id,
+        `name` = :name,
+        `alias` = :alias,
+        `p_nr` = :p_nr,
+        `address` = :address,
+        `post_nr` = :post_nr,
+        `city` = :city,
+        `email` = :email,
+        `phone` = :phone,
+        `is_gf` = :is_gf,
+        `is_managed` = :is_managed,
+        `gf_refid` = :gf_refid,
+        `gf_urid` = :gf_urid,
+        `gf_cdn_base_path` = :gf_cdn_base_path;";
 
         try {
-            $statement = $this->db->prepare($statement);
-            $this->db->beginTransaction();
+            $statement = $this->getDbConnection()->prepare($statement);
+            $this->getDbConnection()->beginTransaction();
             $statement->execute(array(
-                'id' => (int)$input->id,
-                'restaurant_id' => $input->restaurantId,
-                'city' => $input->city,
-                'zip_code' => $input->zip_code,
-                'cvr' => $input->cvr,
+                'id' => $input->id,
+                'company_id' => $input->company_id,
+                'name' => $input->name,
+                'alias' => $input->alias,
+                'p_nr' => $input->p_nr,
                 'address' => $input->address,
-                'country' => $input->country,
-                'reference_id'=>$input->reference_id
+                'post_nr' => $input->post_nr,
+                'city' => $input->city,
+                'email' => $input->email,
+                'phone' => $input->phone,
+                'is_gf' => $input->is_gf,
+                'is_managed' => $input->is_managed,
+                'gf_refid' => $input->gf_refid,
+                'gf_urid' => $input->gf_urid,
+                'gf_cdn_base_path' => $input->gf_cdn_base_path,
             ));
-            $this->db->commit();
+
+            $insertid = intval($this->getDbConnection()->lastInsertId());
+            if ($insertid > 0) {
+                $input->id = $insertid;
+            }
+            $this->getDbConnection()->commit();
+
             return $input;
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }
     }
 
-    public function InsertOrUpdateBranchSecrets(Branch $input)
-    {
-        //Password(:password), sha(:secret_key)
-        $Dstatment = "DELETE FROM `restaurant_branch_keys`
-WHERE `branch_id` = :branch_id;";
+    // function InsertOrUpdateBranch(Branch $input)
+    // {
+    //     if (!isset($input->id) || $input->id === 0) {
+    //         return $this->InsertBranch($input);
+    //     } else {
+    //         return $this->UpdateBranch($input);
+    //     }
+    // }
+    // private function InsertBranch(Branch $input)
+    // {
+    //     //Password(:password), sha(:secret_key)
+    //     $statement = "INSERT INTO `restaurant_branches`
+    //     (`restaurant_id`,
+    //     `city`,
+    //     `zip_code`,
+    //     `address`,
+    //     `country`,
+    //     `cvr`)
+    //     VALUES 
+    //     (:restaurant_id,
+    //     :city,
+    //     :zip_code,
+    //     :address,
+    //     :country,
+    //     :cvr);";
 
-        $Istatement = "INSERT INTO `restaurant_branch_keys`
-(`branch_id`,
-`secret_key`)
-VALUES
-";
-        $secsStatment = array();
-        foreach ($input->secrets as $secret) {
-            $secStatment = "($input->id,'$secret')";
-            array_push($secsStatment, $secStatment);
-        }
-        $Istatement .= implode(",", $secsStatment) . ";";
-        try {
-            $statement = $this->db->prepare("$Dstatment");
-            $this->db->beginTransaction();
-            $statement->execute(array(
-                'branch_id' => $input->id
-            ));
-            $this->db->commit();
-            $statement = $this->db->prepare("$Istatement");
-            $this->db->beginTransaction();
-            $statement->execute(array());
-            $this->db->commit();
+    //     try {
+    //         $statement = $this->db->prepare($statement);
+    //         $this->db->beginTransaction();
+    //         $statement->execute(array(
+    //             'restaurant_id' => $input->restaurantId,
+    //             'city' => $input->city,
+    //             'zip_code' => $input->zip_code,
+    //             'cvr' => $input->cvr,
+    //             'address' => $input->address,
+    //             'country' => $input->country
+    //         ));
+    //         $input->id = intval($this->db->lastInsertId());
+    //         $this->db->commit();
 
-            return true;
-        } catch (\PDOException $e) {
-            exit($e->getMessage());
-        }
-    }
+    //         return $input;
+    //     } catch (\PDOException $e) {
+    //         exit($e->getMessage());
+    //     }
+    // }
+    // private function UpdateBranch(Branch $input)
+    // {
+    //     //Password(:password), sha(:secret_key)
+    //     $statement = "UPDATE `restaurant_branches`
+    //      SET 
+    //      `restaurant_id` =   :restaurant_id ,
+    //      `reference_id` =   :reference_id ,
+    //      `city` =   :city ,
+    //      `zip_code` =   :zip_code ,
+    //      `cvr` =   :cvr ,
+    //      `address` =   :address ,
+    //      `country` =   :country
+
+    //      WHERE id   = :id;";
+
+    //     try {
+    //         $statement = $this->db->prepare($statement);
+    //         $this->db->beginTransaction();
+    //         $statement->execute(array(
+    //             'id' => (int)$input->id,
+    //             'restaurant_id' => $input->restaurantId,
+    //             'city' => $input->city,
+    //             'zip_code' => $input->zip_code,
+    //             'cvr' => $input->cvr,
+    //             'address' => $input->address,
+    //             'country' => $input->country,
+    //             'reference_id'=>$input->reference_id
+    //         ));
+    //         $this->db->commit();
+    //         return $input;
+    //     } catch (\PDOException $e) {
+    //         exit($e->getMessage());
+    //     }
+    // }
+
+    // public function InsertOrUpdateBranchSecrets(Branch $input)
+    // {
+    //     //Password(:password), sha(:secret_key)
+    //     $Dstatment = "DELETE FROM `restaurant_branch_keys`
+    //         WHERE `branch_id` = :branch_id;";
+
+    //                 $Istatement = "INSERT INTO `restaurant_branch_keys`
+    //         (`branch_id`,
+    //         `secret_key`)
+    //         VALUES
+    //         ";
+    //     $secsStatment = array();
+    //     foreach ($input->secrets as $secret) {
+    //         $secStatment = "($input->id,'$secret')";
+    //         array_push($secsStatment, $secStatment);
+    //     }
+    //     $Istatement .= implode(",", $secsStatment) . ";";
+    //     try {
+    //         $statement = $this->db->prepare("$Dstatment");
+    //         $this->db->beginTransaction();
+    //         $statement->execute(array(
+    //             'branch_id' => $input->id
+    //         ));
+    //         $this->db->commit();
+    //         $statement = $this->db->prepare("$Istatement");
+    //         $this->db->beginTransaction();
+    //         $statement->execute(array());
+    //         $this->db->commit();
+
+    //         return true;
+    //     } catch (\PDOException $e) {
+    //         exit($e->getMessage());
+    //     }
+    // }
 }

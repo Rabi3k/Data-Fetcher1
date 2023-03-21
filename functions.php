@@ -22,10 +22,8 @@ function GetStatmentsToExecute(array $statments)
         // echo "{$Key} : ".getenv('VERSION')." => ".version_compare($Key, getenv('VERSION'))."<br/>";
         if (version_compare($Key, getenv('VERSION')) > 0) {
             //echo "=>1";
-        $retval[$Key] =  $Value;
-            
+            $retval[$Key] =  $Value;
         }
-        
     }
     return $retval;
 
@@ -89,15 +87,14 @@ function UplaodImage(UploadType $type, string $fileName, $fileToUpload)
         $uploadOk = 1;
     } else {
         //echo "File is not an image.";
-        return "";
+        return array("upload"=>0,"message"=>"File is not an image!");
     }
     //}
 
 
     // Check file size
     if ($fileToUpload["size"] > 500000) { //$_FILES["fileToUpload"]
-        //echo "Sorry, your file is too large.";
-        return "";
+        return array("upload"=>0,"message"=>"Sorry, your file is too large!");
     }
 
     // Allow certain file formats
@@ -106,7 +103,7 @@ function UplaodImage(UploadType $type, string $fileName, $fileToUpload)
         && $imageFileType != "svg"
     ) {
         //echo "Sorry, only JPG, JPEG, PNG & SVG files are allowed.";
-        return "";
+        return array("upload"=>0,"message"=>"Sorry, only JPG, JPEG, PNG & SVG files are allowed!");
     }
 
     // Check if file already exists
@@ -117,7 +114,7 @@ function UplaodImage(UploadType $type, string $fileName, $fileToUpload)
     }
     // Check if $uploadOk is set to 0 by an error
     if ($uploadOk == 0) {
-        echo "Sorry, your file was not uploaded.";
+        return array("upload"=>0,"message"=>"Sorry, your file was not uploaded!");
         // if everything is ok, try to upload file
     } else {
         if (move_uploaded_file($fileToUpload["tmp_name"], $_SERVER['DOCUMENT_ROOT'] . $target_file)) {
@@ -125,14 +122,49 @@ function UplaodImage(UploadType $type, string $fileName, $fileToUpload)
             if (file_exists($_SERVER['DOCUMENT_ROOT'] . "$target_file.old")) {
                 unlink($_SERVER['DOCUMENT_ROOT'] . "$target_file.old"); //remove the file
             }
-            return $target_file;
+            return array("upload"=>1,"target_file"=>$target_file,"message"=>"");
         } else {
-            echo "Sorry, there was an error uploading your file.";
+            return array("upload"=>0,"message"=>"Sorry, there was an error uploading your file!");
         }
     }
-    return "";
+    
 }
 
+/**
+ * Get image path from the server
+ * 
+ * @param UploadType    $type               (Restaurant,User,System) to know in wich folder we insert the file
+ * @param string        $fileName           the file name in which the file is saved with
+ * 
+ */
+function GetImagePath(UploadType $type, string|null $fileName)
+{
+    //TODO: make all echo to log
+    if (!isset($fileName) || empty($fileName)) {
+        return "/media/restaurant/no-image.png";
+    }
+    $target_dir = "/media";
+    switch ($type) {
+        case UploadType::Restaurant:
+            $target_dir = "$target_dir/restaurant/";
+            break;
+        case UploadType::User:
+            $target_dir = "$target_dir/user/";
+            break;
+        case UploadType::System:
+            $target_dir = "$target_dir/System/";
+            break;
+    }
+    $imageFileTypes = array("jpg", "jpeg", "png", "svg");
+    foreach ($imageFileTypes as $imageFileType) {
+        # code...
+        $target_file = "$target_dir$fileName.$imageFileType"; //basename($_FILES["fileToUpload"]["name"]);
+        if (file_exists($_SERVER['DOCUMENT_ROOT'] . $target_file)) {
+            return $target_file;
+        }
+    }
+    return "/media/restaurant/no-image.png";
+}
 /**
  * 
  */
@@ -237,5 +269,5 @@ function str_Decrypt(string $encryption)
         $decryption_iv
     );
 
-   return $decryption;
+    return $decryption;
 }

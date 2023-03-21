@@ -2,13 +2,20 @@
 
 use Src\TableGateways\RestaurantsGateway;
 
-$restaurants = (new RestaurantsGateway($dbConnection))->GetAllRestaurants();
+if(isset($companyId))
+{
+    $restaurants = (new RestaurantsGateway($dbConnection))->FindByCompanyId($companyId);
+}
+else
+{
+    $restaurants = (new RestaurantsGateway($dbConnection))->GetAll();
+}
 ?>
     <div class="row">
         <div class="col-4"></div>
         <div class="col-4"></div>
         <div class="col-4">
-            <a class="btn btn-primary float-right" href="?new=" role="button"><i data-feather='plus-circle'></i><span> Ny</span></a>
+            <a class="btn btn-primary float-right <?php if(!isset($companyId) || empty($companyId)){echo "btn-disabled";}?>" href="/admin/restaurants/?new=&cid=<?php echo$companyId?>" role="button"><i data-feather='plus-circle'></i><span> Ny</span></a>
         </div>
     </div>
 <hr/>
@@ -26,10 +33,10 @@ $restaurants = (new RestaurantsGateway($dbConnection))->GetAllRestaurants();
             <?php foreach ($restaurants as $restaurant) {
                 
             ?>
-                <tr class='clickable-row' data-href="?id=<?php echo $restaurant->id ?>">
+                <tr class='clickable-row' data-href="/admin/restaurants/?id=<?php echo $restaurant->id ?>">
                     <th scope="row"><?php echo $restaurant->id ?></th>
                     <td scope="row"><?php echo $restaurant->name ?></td>
-                    <td scope="row"><?php echo $restaurant->cvr ?></td>
+                    <td scope="row"><?php echo $restaurant->p_nr ?></td>
                 </tr>
             <?php } ?>
         </tbody>

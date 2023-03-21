@@ -11,7 +11,7 @@ use Src\System\DbObject;
 class OrdersGateway extends DbObject
 {
 
-    #region abstract functions
+    #region protected functions
     protected function SetSelectStatment()
     {
         $tblname = $this->getTableName();
@@ -21,6 +21,8 @@ class OrdersGateway extends DbObject
     {
         $this->tblName = "order_head";
     }
+    #endregion
+     #region public functions
     public function findSoldItems(array $restauntRefId = array())
     {
         $tblname = $this->getTableName();
@@ -177,12 +179,7 @@ class OrdersGateway extends DbObject
             $query = $this->getDbConnection()->query($statment);
             $result = $query->fetchAll(\PDO::FETCH_ASSOC);
             $query->closeCursor();
-            $results = array();
-            foreach ($result as $row) {
-                $jObj = new Order($row);
-                $results[] =  $jObj;
-            }
-            return $results;
+            return Order::GetOrderList($result);
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }

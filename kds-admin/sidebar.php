@@ -19,6 +19,12 @@
                 </a>
               </li>
               <li class="nav-item">
+                <a class="nav-link" href="/admin/companies">
+                  <span data-feather="codesandbox"></span>
+                  Companies
+                </a>
+              </li>
+              <li class="nav-item">
                 <a class="nav-link" href="/admin/restaurants">
                   <span data-feather="coffee"></span>
                   Restaurants
