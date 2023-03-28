@@ -18,7 +18,7 @@ if (isset($_GET['id'])) {
     $idUrl = "new";
 }
 $profiles = (new UserProfilesGateway($dbConnection))->GetAllProfiles();
-$restaurants = (new RestaurantsGateway($dbConnection))->GetAllRestaurants();
+$restaurants = (new RestaurantsGateway($dbConnection))->GetAll();
 
 $userSecret = $userLogin->GetEncryptedKey($lUser->email);
 $secretKey =  bin2hex($userSecret);
@@ -226,7 +226,7 @@ if (isset($_POST['set-access'])) {
         <form method="post" name="setAccess" action="?<?php echo $idUrl ?>&action=set-access&tab=access">
             <ul class="form-group">
                 <?php foreach ($restaurants as $r) {
-                    $restaurant = (new RestaurantsGateway($dbConnection))->GetRestaurant($r->id)[0];
+                    $restaurant = (new RestaurantsGateway($dbConnection))->FindById($r->id);
                 ?>
                     <li class="form-check">
                         <input id="restaurant_<?php echo $r->id ?>" class="form-check-input" level="parent" type="checkbox" name="restaurtants[<?php echo $r->id ?>]" value="<?php echo $r->id ?>" <?php echo $lUser->IsRestaurnatAccessible($r) ? "checked" : "" ?> data-toggle="collapse" data-target="#restaurant_<?php echo $r->id ?>_branches" aria-controls="restaurant_<?php echo $r->id ?>_branches">
