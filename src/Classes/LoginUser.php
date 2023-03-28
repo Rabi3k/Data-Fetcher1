@@ -64,7 +64,40 @@ class LoginUser extends ClassObj
 
         $this->LoadDataObject($companyObj);
     }
-
+    public function IsRestaurnatAccessible(Restaurant $restaurant): bool
+    {
+        $retval = (Traversable::from($this->restaurants))->where(function ($r) use ($restaurant) {
+            echo "$r->id === $restaurant->id";
+            return $r->id === $restaurant->id;
+        })->asArray();
+        return count($retval) > 0;
+    }
+    public function usertype()
+    {
+        if ($this->isSuperAdmin) {
+            return "SuperAdmin";
+        } else if ($this->IsAdmin) {
+            return "Admin";
+        } else {
+            return "User";
+        }
+    }
+    public function SetUsertype(string $type)
+    {
+        switch (strtolower($type)) {
+            case "superadmin":
+                $this->isSuperAdmin = true;
+                $this->isAdmin = false;
+                return;
+            case "admin":
+                $this->isSuperAdmin = false;
+                $this->isAdmin = true;
+                return;
+            default:
+                $this->isSuperAdmin =  $this->isAdmin = false;
+                return;
+        }
+    }
     #endregion
     #region static function
     public static function NewUser(): LoginUser

@@ -42,12 +42,12 @@ class UserGateway extends DbObject
                 "isSuperAdmin", u.`isSuperAdmin`,
                 "screen_type", u.`screen_type`,
                 "Restaurants_Id", concat("[",group_concat(distinct r.`gf_refid`),"]"),
-                "Profile",CONVERT(GROUP_CONCAT(DISTINCT case when p.id is null then "" else JSON_OBJECT(
+                "Profile",CONVERT(GROUP_CONCAT(DISTINCT case when p.id is null then "{}" else JSON_OBJECT(
                 "id", p.`id`,
                 "admin",ifnull( p.`admin`,0),
                 "super-admin", ifnull( p.`super-admin`,0)
              ) end SEPARATOR \',\'),  JSON),
-              "companies",CONVERT(CONCAT (\'[\',GROUP_CONCAT(DISTINCT case when c.id is null then "" else JSON_OBJECT(
+              "companies",CONVERT(CONCAT (\'[\',GROUP_CONCAT(DISTINCT case when c.id is null then "{}" else JSON_OBJECT(
                 "id", c.`id`,
                 "name", c.`name`,
                 "cvr_nr", c.`cvr_nr`,
@@ -59,7 +59,7 @@ class UserGateway extends DbObject
                 "gf_refid", c.`gf_refid`
              ) end SEPARATOR \',\'),
                     \']\'),  JSON),
-              "restaurants",CONVERT(CONCAT (\'[\',GROUP_CONCAT(DISTINCT case when r.id is null then "" else JSON_OBJECT(
+              "restaurants",CONVERT(CONCAT (\'[\',GROUP_CONCAT(DISTINCT case when r.id is null then "{}" else JSON_OBJECT(
                 "id", r.`id`,
                 "company_id", r.`company_id`,
                 "name", r.`name`,
@@ -93,22 +93,24 @@ class UserGateway extends DbObject
             $statement = $this->getDbConnection()->query($statment);
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
             $statement->closeCursor();
+            
             if (count($result) < 1) {
                 return null;
             }
             return LoginUser::GetUserFromJsonStr($result[0]["user"]);
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
-    static function GetUserClass($id, bool $foceRest = true)
+    static function GetUserClass($id, bool $foceRest = true): LoginUser|null
     {
         if (!isset($GLOBALS['dbConnection'])) {
             exit("db connection not loaded properly");
         }
         $ul = new UserGateway($GLOBALS['dbConnection']);
         $u = $ul->FindById($id);
-        return $u->Getjson();
+        return $u;
     }
     function GetUserByUsernamePassword($username, $password)
     {
@@ -123,6 +125,50 @@ class UserGateway extends DbObject
             $sth->execute(array('password' => $password, 'username' => $username));
             $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
             return $result;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
+    function GetEncryptedKey($userEmail)
+    {
+        /*AES_Encrypt(concat(`user_name`,'$',`secret_key`),'maxtibi1301') */
+
+        $userEmail = strtolower($userEmail);
+        /*$password = \mysql_escape_string($password);*/
+        $statement = " SELECT AES_Encrypt(concat(`user_name`,'$',`secret_key`),'maxtibi1301') as 'SecretKey' from $this->tblName where email=:email ;";
+
+        try {
+            $sth = $this->getDbConnection()->prepare($statement);
+            $this->getDbConnection()->beginTransaction();
+            $sth->execute(array('email' => $userEmail));
+            $this->getDbConnection()->commit();
+            $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
+            $UserSecret = Traversable::from($result);
+            return $UserSecret->first()['SecretKey'] ?? null;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
+    function DecryptSecretKey($secretKey)
+    {
+        /*AES_Encrypt(concat(`user_name`,'$',`secret_key`),'maxtibi1301') */
+
+        /*$password = \mysql_escape_string($password);*/
+        $statement = " SELECT AES_DECRYPT($secretKey,'maxtibi1301') as 'UserSecret';";
+
+        try {
+            $sth = $this->getDbConnection()->prepare($statement);
+
+            $this->getDbConnection()->beginTransaction();
+            $sth->execute();
+            $this->getDbConnection()->commit();
+            $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
+            $UserSecret = Traversable::from($result);
+            $str = $UserSecret
+                ->select(function ($x) {
+                    return explode('$', strval($x['UserSecret']));
+                })->first();
+            return $str;
         } catch (\PDOException $e) {
             exit($e->getMessage());
         }
@@ -166,9 +212,10 @@ class UserGateway extends DbObject
     function ValidateLoginBySecretKey($username, $secretKey)
     {
 
-        $user = $this->GetUserByUsernameSecretKey($username, $secretKey);
+        $user = LoginUser::GetUser($this->GetUserByUsernameSecretKey($username, $secretKey)[0]);
 
         if ($user) {
+
             if (strtolower($user->user_name) === strtolower($username) || strtolower($user->email) === strtolower($username)) {
                 $_SESSION["loggedin"] = true;
                 $_SESSION["UserId"] = $user->id;
@@ -202,6 +249,121 @@ class UserGateway extends DbObject
             }
         }
         return $loggedIn;
+    }
+
+    function InsertOrUpdate(LoginUser $input)
+    {
+
+        if ($input->id == 0) {
+            return $this->InsertUser($input);
+        } else {
+            return $this->UpdateUser($input);
+        }
+    }
+    private function InsertUser(LoginUser $input)
+    {
+        //Password(:password), sha(:secret_key)
+        $statement = "INSERT INTO $this->tblName
+        (`email`, `user_name`, `full_name`, `password`, `secret_key`, `profile_id`, `IsAdmin`, `isSuperAdmin`,`screen_type`)
+         VALUES (:email, :user_name, :full_name, SHA2(:secret_key,224), SHA(:secret_key), :profile_id, :IsAdmin, :isSuperAdmin, :screen_type)";
+
+        try {
+            $statement = $this->getDbConnection()->prepare($statement);
+            $this->getDbConnection()->beginTransaction();
+            $statement->execute(array(
+                'email' => $input->email,
+                'user_name' => $input->user_name,
+                'full_name' => $input->full_name,
+                'secret_key' => 'funneat',
+                'profile_id' => $input->profile->id,
+                'IsAdmin' => $input->isAdmin,
+                'isSuperAdmin' => $input->isSuperAdmin,
+                'screen_type' => $input->screen_type,
+            ));
+            $input->id = intval($this->getDbConnection()->lastInsertId());
+            $this->getDbConnection()->commit();
+            return $input;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
+    private function UpdateUser(LoginUser $input)
+    {
+        //Password(:password), sha(:secret_key)
+        $statement = "UPDATE $this->tblName
+         SET 
+         `email` =   :email ,
+         `user_name` =   :user_name ,
+         `full_name` =   :full_name ,
+         `profile_id` =   :profile_id ,
+         `IsAdmin` =   :IsAdmin ,
+         `isSuperAdmin` =   :isSuperAdmin,
+         `screen_type` =   :screen_type 
+
+         WHERE id   = :id;";
+
+        try {
+            $statement = $this->getDbConnection()->prepare($statement);
+            $this->getDbConnection()->beginTransaction();
+            $statement->execute(array(
+                'id' => (int)$input->id,
+                'email' => $input->email,
+                'user_name' => $input->user_name,
+                'full_name' => $input->full_name,
+                'profile_id' => $input->profile->id,
+                'IsAdmin' => $input->isAdmin ?? false,
+                'isSuperAdmin' => $input->isSuperAdmin ?? false,
+                'screen_type' => $input->screen_type ?? 1,
+            ));
+            $this->getDbConnection()->commit();
+            return $input;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
+    function UpdatePassword(string $password)
+    {
+        //Password(:password), sha(:secret_key)
+        $statement = "UPDATE $this->tblName
+         SET 
+         `password` =   SHA2(:secret_key,224) ,
+         `secret_key`   =   SHA(:secret_key) 
+         WHERE id   = :id;";
+
+        try {
+            $statement = $this->getDbConnection()->prepare($statement);
+            $this->getDbConnection()->beginTransaction();
+            $statement->execute(array(
+                'id' => (int)$this->user->id,
+                'secret_key' => strval($password),
+            ));
+            $this->getDbConnection()->commit();
+            return $this->user;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
+    function UpdateUserPassword(LoginUser $user, string $password)
+    {
+        //Password(:password), sha(:secret_key)
+        $statement = "UPDATE $this->tblName
+         SET 
+         `password` =   SHA2(:secret_key,224) ,
+         `secret_key`   =   SHA(:secret_key) 
+         WHERE id   = :id;";
+
+        try {
+            $statement = $this->getDbConnection()->prepare($statement);
+            $this->getDbConnection()->beginTransaction();
+            $statement->execute(array(
+                'id' => (int)$user->id,
+                'secret_key' => strval($password),
+            ));
+            $this->getDbConnection()->commit();
+            return $user;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
     }
     #endregion
 }

@@ -3,13 +3,14 @@
 use Src\Classes\User;
 use Src\Classes\KMail;
 use Src\TableGateways\UserLoginGateway;
+use Src\TableGateways\UserGateway;
 use Src\TableGateways\RestaurantsGateway;
 use Src\TableGateways\UserProfilesGateway;
 
 $SaveType = "";
 $idUrl = "";
 if (isset($_GET['id'])) {
-    $lUser = UserLoginGateway::GetUserClass($_GET['id'], false);
+    $lUser = UserGateway::GetUserClass($_GET['id'], false);
     $SaveType = "update";
     $idUrl = "id=$lUser->id";
 } else if (isset($_GET['new'])) {
@@ -20,7 +21,7 @@ if (isset($_GET['id'])) {
 $profiles = (new UserProfilesGateway($dbConnection))->GetAllProfiles();
 $restaurants = (new RestaurantsGateway($dbConnection))->GetAll();
 
-$userSecret = $userLogin->GetEncryptedKey($lUser->email);
+$userSecret = $userGateway->GetEncryptedKey($lUser->email);
 $secretKey =  bin2hex($userSecret);
 if (isset($_GET['action'])) {
     if ($_GET['action'] == 'change-password') {
@@ -67,9 +68,9 @@ if (isset($_GET['action'])) {
             }
         }
         if (isset($_POST['inputProfile']) && !empty($_POST['inputProfile'])) {
-            $lUser->profile->id = intval($_POST['inputProfile']);
+            $lUser->Profile["id"] = intval($_POST['inputProfile']);
         }
-        $lUser = $userLogin->InsertOrUpdate($lUser);
+        $lUser = $userGateway->InsertOrUpdate($lUser);
         $idUrl = "id=$lUser->id";
     }
 }
@@ -107,6 +108,7 @@ if (isset($_POST['set-access'])) {
     $lUser = UserLoginGateway::GetUserClass($_GET['id'], false);
 }
 ?>
+<?php var_dump($lUser); ?>
 <div class="row">
     <div class="col-4">
         <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
@@ -325,7 +327,7 @@ if (isset($_POST['set-access'])) {
     $('#inputProfile option[name=<?php echo $lUser->UserType() ?>]').show();
     $("#rb_<?php echo $lUser->UserType()   ?>").prop("checked", true);
     $("#rb_<?php echo $lUser->GetScreenType()   ?>").prop("checked", true);
-    $("#inputProfile").val("<?php echo $lUser->profile->id   ?>");
+    $("#inputProfile").val("<?php echo $lUser->Profile["id"]   ?>");
     $("#userDetails").validate({
         rules: {
             inputUserName: {
