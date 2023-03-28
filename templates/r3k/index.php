@@ -1,7 +1,9 @@
 <?php
 
+use Src\TableGateways\UserGateway;
 
-if (!$userLogin->checkLogin()) {
+if(!$userGateway->checkLogin())
+{
   header("Location: $rootpath/login.php");
   exit();
 }

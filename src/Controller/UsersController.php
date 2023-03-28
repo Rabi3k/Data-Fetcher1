@@ -4,7 +4,7 @@ namespace Src\Controller;
 use Src\TableGateways\UserLoginGateway;
 use Src\Enums\FuncType;
 use Src\Classes\User;
-
+use Src\TableGateways\UserGateway;
 
 class UsersController {
 
@@ -13,6 +13,7 @@ class UsersController {
     private array $params;
 
     private $usersGateway;
+    private $userGateway;
 
     public function __construct($db, $requestMethod, $params)
     {
@@ -20,6 +21,7 @@ class UsersController {
         $this->requestMethod = $requestMethod;
         $this->params = $params;
         $this->usersGateway = new UserLoginGateway($db);
+        $this->userGateway = new UserGateway($db);
     }
 
     public function processRequest()
@@ -34,6 +36,7 @@ class UsersController {
                         $response = GeneralController::CreateResponser($this->getUser($this->params['u'],$password));
                         break;
                     case FuncType::ById:
+                        $response = GeneralController::CreateResponser($this->getUserById($this->params['id']));
                         //$response = $this->getOrderById($this->params['id']);
                         break;
                     case FuncType::All:
@@ -45,7 +48,6 @@ class UsersController {
                         $response = $this->notFoundResponse();
                         break;
                 }
-                break;
                 break;
             case 'POST':
                 //$response = $this->createRequestFromRequest();
@@ -86,12 +88,17 @@ class UsersController {
        return FuncType::All;
     }
 
+    private function getUserById($id)
+    {
+        $u= $this->userGateway->FindById($id);
+        return $u->getJson();
+    }
     private function getUser(string $username,string $password)
     {
-        $users = $this->usersGateway->GetUserByUsernamePassword($username,$password);
+        $users = $this->userGateway->GetUserByUsernamePassword($username,$password);
         if (count($users) > 0) {
             //$user = $users[0];
-            $user  = UserLoginGateway::GetUserClass($users[0]["id"]);
+            $user  = UserGateway::GetUserClass($users[0]["id"]);
 
             if (strtolower($user->user_name) === strtolower($username) || strtolower($user->email) === strtolower($username)) {
                 return $user;
@@ -99,7 +106,7 @@ class UsersController {
         }
         /*$response['status_code_header'] = 'HTTP/1.1 200 OK';
         $response['body'] = json_encode($user);*/
-        return null;
+        return array();
     }
     #region Header response
     private function unprocessableEntityResponse()

@@ -184,6 +184,8 @@ class CompanyGateway extends DbObject
         `name`,
         `cvr_nr`,
         `address`,
+        `city`,
+        `zip`,
         `email`,
         `phone`,
         `gf_refid`)
@@ -196,10 +198,8 @@ class CompanyGateway extends DbObject
         :zip,
         :email,
         :phone,
-        :gf_refid)
-        
+        :gf_refid)        
          ON DUPLICATE KEY UPDATE 
-        SET
         `name` = :name,
         `cvr_nr` = :cvr_nr,
         `address` = :address,
@@ -223,11 +223,16 @@ class CompanyGateway extends DbObject
                 'phone' => $input->phone,
                 'gf_refid' => intval($input->gf_refid)
             ));
-            $input->id = intval($this->getDbConnection()->lastInsertId());
+            $insertid = intval($this->getDbConnection()->lastInsertId());
+            if ($insertid > 0) {
+                $input->id = $insertid;
+            }
+            
             $this->getDbConnection()->commit();
 
             return $input;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }

@@ -26,7 +26,9 @@ $endDate = $_GET["e"] ?? null;
 $username = $_GET["u"] ?? NULL;
 $password = $_GET["p"] ?? null;
 $secrets = $_GET["secrets"] ?? null;
+$userRefIds = $_GET["userRefIds"] ?? null;
 $secrets = isset($secrets) ? json_decode($secrets) : array();
+$userRefIds = isset($userRefIds) ? explode(",",$userRefIds) : array();
 //echo file_get_contents('php://input');
 //echo $_GET["secrets"]??"Get Nothing";
 //echo $_POST["secrets"]??"Post nothing";
@@ -68,13 +70,14 @@ switch ($oper) {
             'startDate' =>  $startDate,
             'endDate'   =>  $endDate,
         ]);
-        $controller = new ActiveOrderController($dbConnection, $requestMethod, $params, $secrets);
+        $controller = new ActiveOrderController($dbConnection, $requestMethod, $params, $secrets,$userRefIds);
         $controller->processRequest();
         break;
 
     case "logs":
         include($_SERVER["DOCUMENT_ROOT"] . '/logs/index.php');
         break;
+
 
     case 'restaurant':
         

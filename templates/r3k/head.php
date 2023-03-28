@@ -20,7 +20,11 @@
     <!-- https://code.jquery.com/jquery-3.5.1.js
 https://cdn.datatables.net/1.13.2/js/dataTables.bootstrap4.min.js-->
 
-    <link rel="stylesheet" href="<?php echo "/$templatePath" ?>/css/style.min.css">
+    <link rel="stylesheet" href="<?php
+
+            use Src\TableGateways\UserGateway;
+
+ echo "/$templatePath" ?>/css/style.min.css">
 
     <!-- <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper/swiper-bundle.min.css" />
@@ -53,6 +57,7 @@ https://cdn.datatables.net/1.13.2/js/dataTables.bootstrap4.min.js-->
         var rootpath = '<?php echo $rootpath ?>';
         var templatePath = '<?php echo $templatePath ?>';
         var userSecrets = JSON.parse('<?php echo $userLogin->GetSecrets() ?>')
+        var userRefIds = JSON.parse('<?php echo UserGateway::$user->Restaurants_Id ?>')
     </script>
         
     <script type="text/javascript" src="<?php echo $rootpath . "/" . $templatePath ?>/js/playsound.min.js"></script>

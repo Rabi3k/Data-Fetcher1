@@ -18,17 +18,19 @@ class ActiveOrderController {
     private $requestMethod;
     private array $params;
     private array $secrets;
+    private array $userRefIds;
     private $requestsGateway;
     private $orderGateway;
 #endregion
 
 #region constructor
-    public function __construct($db, $requestMethod,$params =array(),$secrets = array())
+    public function __construct($db, $requestMethod,$params =array(),$secrets = array(),$userRefIds=array())
     {
         $this->db = $db;
         $this->requestMethod = $requestMethod;
         $this->params = $params;
         $this->secrets = $secrets??array();
+        $this->userRefIds = $userRefIds??array();
 
         $this->requestsGateway = new RequestsGateway($db);
         $this->orderGateway = new OrdersGateway($db);
@@ -43,7 +45,7 @@ class ActiveOrderController {
                 switch($this->getFunc())
                 {
                     case FuncType::ByDate:
-                        $response = $this->getActiveOrderIdsByDate($this->params['startDate'],$this->params['endDate'],$this->secrets);
+                        $response = $this->getActiveOrderIdsByDate($this->params['startDate'],$this->params['endDate'],$this->userRefIds);
                         break;
                     case FuncType::ById:
                         $response = $this->getOrderById($this->params['id']);
@@ -73,7 +75,7 @@ class ActiveOrderController {
 #region private function
     private function getFunc():FuncType
     {
-       if(!isset($this->params) || !isset($this->secrets) || \count($this->secrets)<1)
+       if(!isset($this->params) || !isset($this->secrets) || count($this->userRefIds)<1)
        {
             return FuncType::None;
        }
@@ -98,7 +100,8 @@ class ActiveOrderController {
         {
             $eDate->setTime(23,59,59,999999);
         }
-        $data = $this->orderGateway->FindActiveIdsByDate($sDate,$eDate,$secrets);
+        //$data = $this->orderGateway->FindActiveIdsByDate($sDate,$eDate,$secrets);
+        $data = $this->orderGateway->FindActiveIdsByDateRestaurantRefId($sDate,$eDate,$secrets);
         return GeneralController::CreateResponser($data);
     }
     private function getOrderById($id)

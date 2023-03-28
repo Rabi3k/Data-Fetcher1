@@ -34,14 +34,14 @@ if (isset($_GET['action'])) {
         if (isset($_POST['inputPhone']) && !empty($_POST['inputPhone'])) {
             $lCompany->phone = $_POST['inputPhone'];
         }
-        if (isset($_POST['inputPhone']) && !empty($_POST['inputPhone'])) {
-            $lCompany->phone = $_POST['inputPhone'];
+        if (isset($_POST['inputStreet']) && !empty($_POST['inputStreet'])) {
+            $lCompany->address = $_POST['inputStreet'];
         }
-        if (isset($_POST['inputPhone']) && !empty($_POST['inputPhone'])) {
-            $lCompany->phone = $_POST['inputPhone'];
+        if (isset($_POST['inputCity']) && !empty($_POST['inputCity'])) {
+            $lCompany->city = $_POST['inputCity'];
         }
-        if (isset($_POST['inputPhone']) && !empty($_POST['inputPhone'])) {
-            $lCompany->phone = $_POST['inputPhone'];
+        if (isset($_POST['inputZip']) && !empty($_POST['inputZip'])) {
+            $lCompany->zip = $_POST['inputZip'];
         }
         if (isset($_POST['inputReferenceId']) && !empty($_POST['inputReferenceId'])) {
             $lCompany->gf_refid = $_POST['inputReferenceId'];
@@ -50,7 +50,6 @@ if (isset($_GET['action'])) {
             $nyPath =  UplaodImage(UploadType::Restaurant, $lCompany->name, $_FILES['fileToUpload']);
             $lCompany->logo = (isset($nyPath) && !empty($nyPath)) ? $nyPath : $lCompany->logo;
         }
-
 
         $lCompany = $restaurantsGateway->InsertOrUpdate($lCompany);
         $idUrl = "id=$lCompany->id";
@@ -171,7 +170,7 @@ if (isset($_GET['action'])) {
 
             <form method="post" id="profleAccess" action="?<?php echo $idUrl ?>&action=set-restaurants&tab=restaurants">
                 <div class="row">
-                    <div class="form-group col-12 text-right float-right">
+                    <div class="form-group col-12 float-right">
                         <?php include __DIR__ . "/../restaurant/restaurants-list.php" ?>
                         <!-- <button type="submit" class="btn btn-primary">Save</button> -->
                     </div>

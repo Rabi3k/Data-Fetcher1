@@ -215,6 +215,32 @@ class OrdersGateway extends DbObject
             exit($e->getMessage());
         }
     }
+    public function FindActiveIdsByDateRestaurantRefId($startDate, $endDate, array $refIds)
+    {
+        $tblname = $this->getTableName();
+        $StrRefIds = implode("','", $refIds);
+        $sDate = $startDate->format('Y-m-d H:i:s');
+        $eDate = $endDate->format('Y-m-d H:i:s');
+        $statment = "SELECT oh.`id` FROM `order_head` oh 
+                        WHERE
+                            oh.`ready` = 0
+                            AND oh.`status` = 'accepted'
+                            AND oh.`fulfill_at` BETWEEN CAST('$sDate' as DateTime) AND CAST('$eDate' as DateTime)
+                            And oh.`restaurant_id` IN ('$StrRefIds')
+                        ORDER BY oh.`fulfill_at`";
+        try {
+            $query = $this->getDbConnection()->query($statment);
+            $result = $query->fetchAll(\PDO::FETCH_ASSOC);
+            $query->closeCursor();
+            $results = array();
+            foreach ($result as $row) {
+                $results[] =  $row['id'];
+            }
+            return $results;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
     public function FindActiveByDate($startDate, $endDate, array $secrets)
     {
 

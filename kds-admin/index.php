@@ -5,11 +5,11 @@ use Src\TableGateways\OrdersGateway;
 use Src\Classes\Order;
 
 $getWholeUrl = $_SERVER['HTTP_HOST'] . "" . $_SERVER['REQUEST_URI'] . "";
-if (!$userLogin->checkLogin()) {
+if (!$userGateway->checkLogin()) {
         header("Location: /login.php?returnurl=" . $_SERVER['REQUEST_URI']);
         exit();
 }
-$loggedUser = $userLogin->GetUser();
+$loggedUser = $userGateway::$user;
 if (!$loggedUser->isSuperAdmin) {
         header("Location: /");
         exit();

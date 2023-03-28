@@ -1,6 +1,6 @@
 <?php
 require_once("../bootstrap.php");
-if (!$userLogin->checkLogin()) {
+if (!$userGateway->checkLogin()) {
     exit();
   }
 //echo json_encode($userLogin->GetUser());

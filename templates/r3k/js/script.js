@@ -125,7 +125,7 @@ function GetNewOrder() {
   var now = new Date();
   var s = getdatestr(now, '');
   var secrets = JSON.stringify(userSecrets);
-  $.getJSON('../api/orders/' + s + '-' + s + '?secrets=' + secrets).then(r => {
+  $.getJSON('../api/orders/' + s + '-' + s + '?userRefIds=' + userRefIds).then(r => {
     let fetchedIds = r.data;
     let toRemove = ActiveOrderIds.filter(x => !fetchedIds.includes(x));
     let toAdd = fetchedIds.filter(x => !ActiveOrderIds.includes(x));

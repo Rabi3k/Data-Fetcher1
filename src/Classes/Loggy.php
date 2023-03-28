@@ -47,7 +47,7 @@ class Loggy
     #region Public func
     private function initValues(string $stacktrace, $exception)
     {
-        $userLogin = $GLOBALS["userLogin"];
+        $userLogin = $GLOBALS["userGateway"];
         $userLogin->checkLogin();
         $user = $userLogin->GetUser();
         //var_dump($userLogin);

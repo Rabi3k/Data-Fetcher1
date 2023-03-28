@@ -4,9 +4,9 @@ $errorMessage = false;
 $lUser = null;
 
 if (isset($_GET['secret'])) {
-  $keys = $userLogin->DecryptSecretKey($_GET['secret']);
+  $keys = $userGateway->DecryptSecretKey($_GET['secret']);
   if (isset($keys) && count($keys) > 1) {
-    $lUser = $userLogin->GetUserByUsernameSecretKey($keys[0], $keys[1]);
+    $lUser = $userGateway->GetUserByUsernameSecretKey($keys[0], $keys[1]);
   }
   if (!isset($lUser)) {
     header("Location: /");
@@ -14,21 +14,21 @@ if (isset($_GET['secret'])) {
   } else {
 
 
-    if (!$userLogin->ValidateLoginBySecretKey($keys[0], $keys[1])) {
+    if (!$userGateway->ValidateLoginBySecretKey($keys[0], $keys[1])) {
       //show error message;
 
       $errorMessage = true;
     }
   }
 } else if (isset($_POST['uname']) && isset($_POST['password'])) {
-  if (!$userLogin->ValidateLogin($_POST['uname'], $_POST['password'])) {
+  if (!$userGateway->ValidateLogin($_POST['uname'], $_POST['password'])) {
     //show error message;
     $errorMessage = true;
   }
 }
 
 
-if ($userLogin->checkLogin()) {
+if ($userGateway->checkLogin()) {
   $returnUrl = "$rootpath/";
   if (isset($_GET['returnurl'])) {
     $returnUrl = $_GET['returnurl'];

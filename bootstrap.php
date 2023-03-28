@@ -18,6 +18,7 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Handler\FirePHPHandler;
 use Src\Classes\Options;
 use Src\TableGateways\OptionsGateway;
+use Src\TableGateways\UserGateway;
 use Src\TableGateways\UserLoginGateway;
 
 require_once("config.php");
@@ -57,6 +58,7 @@ if (session_status() === PHP_SESSION_NONE) {
     define('GIT_ACCESS_TOKEN',$Github['GIT_ACCESS_TOKEN']);
     
     $userLogin = new UserLoginGateway($dbConnection);
+    $userGateway = new UserGateway($dbConnection);
     
     $templatePath = "templates/$template";
     ini_set('session.referer_check', 'TRUE');

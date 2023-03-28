@@ -287,6 +287,16 @@ footer {
   background-color: #444;
 }
 
+.time-text
+{
+  height: 4em;
+}
+.logo-img
+{
+  width: 5em;
+  height: 5em;
+}
+
 #main {
   transition: margin-left .5s;
   /* padding: 10px 0px 10px 0px; */
