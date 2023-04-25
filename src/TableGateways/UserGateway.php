@@ -25,7 +25,7 @@ class UserGateway extends DbObject
     }
     #endregion
     #region public functions
-    public function FindById($id): LoginUser|null
+    public function FindById($id, $forceLoad=true): LoginUser|null
     {
         $statment = 'SELECT 
 
@@ -41,7 +41,7 @@ class UserGateway extends DbObject
                 "IsAdmin", u.`IsAdmin`,
                 "isSuperAdmin", u.`isSuperAdmin`,
                 "screen_type", u.`screen_type`,
-                "Restaurants_Id", concat("[",group_concat(distinct r.`gf_refid`),"]"),
+                "Restaurants_Id", CONVERT(concat("[",group_concat(distinct r.`gf_refid`),"]"), JSON),
                 "Profile",CONVERT(GROUP_CONCAT(DISTINCT case when p.id is null then "{}" else JSON_OBJECT(
                 "id", p.`id`,
                 "admin",ifnull( p.`admin`,0),
@@ -84,8 +84,10 @@ class UserGateway extends DbObject
             LEFT JOIN `tbl_profiles` as p on (u.profile_id = p.id)
             LEFT JOIN `tbl_user_relations` ur on(u.id = ur.user_id)
             LEFT JOIN `tbl_restaurants` as r1 on (ur.restaurant_id = r1.id)
-            LEFT JOIN `tbl_companies` as c on (IFNULL(ur.company_id ,r1.company_id)= c.id OR (IFNULL(ur.company_id,0)=0 AND IFNULL(ur.restaurant_id,0)=0 AND u.isSuperAdmin = 1) )
-            LEFT JOIN `tbl_restaurants` as r on (case when r1.id is not null then r1.id = r.id else r.company_id = c.id end)
+            LEFT JOIN `tbl_companies` as c on (IFNULL(ur.company_id ,r1.company_id)= c.id';
+             //OR (IFNULL(ur.company_id,0)=0 AND IFNULL(ur.restaurant_id,0)=0 AND u.isSuperAdmin = 1) )
+             $statment .= $forceLoad ? ' OR (IFNULL(ur.company_id,0)=0 AND IFNULL(ur.restaurant_id,0)=0 AND u.isSuperAdmin = 1))':')';
+            $statment .= 'LEFT JOIN `tbl_restaurants` as r on (case when r1.id is not null then r1.id = r.id else r.company_id = c.id end)
             where u.`id` = ' . $id . '
             group by u.id;';
         //echo "ID: $id <br/>statment: $statment<br/>";
@@ -109,7 +111,7 @@ class UserGateway extends DbObject
             exit("db connection not loaded properly");
         }
         $ul = new UserGateway($GLOBALS['dbConnection']);
-        $u = $ul->FindById($id);
+        $u = $ul->FindById($id,$foceRest);
         return $u;
     }
     function GetUserByUsernamePassword($username, $password)
@@ -275,7 +277,7 @@ class UserGateway extends DbObject
                 'user_name' => $input->user_name,
                 'full_name' => $input->full_name,
                 'secret_key' => 'funneat',
-                'profile_id' => $input->profile->id,
+                'profile_id' => $input->profile_id,
                 'IsAdmin' => $input->isAdmin,
                 'isSuperAdmin' => $input->isSuperAdmin,
                 'screen_type' => $input->screen_type,
@@ -310,7 +312,7 @@ class UserGateway extends DbObject
                 'email' => $input->email,
                 'user_name' => $input->user_name,
                 'full_name' => $input->full_name,
-                'profile_id' => $input->profile->id,
+                'profile_id' => $input->profile_id,
                 'IsAdmin' => $input->isAdmin ?? false,
                 'isSuperAdmin' => $input->isSuperAdmin ?? false,
                 'screen_type' => $input->screen_type ?? 1,
@@ -321,6 +323,45 @@ class UserGateway extends DbObject
             exit($e->getMessage());
         }
     }
+
+    public function updateUserRelations(array $userRelations)
+    {
+        //Password(:password), sha(:secret_key)
+        $Dstatment = "DELETE FROM `tbl_user_relations`
+WHERE `user_id` = :user_id;";
+
+        $Istatement = "INSERT INTO `tbl_user_relations`
+(`user_id`,
+`company_id`,
+`restaurant_id`)
+VALUES
+";
+        $secsStatment = array();
+        foreach ($userRelations as $i) {
+            $company_id = $i->company_id ?? 'null';
+            $restaurant_id = $i->restaurant_id ?? 'null';
+            $secStatment = "($i->user_id,$company_id,$restaurant_id)";
+            array_push($secsStatment, $secStatment);
+        }
+        $Istatement .= implode(",", $secsStatment) . ";";
+        try {
+            $statement = $this->getDbConnection()->prepare("$Dstatment");
+            $this->getDbConnection()->beginTransaction();
+            $statement->execute(array(
+                'user_id' => $i->user_id
+            ));
+            $this->getDbConnection()->commit();
+            $statement = $this->getDbConnection()->prepare("$Istatement");
+            $this->getDbConnection()->beginTransaction();
+            $statement->execute(array());
+            $this->getDbConnection()->commit();
+
+            return true;
+        } catch (\PDOException $e) {
+            exit($e->getMessage());
+        }
+    }
+
     function UpdatePassword(string $password)
     {
         //Password(:password), sha(:secret_key)

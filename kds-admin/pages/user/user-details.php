@@ -1,5 +1,6 @@
 <?php
 
+use Src\Classes\Company;
 use Src\Classes\User;
 use Src\Classes\KMail;
 use Src\TableGateways\UserLoginGateway;
@@ -20,13 +21,17 @@ if (isset($_GET['id'])) {
 }
 $profiles = (new UserProfilesGateway($dbConnection))->GetAllProfiles();
 $restaurants = (new RestaurantsGateway($dbConnection))->GetAll();
+$companiesTree = Company::getAllCompaniesJsonTree();
+
 
 $userSecret = $userGateway->GetEncryptedKey($lUser->email);
 $secretKey =  bin2hex($userSecret);
+
+$compTree = $lUser->GetUserComanyRelationTree();
 if (isset($_GET['action'])) {
     if ($_GET['action'] == 'change-password') {
         if (isset($_POST['password1'])) {
-            $userLogin->UpdateUserPassword($lUser, $_POST['password1']);
+            $userGateway->UpdateUserPassword($lUser, $_POST['password1']);
         } else if (array_key_exists('SendRestPaswordEmail', $_POST)) {
 
             //$secret = $userLogin->GetEncryptedKey($lUser->email);
@@ -68,7 +73,7 @@ if (isset($_GET['action'])) {
             }
         }
         if (isset($_POST['inputProfile']) && !empty($_POST['inputProfile'])) {
-            $lUser->Profile["id"] = intval($_POST['inputProfile']);
+            $lUser->profile_id = intval($_POST['inputProfile']);
         }
         $lUser = $userGateway->InsertOrUpdate($lUser);
         $idUrl = "id=$lUser->id";
@@ -84,14 +89,14 @@ if (isset($_POST['set-access'])) {
                     $ur = new stdClass();
                     $ur->user_id = $lUser->id;
                     $ur->restaurant_id = $key;
-                    $ur->branch_id = $bkey;
+                    $ur->company_id = $bkey;
                     array_push($userRelations, $ur);
                 }
             } else {
                 $ur = new stdClass();
                 $ur->user_id = $lUser->id;
                 $ur->restaurant_id = $key;
-                $ur->branch_id = null;
+                $ur->company_id = null;
                 array_push($userRelations, $ur);
             }
         }
@@ -101,14 +106,32 @@ if (isset($_POST['set-access'])) {
         $ur = new stdClass();
         $ur->user_id = $lUser->id;
         $ur->restaurant_id = null;
-        $ur->branch_id = null;
+        $ur->company_id = null;
         array_push($userRelations, $ur);
     }
-    $userLogin->updateUserRelations($userRelations);
-    $lUser = UserLoginGateway::GetUserClass($_GET['id'], false);
+    $userGateway->updateUserRelations($userRelations);
+    $lUser = UserGateway::GetUserClass($_GET['id'], false);
+   
 }
+$companiesTreejs = array();
+foreach ($companiesTree as $c) {
+    $co = new stdClass();
+    $co->parentNodeId = $c->id ;
+    $co->parentNodeTxt = $c->name ;
+    $co->childNodes = array() ;
+    foreach ($c->restaurants as $r) {
+        $cor = new stdClass();
+        $cor->id=$r->id;
+        $cor->name=$r->name;
+        $co->childNodes[] = $cor;
+    }
+    $companiesTreejs[]=$co;
+}
+
 ?>
-<?php var_dump($lUser); ?>
+<script>
+    var companiesTree = <?php echo json_encode($companiesTreejs); ?>;
+</script>
 <div class="row">
     <div class="col-4">
         <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
@@ -231,9 +254,9 @@ if (isset($_POST['set-access'])) {
                     $restaurant = (new RestaurantsGateway($dbConnection))->FindById($r->id);
                 ?>
                     <li class="form-check">
-                        <input id="restaurant_<?php echo $r->id ?>" class="form-check-input" level="parent" type="checkbox" name="restaurtants[<?php echo $r->id ?>]" value="<?php echo $r->id ?>" <?php echo $lUser->IsRestaurnatAccessible($r) ? "checked" : "" ?> data-toggle="collapse" data-target="#restaurant_<?php echo $r->id ?>_branches" aria-controls="restaurant_<?php echo $r->id ?>_branches">
+                        <input id="restaurant_<?php echo $r->id ?>" class="form-check-input" level="parent" type="checkbox" name="restaurtants[<?php echo $r->id ?>]" value="<?php echo $r->id ?>" <?php echo  isset($lUser->Restaurants_Id)&& in_array($r->gf_refid, $lUser->Restaurants_Id, true) ? "checked" : "" ?> data-toggle="collapse" data-target="#restaurant_<?php echo $r->id ?>_branches" aria-controls="restaurant_<?php echo $r->id ?>_branches">
                         <label for="restaurant_<?php echo $r->id ?>" class="form-check-label"><?php echo $r->name ?></label>
-                        <ul class="form-group collapse <?php echo $lUser->IsRestaurnatAccessible($r) ? "show" : "" ?>" id="restaurant_<?php echo $r->id ?>_branches">
+                        <ul class="form-group collapse <?php echo isset($lUser->Restaurants_Id) && in_array($r->id, $lUser->Restaurants_Id, true)  ? "show" : "" ?>" id="restaurant_<?php echo $r->id ?>_branches">
                             <?php foreach ($restaurant->branches as $b) {
 
                             ?>
@@ -257,6 +280,13 @@ if (isset($_POST['set-access'])) {
                     </li>
                 <?php } ?>
             </ul>
+
+            <div id="tree" class="tree"></div>
+<script>$("#tree").treejs({
+    sourceType : 'json',
+    dataSource : companiesTree,
+    initialState:'open'
+});</script>
             <button type="submit" name="set-access" class="btn btn-primary">Save</button>
         </form>
         <script>

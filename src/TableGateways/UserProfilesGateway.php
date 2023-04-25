@@ -9,7 +9,7 @@ use Pinq\Traversable;
 class UserProfilesGateway
 {
     private $db = null;
-    private $tblName = "`profiles`";
+    private $tblName = "`tbl_profiles`";
 
     public function __construct($db)
     {
@@ -21,7 +21,7 @@ class UserProfilesGateway
         `name`,
         `admin`,
         `super-admin`
-        FROM `profiles`;";
+        FROM `tbl_profiles`;";
         try {
             $statement = $this->db->prepare($statement);
             $statement->execute();
@@ -48,7 +48,7 @@ class UserProfilesGateway
         `name`,
         `admin`,
         `super-admin`
-        FROM `profiles`
+        FROM `tbl_profiles`
         WHERE id = :id
         ;";
         try {

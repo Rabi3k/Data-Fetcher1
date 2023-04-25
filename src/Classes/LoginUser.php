@@ -14,7 +14,7 @@ use Pinq\Traversable;
 
 class LoginUser extends ClassObj
 {
-     #region Private props
+    #region Private props
     #endregion
 
     #region Construct
@@ -64,10 +64,26 @@ class LoginUser extends ClassObj
 
         $this->LoadDataObject($companyObj);
     }
+    public function GetUserComanyRelationTree(): array|null
+    {
+        $retval = array();
+        $restaurants = isset($this->restaurants) ? $this->restaurants : array();
+        if (isset($this->companies)) {
+            foreach ($this->companies as $c) {
+
+                $cRest =  (Traversable::from($restaurants))->where(function ($r) use ($c) {
+                    return $r["company_id"] === $c["id"];
+                })->asArray();
+                $c["restaurants"] = new Restaurant($cRest);
+                $retval[] = new Company($c);
+            }
+        }
+
+        return $retval;
+    }
     public function IsRestaurnatAccessible(Restaurant $restaurant): bool
     {
         $retval = (Traversable::from($this->restaurants))->where(function ($r) use ($restaurant) {
-            echo "$r->id === $restaurant->id";
             return $r->id === $restaurant->id;
         })->asArray();
         return count($retval) > 0;
