@@ -12,13 +12,13 @@ if (isset($_GET['secret'])) {
     header("Location: /");
     exit();
   } else {
-
-
     if (!$userGateway->ValidateLoginBySecretKey($keys[0], $keys[1])) {
       //show error message;
       $errorMessage = true;
-    }else
-{    echo "passed";}
+    } else {
+      header("Location: \\");
+      exit();
+    }
   }
 } else if (isset($_POST['uname']) && isset($_POST['password'])) {
   if (!$userGateway->ValidateLogin($_POST['uname'], $_POST['password'])) {
