@@ -57,7 +57,7 @@ https://cdn.datatables.net/1.13.2/js/dataTables.bootstrap4.min.js-->
         var rootpath = '<?php echo $rootpath ?>';
         var templatePath = '<?php echo $templatePath ?>';
         var userSecrets = JSON.parse('<?php echo $userLogin->GetSecrets() ?>')
-        var userRefIds = JSON.parse('<?php echo json_encode(UserGateway::$user->Restaurants_Id) ?>')
+        var userRefIds = JSON.parse('<?php if(isset(UserGateway::$user)){echo json_encode(UserGateway::$user->Restaurants_Id);} ?>')
     </script>
         
     <script type="text/javascript" src="<?php echo $rootpath . "/" . $templatePath ?>/js/playsound.min.js"></script>
