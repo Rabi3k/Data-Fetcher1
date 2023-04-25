@@ -92,6 +92,7 @@ class UserGateway extends DbObject
             group by u.id;';
         //echo "ID: $id <br/>statment: $statment<br/>";
         try {
+            $this->getDbConnection()->query('SET SESSION group_concat_max_len=150000');
             $statement = $this->getDbConnection()->query($statment);
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
             $statement->closeCursor();
@@ -128,6 +129,7 @@ class UserGateway extends DbObject
             $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
             return $result;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -148,6 +150,7 @@ class UserGateway extends DbObject
             $UserSecret = Traversable::from($result);
             return $UserSecret->first()['SecretKey'] ?? null;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -172,6 +175,7 @@ class UserGateway extends DbObject
                 })->first();
             return $str;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -190,6 +194,7 @@ class UserGateway extends DbObject
             $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
             return $result;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -244,7 +249,8 @@ class UserGateway extends DbObject
             if (isset($this::$user) && $this::$user->id > 0) {
                 $loggedIn = true;
             } else {
-                $this::$user = $this->FindById($_SESSION["UserId"]);
+                $us = $this->FindById($_SESSION["UserId"]);
+                $this::$user = $us;
                 if (isset($this::$user) && $this::$user->id != null) {
                     $loggedIn = true;
                 }
@@ -286,6 +292,7 @@ class UserGateway extends DbObject
             $this->getDbConnection()->commit();
             return $input;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -320,6 +327,7 @@ class UserGateway extends DbObject
             $this->getDbConnection()->commit();
             return $input;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -358,6 +366,7 @@ VALUES
 
             return true;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -381,6 +390,7 @@ VALUES
             $this->getDbConnection()->commit();
             return $this->user;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -403,6 +413,7 @@ VALUES
             $this->getDbConnection()->commit();
             return $user;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }

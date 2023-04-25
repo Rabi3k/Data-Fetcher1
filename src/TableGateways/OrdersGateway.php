@@ -59,6 +59,7 @@ class OrdersGateway extends DbObject
             $items = json_decode($itemst);
             return $items;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -78,6 +79,7 @@ class OrdersGateway extends DbObject
             }
             return $results;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -101,6 +103,7 @@ class OrdersGateway extends DbObject
             }
             return $results;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -159,6 +162,7 @@ class OrdersGateway extends DbObject
             //echo ($o->getJsonStr());
             return $o;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -181,6 +185,7 @@ class OrdersGateway extends DbObject
             $query->closeCursor();
             return Order::GetOrderList($result);
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -212,13 +217,14 @@ class OrdersGateway extends DbObject
             }
             return $results;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
     public function FindActiveIdsByDateRestaurantRefId($startDate, $endDate, array $refIds)
     {
         $tblname = $this->getTableName();
-        $StrRefIds = implode("','", $refIds);
+        $StrRefIds = implode(",", $refIds);
         $sDate = $startDate->format('Y-m-d H:i:s');
         $eDate = $endDate->format('Y-m-d H:i:s');
         $statment = "SELECT oh.`id` FROM `order_head` oh 
@@ -226,19 +232,23 @@ class OrdersGateway extends DbObject
                             oh.`ready` = 0
                             AND oh.`status` = 'accepted'
                             AND oh.`fulfill_at` BETWEEN CAST('$sDate' as DateTime) AND CAST('$eDate' as DateTime)
-                            And oh.`restaurant_id` IN ('$StrRefIds')
+                            And oh.`restaurant_id` IN ($StrRefIds)
                         ORDER BY oh.`fulfill_at`";
         try {
             $query = $this->getDbConnection()->query($statment);
+
             $result = $query->fetchAll(\PDO::FETCH_ASSOC);
+            
             $query->closeCursor();
             $results = array();
             foreach ($result as $row) {
-                $results[] =  $row['id'];
+                $results[] = $row['id'];
             }
             return $results;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
+            
         }
     }
     public function FindActiveByDate($startDate, $endDate, array $secrets)
@@ -267,6 +277,7 @@ class OrdersGateway extends DbObject
             }
             return $results;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -298,6 +309,7 @@ class OrdersGateway extends DbObject
             }
             return $results;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -328,6 +340,7 @@ class OrdersGateway extends DbObject
             }
             return $results;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }

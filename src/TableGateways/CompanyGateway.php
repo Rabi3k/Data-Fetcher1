@@ -63,6 +63,7 @@ class CompanyGateway extends DbObject
             }
             return Company::GetCompany($result[0]);
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -105,6 +106,7 @@ class CompanyGateway extends DbObject
             }
             return Company::GetCompanyList($result);
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -119,6 +121,7 @@ class CompanyGateway extends DbObject
             }
             return Company::GetCompanyList($result);
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -174,6 +177,7 @@ class CompanyGateway extends DbObject
 
             return $input;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }

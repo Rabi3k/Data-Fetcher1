@@ -1,6 +1,8 @@
 <?php
 namespace Src\System;
 
+use Src\Classes\Loggy;
+
 class DatabaseConnector {
 
     private $dbConnection = null;
@@ -20,6 +22,7 @@ class DatabaseConnector {
                 $pass
             );
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }

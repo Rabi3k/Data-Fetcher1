@@ -3,13 +3,13 @@
 use Src\TableGateways\OrdersGateway;
 use Src\Classes\Order;
 use Src\Enums\ItemStatus;
-
 $orderstGateway = new OrdersGateway($dbConnection);
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
     $row = $orderstGateway->FindById($id);
 } else if (isset($row)) {
-    $row = $orderstGateway->FindById($row->id);
+    
+    $row = $orderstGateway->FindById($row);
 }
 if (!isset($row)) {
     die();

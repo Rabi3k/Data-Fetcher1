@@ -1,6 +1,8 @@
 <?php
 namespace Src\System;
 
+use Src\Classes\Loggy;
+
 abstract class DbObject
 {
     #region Private Properties
@@ -45,6 +47,7 @@ abstract class DbObject
                 $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
                 return $result;
             } catch (\PDOException $e) {
+                (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
                 exit($e->getMessage());
             }
         }

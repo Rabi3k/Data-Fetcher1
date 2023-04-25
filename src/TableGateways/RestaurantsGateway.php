@@ -2,7 +2,7 @@
 
 namespace Src\TableGateways;
 
-
+use Src\Classes\Loggy;
 use Src\Classes\Restaurant;
 use Src\System\DbObject;
 
@@ -51,6 +51,7 @@ class RestaurantsGateway extends DbObject
             }
             return Restaurant::GetRestaurantList($result);
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -65,6 +66,7 @@ class RestaurantsGateway extends DbObject
             }
             return Restaurant::GetRestaurantList($result);
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -138,6 +140,7 @@ class RestaurantsGateway extends DbObject
 
             return $input;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -220,6 +223,7 @@ class RestaurantsGateway extends DbObject
 
             return $input;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }

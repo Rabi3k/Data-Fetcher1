@@ -4,6 +4,7 @@ namespace Src\TableGateways;
 use Pinq\Queries\Segments\Select;
 use Src\Classes\Options;
 use Pinq\Traversable;
+use Src\Classes\Loggy;
 
 class OptionsGateway
 {
@@ -39,6 +40,7 @@ class OptionsGateway
             })->asArray();
             return $options;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -62,6 +64,7 @@ class OptionsGateway
             })->asArray();
             return $options;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -88,6 +91,7 @@ class OptionsGateway
            $this->db->commit();
            return $input;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }

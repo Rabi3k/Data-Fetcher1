@@ -30,6 +30,7 @@ class RequestsGateway
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
             return $result;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -46,6 +47,7 @@ class RequestsGateway
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
             return $result;
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -103,6 +105,7 @@ class RequestsGateway
             ));
             return $statement->rowCount();
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
@@ -121,6 +124,7 @@ class RequestsGateway
             $statement->execute(array('id' => $id));
             return $statement->rowCount();
         } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
