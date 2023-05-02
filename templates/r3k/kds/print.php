@@ -39,8 +39,28 @@ if (!isset($OrderClass) || !isset($OrderClass->id)) {
 $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 
 $PageTitle = "KDS System Order #" . $orderId;
-$logoPath = GetImagePath(UploadType::Restaurant,$OrderClass->restaurant_name )
+$logoPath = GetImagePath(UploadType::Restaurant,$OrderClass->restaurant_name );
 // include "../$templatePath/head.php";
+
+switch ($OrderClass->type) {
+    case 'pickup':
+        $orderTypeText = 'Afhentning';
+        break;
+    case 'delivery':
+        $orderTypeText = 'Levering';
+        break;
+    case 'order_ahead':
+        $orderTypeText = 'Bordreservation';
+        break;
+    case 'table_reservation':
+        $orderTypeText = 'Bordreservation';
+        break;
+    case 'dine_in':
+        $orderTypeText = 'Spise i';
+        break;
+    default:
+        break;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -104,7 +124,10 @@ $logoPath = GetImagePath(UploadType::Restaurant,$OrderClass->restaurant_name )
             text-align: center;
             align-content: center;
         }
-
+        .lefted {
+            text-align: start;
+            align-content: flex-start;
+        }
         .ticket {
             width: 70mm;
             max-width: 70mm;
@@ -137,6 +160,7 @@ $logoPath = GetImagePath(UploadType::Restaurant,$OrderClass->restaurant_name )
                     E-mail : <?php echo $OrderClass->client_email; ?></br>
                     Mobil nr. : <?php echo $OrderClass->client_phone; ?></br>
                 </p>
+                <p class="lefted"><b>Ordre type: <?php echo $orderTypeText ?></b></p>
                 <table>
                     <thead>
                         <tr>
@@ -151,7 +175,14 @@ $logoPath = GetImagePath(UploadType::Restaurant,$OrderClass->restaurant_name )
                         ?>
                                 <tr>
                                     <td class="quantity"><?php echo $item->quantity ?></td>
-                                    <td class="description"><?php echo $item->name ?></td>
+                                    <td class="description"><?php echo $item->name ?>
+                                    <?php if ($item->instructions) { ?>
+                                        <span class="itemtext"><?php echo '*' . $item->instructions . '*' ?></span><br />
+                                    <?php }
+                                    foreach ($item->options as $option) { ?>
+                                        <span class="itemtext "><?php echo "*".$option->name ?></span><br />
+                                    <?php } ?>
+                                </td>
                                     <td class="price"><?php echo number_format( $item->price, 2, '. ', '' ); ?></td>
                                 </tr>
                         <?php }
