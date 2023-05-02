@@ -214,7 +214,7 @@ $logoPath = GetImagePath(UploadType::Restaurant,$OrderClass->restaurant_name )
                 <center>
                     <div id="legalcopy">
                         <picture>
-                            <img class="border border-dark rounded-circle bg-dark mx-auto d-block" src="https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=http%3A%2F%2Fportal.kbs-leb.com%2Forder%2F682324341&choe=UTF-8" title="Order #682324341" />
+                        <img class="border border-dark rounded-circle bg-dark mx-auto d-block" src="https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=<?php echo urlencode($actual_link) ?>&choe=UTF-8" title="Order #<?php echo $OrderClass->id ?>" />
                         </picture>
                         <p class="legal"><strong>Tak for dit køb!</strong></p>
                         <h3> <?php echo strtoupper($OrderClass->restaurant_name);?></h3>
