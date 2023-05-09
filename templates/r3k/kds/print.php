@@ -39,7 +39,7 @@ if (!isset($OrderClass) || !isset($OrderClass->id)) {
 $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
 
 $PageTitle = "KDS System Order #" . $orderId;
-$logoPath = GetImagePath(UploadType::Restaurant,$OrderClass->restaurant_name );
+$logoPath = GetImagePath(UploadType::Restaurant, $OrderClass->restaurant_name);
 // include "../$templatePath/head.php";
 
 switch ($OrderClass->type) {
@@ -69,7 +69,7 @@ switch ($OrderClass->type) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Receipt example</title>
+    <title>Order# <?php echo $OrderClass->id  ?></title>
     <style>
         * {
             font-size: 18px;
@@ -124,10 +124,12 @@ switch ($OrderClass->type) {
             text-align: center;
             align-content: center;
         }
+
         .lefted {
             text-align: start;
             align-content: flex-start;
         }
+
         .ticket {
             width: 70mm;
             max-width: 70mm;
@@ -138,8 +140,22 @@ switch ($OrderClass->type) {
             width: inherit;
         }
 
+        .new-order {
+            border: #343a40 1px solid;
+            border-radius: 10px;
+            display: block;
+            color: black;
+            text-decoration: none;
+            width: 10em;
+            padding: 5px;
+            margin: 5px
+        }
+
         @media print {
 
+            @page{
+                size: 80mm*200mm;
+            }
             .hidden-print,
             .hidden-print * {
                 display: none !important;
@@ -152,7 +168,7 @@ switch ($OrderClass->type) {
     <body>
         <center>
             <div class="ticket">
-                <img src="<?php echo $logoPath?>" alt="Logo">
+                <img src="<?php echo $logoPath ?>" alt="Logo">
                 <h2>Kunde Info</h2>
                 <p>
                     Navn : <?php echo $OrderClass->client_first_name . " " . $OrderClass->client_last_name; ?></br>
@@ -176,14 +192,14 @@ switch ($OrderClass->type) {
                                 <tr>
                                     <td class="quantity"><?php echo $item->quantity ?></td>
                                     <td class="description"><?php echo $item->name ?>
-                                    <?php if ($item->instructions) { ?>
-                                        <span class="itemtext"><?php echo '*' . $item->instructions . '*' ?></span><br />
-                                    <?php }
-                                    foreach ($item->options as $option) { ?>
-                                        <span class="itemtext "><?php echo "*".$option->name ?></span><br />
-                                    <?php } ?>
-                                </td>
-                                    <td class="price"><?php echo number_format( $item->price, 2, '. ', '' ); ?></td>
+                                        <?php if ($item->instructions) { ?>
+                                            <span class="itemtext"><?php echo '*' . $item->instructions . '*' ?></span><br />
+                                        <?php }
+                                        foreach ($item->options as $option) { ?>
+                                            <span class="itemtext "><?php echo "*" . $option->name ?></span><br />
+                                        <?php } ?>
+                                    </td>
+                                    <td class="price"><?php echo number_format($item->price, 2, '. ', ''); ?></td>
                                 </tr>
                         <?php }
                         } ?>
@@ -194,7 +210,7 @@ switch ($OrderClass->type) {
                                 <tr>
                                     <td class="quantity"></td>
                                     <td class="description"><?php echo $item->name ?></td>
-                                    <td class="price"><?php echo "-" . number_format( $item->item_discount , 2, '. ', '' );?></td>
+                                    <td class="price"><?php echo "-" . number_format($item->item_discount, 2, '. ', ''); ?></td>
                                 </tr>
                         <?php }
                         } ?>
@@ -203,7 +219,7 @@ switch ($OrderClass->type) {
                                 <tr>
                                     <td class="quantity"></td>
                                     <td class="description"><?php echo $item->name ?></td>
-                                    <td class="price"><?php echo "-" . number_format( $item->cart_discount_rate, 2, '. ', '' ); ?></td>
+                                    <td class="price"><?php echo "-" . number_format($item->cart_discount_rate, 2, '. ', ''); ?></td>
                                 </tr>
                         <?php }
                         } ?>
@@ -212,7 +228,7 @@ switch ($OrderClass->type) {
                                 <tr>
                                     <td class="quantity"></td>
                                     <td class="description"><?php echo $item->name ?></td>
-                                    <td class="price"><?php echo number_format( $item->price, 2, '. ', '' ); ?></td>
+                                    <td class="price"><?php echo number_format($item->price, 2, '. ', ''); ?></td>
                                 </tr>
                         <?php }
                         } ?>
@@ -223,13 +239,13 @@ switch ($OrderClass->type) {
                                 <h3><?php echo "Total" ?><h3>
                             </td>
                             <td class="price">
-                                <h3><b><?php echo number_format( $OrderClass->total_price, 2, '. ', '' ); ?></b></h3>
+                                <h3><b><?php echo number_format($OrderClass->total_price, 2, '. ', ''); ?></b></h3>
                             </td>
                         </tr>
                         <tr>
                             <td class="quantity"></td>
                             <td class="description"><?php echo  $OrderClass->tax_name ?></td>
-                            <td class="price"><?php echo  number_format( $OrderClass->tax_value , 2, '. ', '' ); ?></td>
+                            <td class="price"><?php echo  number_format($OrderClass->tax_value, 2, '. ', ''); ?></td>
                         </tr>
                         <tr>
                             <td class="quantity"></td>
@@ -245,17 +261,19 @@ switch ($OrderClass->type) {
                 <center>
                     <div id="legalcopy">
                         <picture>
-                        <img class="border border-dark rounded-circle bg-dark mx-auto d-block" src="https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=<?php echo urlencode($actual_link) ?>&choe=UTF-8" title="Order #<?php echo $OrderClass->id ?>" />
+                            <img class="border border-dark rounded-circle bg-dark mx-auto d-block" src="https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=<?php echo urlencode($actual_link) ?>&choe=UTF-8" title="Order #<?php echo $OrderClass->id ?>" />
                         </picture>
                         <p class="legal"><strong>Tak for dit køb!</strong></p>
-                        <h3> <?php echo strtoupper($OrderClass->restaurant_name);?></h3>
+                        <h3> <?php echo strtoupper($OrderClass->restaurant_name); ?></h3>
                         <p>
                             Adresse : torvet 2, 6580 Vamdrup</br>
                             Mobil nr. : +45 22 18 53 35</br>
                         </p>
                     </div>
                 </center>
-                <button id="btnPrint" class="hidden-print">Print</button>
+                <button id="btnPrint" class="hidden-print new-order">Print</button>
+                <br />
+                <a id="" class="hidden-print new-order" href="https:funneat.dk" target="_blank">Order again !</a>
                 <script>
                     const $btnPrint = document.querySelector("#btnPrint");
                     $btnPrint.addEventListener("click", () => {
@@ -263,4 +281,5 @@ switch ($OrderClass->type) {
                     });
                 </script>
     </body>
+
 </html>
