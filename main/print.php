@@ -40,6 +40,7 @@ use Mike42\Escpos\Printer;
 use Mike42\Escpos\EscposImage;
 use Mike42\Escpos\PrintConnectors\RawbtPrintConnector;
 use Mike42\Escpos\CapabilityProfile;
+use Mike42\Escpos\PrintConnectors\CupsPrintConnector;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use Src\Enums\UploadType;
 use Src\TableGateways\OrdersGateway;
@@ -91,7 +92,8 @@ try {
     $profile = CapabilityProfile::load("POS-5890");
 
     /* Fill in your own connector here */
-    $connector = new WindowsPrintConnector("Metapace T-25");
+    $connector = new CupsPrintConnector("Metapace T-25", $_SERVER["REMOTE_ADDR"]);
+    //new WindowsPrintConnector("Metapace T-25");
 
     /* Information for the receipt */
     $items = array(
