@@ -26,7 +26,6 @@ class ComposerStaticInit066f79285e7902e26079783eeea82b75
         'M' => 
         array (
             'Monolog\\' => 8,
-            'Mike42\\' => 7,
         ),
         'D' => 
         array (
@@ -62,10 +61,6 @@ class ComposerStaticInit066f79285e7902e26079783eeea82b75
         'Monolog\\' => 
         array (
             0 => __DIR__ . '/..' . '/monolog/monolog/src/Monolog',
-        ),
-        'Mike42\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/mike42/escpos-php/src/Mike42',
         ),
         'Dotenv\\' => 
         array (

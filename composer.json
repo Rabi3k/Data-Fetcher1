@@ -3,8 +3,7 @@
         "vlucas/phpdotenv": "^2.4",
         "monolog/monolog": "^3.2",
         "timetoogo/pinq": "^3.5",
-        "phpmailer/phpmailer": "^6.6",
-        "mike42/escpos-php": "^2.2"
+        "phpmailer/phpmailer": "^6.6"
     },
     "autoload": {
         "psr-4": {
