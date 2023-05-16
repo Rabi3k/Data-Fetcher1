@@ -8,7 +8,7 @@ use \Monolog\Logger;
 use \Monolog\Handler\StreamHandler;
 use \Monolog\Handler\FirePHPHandler;
 use Monolog\Formatter\JsonFormatter;
-
+use Src\TableGateways\UserGateway;
 use Src\TableGateways\UserLoginGateway;
 use stdClass;
 
@@ -47,7 +47,8 @@ class Loggy
     #region Public func
     private function initValues(string $stacktrace, $exception)
     {
-        $userLogin = $GLOBALS["userGateway"];
+        global $dbConnection;
+        $userLogin = $GLOBALS["userGateway"]??new UserGateway($dbConnection);
         $userLogin->checkLogin();
         $user = $userLogin->GetUser();
         //var_dump($userLogin);
