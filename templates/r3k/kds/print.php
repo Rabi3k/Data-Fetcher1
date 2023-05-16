@@ -153,9 +153,7 @@ switch ($OrderClass->type) {
 
         @media print {
 
-            @page{
-                size: 80mm*200mm;
-            }
+
             .hidden-print,
             .hidden-print * {
                 display: none !important;
@@ -169,10 +167,13 @@ switch ($OrderClass->type) {
         <center>
             <div class="ticket">
                 <img src="<?php echo $logoPath ?>" alt="Logo">
+                <h2><b>Order# <?php echo $OrderClass->id  ?></b></h2>
                 <h2>Kunde Info</h2>
                 <p>
                     Navn : <?php echo $OrderClass->client_first_name . " " . $OrderClass->client_last_name; ?></br>
-                    Adresse : <?php echo $OrderClass->client_address; ?></br>
+                    <?php if ($OrderClass->type === "delivery") { ?>
+                        Adresse : <?php echo $OrderClass->client_address; ?></br>
+                    <?php } ?>
                     E-mail : <?php echo $OrderClass->client_email; ?></br>
                     Mobil nr. : <?php echo $OrderClass->client_phone; ?></br>
                 </p>
@@ -219,15 +220,22 @@ switch ($OrderClass->type) {
                                 <tr>
                                     <td class="quantity"></td>
                                     <td class="description"><?php echo $item->name ?></td>
-                                    <td class="price"><?php echo "-" . number_format($item->cart_discount_rate, 2, '. ', ''); ?></td>
+                                    <td class="price"><?php echo  number_format($item->cart_discount, 2, '. ', ''); ?></td>
                                 </tr>
                         <?php }
                         } ?>
+                        <?php if ($OrderClass->type === "delivery") { ?>
+                            <tr>
+                                <td class="quantity"></td>
+                                <td class="description">subtotal</td>
+                                <td class="price"><?php echo number_format($OrderClass->sub_total_price, 2, '. ', ''); ?></td>
+                            </tr>
+                        <?php } ?>
                         <?php foreach ($OrderClass->items as $item) {
                             if ($item->type === 'delivery_fee') { ?>
                                 <tr>
                                     <td class="quantity"></td>
-                                    <td class="description"><?php echo $item->name ?></td>
+                                    <td class="description">levering</td>
                                     <td class="price"><?php echo number_format($item->price, 2, '. ', ''); ?></td>
                                 </tr>
                         <?php }
