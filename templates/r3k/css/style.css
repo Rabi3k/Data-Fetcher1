@@ -180,6 +180,7 @@ footer {
 {
   position: absolute;
   bottom: 5em;
+  z-index: 100;
 }
 .ToDo span
 {
@@ -231,7 +232,7 @@ footer {
     flex: 0 0 100%;
     display: block;
   }
-
+  
   .carousel-inner {
     display: flex;
   }

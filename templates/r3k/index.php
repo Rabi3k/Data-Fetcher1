@@ -12,7 +12,7 @@ if(!$userGateway->checkLogin())
 $PageTitle = "KDS System";
 include  $templatePath . '/head.php';
 
-include  $templatePath . '/header.php';
+
 ?>
 <!-- Header / Home-->
 
@@ -22,7 +22,11 @@ include  $templatePath . '/header.php';
 
 
 <div class="full-div opacity-min bg-secondary" >
-    <?php include "$templatePath/kds/index.php" ?>
+  
+    <?php 
+    include  $templatePath . '/header.php';
+    include "$templatePath/kds/index.php" 
+    ?>
 
   </div>
 

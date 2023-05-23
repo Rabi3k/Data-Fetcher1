@@ -98,7 +98,7 @@ $('#complete-btn').on("click", function (e) {
 });
 
 function openBottomBar() {
-  $('.bottom-bar').css("bottom", $("footer").height() + $("header").height());
+  $('.bottom-bar').css("bottom", $("footer").height());
   $('.bottom-bar').collapse('show')
   $('#info-lbl').text("order#" + selectedSlide);
   //$('#main-swiper').addClass('h-80');
