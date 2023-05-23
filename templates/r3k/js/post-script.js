@@ -200,7 +200,15 @@ var swiperCar = new Swiper('.swiper', {
   resizeObserver: true,
 
 });
-
+(function(){
+  function goFullscreen() {
+  document.querySelector("body").webkitRequestFullscreen();
+}
+  
+document.documentElement.onclick = goFullscreen;
+document.onkeydown = goFullscreen;
+  
+  })();
 // var carouselWidth = $(".carousel-inner")[0].scrollWidth;
 // var cardWidth = $(".carousel-item").width();
 // var scrollPosition = 0;
