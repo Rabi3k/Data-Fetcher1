@@ -843,7 +843,7 @@ class OrdersGateway extends DbObject
     public function UpdateOrderStatus(int $orderId, bool $status)
     {
         $statment = "UPDATE `tbl_order_head` oh 
-        left join order_items oi on(oh.id=oi.order_head_id)
+        left join `tbl_order_items` oi on(oh.id=oi.order_head_id)
         SET
         oh.`ready` = :status,
         oi.`status` = :orderItemStatus
