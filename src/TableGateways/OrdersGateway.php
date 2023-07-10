@@ -138,7 +138,7 @@ class OrdersGateway extends DbObject
             $o->items = $result_itemse;
             if (count($o->items) > 0) {
                 foreach ($o->items as $item) {
-                    $statment_itemOptions = "SELECT * FROM order_item_options
+                    $statment_itemOptions = "SELECT * FROM  `tbl_order_item_options` 
                     where order_item_id = $item->id";
                     $statment_itemOptions = $this->getDbConnection()->query($statment_itemOptions);
                     $result_itemOptions = $statment_itemOptions->fetchAll(\PDO::FETCH_ASSOC);
@@ -661,7 +661,7 @@ class OrdersGateway extends DbObject
     public function InsertOrUpdate_OrderItemOptionList($orderItemOption)
     {
 
-        $statement = "INSERT INTO `tbl_order_item_options`
+        $statement = "INSERT INTO `tbl_ `tbl_order_item_options` `
         (`id`,
         `order_item_id`,
         `name`,
