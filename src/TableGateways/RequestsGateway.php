@@ -10,7 +10,7 @@ class RequestsGateway
 {
 
     private $db = null;
-    private $tblName = "`requests`";
+    private $tblName = "`tbl_requests`";
 /**
  * 
  */

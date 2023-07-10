@@ -76,5 +76,17 @@ class Profile
         );
         return $profile;
     }
+    public static function GetProfileFromArray(
+       array $profileArray
+    ) {
+        $profile = new Profile();
+        $profile->LoadProfile(
+            $profileArray["id"],
+            $profileArray["name"],
+            $profileArray["super-admin"],
+            $profileArray["admin"]
+        );
+        return $profile;
+    }
     #endregion
 }

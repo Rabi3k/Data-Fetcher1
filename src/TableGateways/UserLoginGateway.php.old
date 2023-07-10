@@ -257,7 +257,7 @@ class UserLoginGateway
         LEFT JOIN `profiles` as p on (u.profile_id = p.id)
         LEFT JOIN `user_relations` as ur on (u.id = ur.user_id)
         LEFT JOIN `restaurant_branches` as rb1 on (ur.branch_id = rb1.id)
-        LEFT JOIN `restaurants` as r on (IFNULL(ur.restaurant_id ,rb1.restaurant_id)= r.id ";
+        LEFT JOIN `tbl_restaurants` as r on (IFNULL(ur.restaurant_id ,rb1.restaurant_id)= r.id ";
         $statement .= $foceRest ? "OR (IFNULL(ur.restaurant_id,0)=0 AND IFNULL(ur.branch_id,0)=0 AND u.isSuperAdmin = 1) )" : ") ";
         $statement .= "LEFT JOIN `restaurant_branches` as rb on (case when rb1.id is not null then rb1.id = rb.id else rb.restaurant_id = r.id end)
         LEFT JOIN `restaurant_branch_keys` as rbs on (rbs.branch_id = rb.id)

@@ -111,27 +111,24 @@ if (isset($_POST['set-access'])) {
     }
     $userGateway->updateUserRelations($userRelations);
     $lUser = UserGateway::GetUserClass($_GET['id'], false);
-   
 }
 $companiesTreejs = array();
 foreach ($companiesTree as $c) {
     $co = new stdClass();
-    $co->parentNodeId = $c->id ;
-    $co->parentNodeTxt = $c->name ;
-    $co->childNodes = array() ;
+    $co->parentNodeId = $c->id;
+    $co->parentNodeTxt = $c->name;
+    $co->childNodes = array();
     foreach ($c->restaurants as $r) {
         $cor = new stdClass();
-        $cor->id=$r->id;
-        $cor->name=$r->name;
+        $cor->id = $r->id;
+        $cor->name = $r->name;
         $co->childNodes[] = $cor;
     }
-    $companiesTreejs[]=$co;
+    $companiesTreejs[] = $co;
 }
 
 ?>
-<script>
-    var companiesTree = <?php echo json_encode($companiesTreejs); ?>;
-</script>
+
 <div class="row">
     <div class="col-4">
         <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
@@ -249,54 +246,23 @@ foreach ($companiesTree as $c) {
     <!-- set Profifle Tab -->
     <div class="tab-pane fade" id="access" role="tabpanel" aria-labelledby="profile-tab">
         <form method="post" name="setAccess" action="?<?php echo $idUrl ?>&action=set-access&tab=access">
-            <ul class="form-group">
-                <?php foreach ($restaurants as $r) {
-                    $restaurant = (new RestaurantsGateway($dbConnection))->FindById($r->id);
-                ?>
-                    <li class="form-check">
-                        <input id="restaurant_<?php echo $r->id ?>" class="form-check-input" level="parent" type="checkbox" name="restaurtants[<?php echo $r->id ?>]" value="<?php echo $r->id ?>" <?php echo  isset($lUser->Restaurants_Id)&& in_array($r->gf_refid, $lUser->Restaurants_Id, true) ? "checked" : "" ?> data-toggle="collapse" data-target="#restaurant_<?php echo $r->id ?>_branches" aria-controls="restaurant_<?php echo $r->id ?>_branches">
-                        <label for="restaurant_<?php echo $r->id ?>" class="form-check-label"><?php echo $r->name ?></label>
-                        <ul class="form-group collapse <?php echo isset($lUser->Restaurants_Id) && in_array($r->id, $lUser->Restaurants_Id, true)  ? "show" : "" ?>" id="restaurant_<?php echo $r->id ?>_branches">
-                            <?php foreach ($restaurant->branches as $b) {
+            <table>
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Alias </th>
+                        <th>City</th>
+                        <th>Phone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
 
-                            ?>
-                                <li class="form-check">
-                                    <input id="branch_<?php echo $b->id ?>" class="form-check-input" level="child" type="checkbox" name="restaurtants[<?php echo $r->id ?>][<?php echo $b->id ?>]" value="<?php echo $b->id ?>" <?php echo $lUser->IsBranchAccessible($b) ? "checked" : "" ?> data-toggle="collapse" data-target="#restaurant_<?php echo $r->id ?>_branch_<?php echo $b->id ?>_secrets" aria-controls="restaurant_<?php echo $r->id ?>_branch_<?php echo $b->id ?>_secrets">
-                                    <label for="branch_<?php echo $b->id ?>" class="form-check-label"><?php echo $b->cvr . " - " . $b->city ?></label>
-                                    <ul class="form-group collapse <?php echo $lUser->IsBranchAccessible($b) ? "show" : "" ?>" id="restaurant_<?php echo $r->id ?>_branch_<?php echo $b->id ?>_secrets">
-                                        <?php foreach ($b->secrets as $s) {
-                                        ?>
-                                            <li class="form-check">
-                                                <input id="secret_<?php echo $s ?>" class="form-check-input" type="checkbox" <?php echo isset($lUser->secrets) && count(array_filter($lUser->secrets, function ($x) use ($s) {
-                                                                                                                                    return $x === $s;
-                                                                                                                                })) ? "checked" : "" ?> name="restaurtants[<?php echo $r->id ?>][<?php echo $b->id ?>][<?php echo $s ?>]" value="<?php echo $s ?>">
-                                                <label for="secret_<?php echo $s ?>" class="form-check-label"><?php echo $s ?></label>
-                                            </li>
-                                        <?php } ?>
-                                    </ul>
-                                </li>
-                            <?php } ?>
-                        </ul>
-                    </li>
-                <?php } ?>
-            </ul>
-
-            <div id="tree" class="tree"></div>
-<script>$("#tree").treejs({
-    sourceType : 'json',
-    dataSource : companiesTree,
-    initialState:'open'
-});</script>
             <button type="submit" name="set-access" class="btn btn-primary">Save</button>
         </form>
-        <script>
-            $($('input[level="parent"]')).on('change', function() {
-                if (this.checked === false) {
-                    $(this).parent().find(':checkbox').prop('checked', false);
-                    $(this).parent().find('ul').removeClass('show');
-                }
-            });
-        </script>
+
 
     </div>
     <!-- End of Profifle Tab -->
@@ -357,7 +323,7 @@ foreach ($companiesTree as $c) {
     $('#inputProfile option[name=<?php echo $lUser->UserType() ?>]').show();
     $("#rb_<?php echo $lUser->UserType()   ?>").prop("checked", true);
     $("#rb_<?php echo $lUser->GetScreenType()   ?>").prop("checked", true);
-    $("#inputProfile").val("<?php echo $lUser->Profile["id"]   ?>");
+    $("#inputProfile").val("<?php echo $lUser->Profile->id   ?>");
     $("#userDetails").validate({
         rules: {
             inputUserName: {

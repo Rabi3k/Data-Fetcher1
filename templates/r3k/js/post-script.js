@@ -200,15 +200,45 @@ var swiperCar = new Swiper('.swiper', {
   resizeObserver: true,
 
 });
-(function(){
-  function goFullscreen() {
-  document.querySelector("body").webkitRequestFullscreen();
-}
-  
-document.documentElement.onclick = goFullscreen;
-document.onkeydown = goFullscreen;
-  
-  })();
+(function () {
+  var elem = document.documentElement;
+  function openFullscreen() {
+    if (elem.requestFullscreen) {
+      elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) { /* Safari */
+      elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) { /* IE11 */
+      elem.msRequestFullscreen();
+    }
+  }
+
+  function closeFullscreen() {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) { /* Safari */
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) { /* IE11 */
+      document.msExitFullscreen();
+    }
+  }
+  $("#btn-fullscreen").on("click", function () {
+    
+    if(($(this).attr('isFull')) == "true")
+    {
+      closeFullscreen();
+      $(this).attr('isFull',false);
+      $(this).html('<i class="bi bi-fullscreen"></i> Full Screen');
+    } else
+    {
+      openFullscreen();
+      $(this).attr('isFull',true);
+      $(this).html('<i class="bi bi-fullscreen-exit"></i> Exit Full Screen');
+    }
+  });
+  //document.documentElement.onclick = goFullscreen;
+  //document.onkeydown = goFullscreen;
+
+})();
 // var carouselWidth = $(".carousel-inner")[0].scrollWidth;
 // var cardWidth = $(".carousel-item").width();
 // var scrollPosition = 0;

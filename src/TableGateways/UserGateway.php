@@ -25,6 +25,52 @@ class UserGateway extends DbObject
     }
     #endregion
     #region public functions
+    public function GetAllUsers()
+    {
+        $statment = 'SELECT 
+
+            /* User */
+            JSON_OBJECT(
+                "id", u.`id`,
+                "email", u.`email`,
+                "user_name", u.`user_name`,
+                "full_name", u.`full_name`,
+                "password", u.`password`,
+                "secret_key", u.`secret_key`,
+                "profile_id", u.`profile_id`,
+                "IsAdmin", u.`IsAdmin`,
+                "isSuperAdmin", u.`isSuperAdmin`,
+                "screen_type", u.`screen_type`,
+                "Restaurants_Id", "[]",
+                "Profile",CONVERT(GROUP_CONCAT(DISTINCT case when p.id is null then "{}" else JSON_OBJECT(
+                "id", p.`id`,
+                "name",p.`name`,
+                "admin",ifnull( p.`admin`,0),
+                "super-admin", ifnull( p.`super-admin`,0)
+             ) end SEPARATOR \',\'),  JSON),
+              "companies","[]",
+              "restaurants","[]"
+             )as "user"
+            FROM `tbl_users` u
+            LEFT JOIN `tbl_profiles` as p on (u.profile_id = p.id)
+            LEFT JOIN `tbl_user_relations` ur on(u.id = ur.user_id)
+            GROUP BY u.id;';
+        //echo "ID: $id <br/>statment: $statment<br/>";
+        try {
+            $this->getDbConnection()->query('SET SESSION group_concat_max_len=150000');
+            $statement = $this->getDbConnection()->query($statment);
+            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $statement->closeCursor();
+            
+            if (count($result) < 1) {
+                return null;
+            }
+            return LoginUser::GetUserFromArrayJsonStr($result);
+        } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
+            exit($e->getMessage());
+        }
+    }
     public function FindById($id, $forceLoad=true): LoginUser|null
     {
         $statment = 'SELECT 
@@ -44,6 +90,7 @@ class UserGateway extends DbObject
                 "Restaurants_Id", CONVERT(concat("[",group_concat(distinct r.`gf_refid`),"]"), JSON),
                 "Profile",CONVERT(GROUP_CONCAT(DISTINCT case when p.id is null then "{}" else JSON_OBJECT(
                 "id", p.`id`,
+                "name",p.`name`,
                 "admin",ifnull( p.`admin`,0),
                 "super-admin", ifnull( p.`super-admin`,0)
              ) end SEPARATOR \',\'),  JSON),

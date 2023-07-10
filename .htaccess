@@ -17,6 +17,7 @@ RewriteRule ^api$ public/index.php [L,QSA]
 
 RewriteCond %{THE_REQUEST} %{ENV:ROOT_PATH}/kds-admin/([^\s?]*) [NC]
 RewriteRule ^ %1 [L,NE,R=302]
+RewriteRule ^admin/(.*)/(\d+)$ kds-admin/index.php?page=$1&id=$2 [L,QSA]
 RewriteRule ^admin/(.*)/(.*)$ kds-admin/index.php?page=$1&q=$2 [L,QSA]
 RewriteRule ^admin/(.*)$ kds-admin/index.php?page=$1 [L,QSA]
 RewriteRule ^admin$ kds-admin/index.php [L,QSA]

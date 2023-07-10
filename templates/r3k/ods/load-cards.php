@@ -9,7 +9,7 @@ $ordersGateway = new OrdersGateway($dbConnection);
 $sDate = (new \DateTime('today midnight', new \DateTimeZone('Europe/Copenhagen')));
 $eDate = (new \DateTime('tomorrow midnight', new \DateTimeZone('Europe/Copenhagen')));
 
-$secrets = $userLogin->GetUser()?->secrets ?? array();
+$secrets = $userGateway->GetUser()?->secrets ?? array();
 //$data = $ordersGateway->FindActiveByDate($sDate, $eDate, $secrets);
 $data = $ordersGateway->FindActiveIdsByDateRestaurantRefId($sDate, $eDate, UserGateway::$user->Restaurants_Id);
 $idOrders = array_column($data, 'id');
@@ -28,14 +28,4 @@ $idOrders = array_column($data, 'id');
             <?php include "create-card.php"; ?>
         <?php } ?>
     </div>
-
-    <!-- <div class="controls-container"> <a class="btn-prev" href="#carouselExampleInterval" role="button" data-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="sr-only">Previous</span>
-        </a>
-        <a class="btn-next" href="#carouselExampleInterval" role="button" data-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="sr-only">Next</span>
-        </a>
-    </div> -->
 </div>

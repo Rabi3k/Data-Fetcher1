@@ -17,6 +17,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.2/css/dataTables.bootstrap4.min.css" />
 
+    <!-- Bootstrap Icons  -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <!-- https://code.jquery.com/jquery-3.5.1.js
 https://cdn.datatables.net/1.13.2/js/dataTables.bootstrap4.min.js-->
 
@@ -56,7 +58,7 @@ https://cdn.datatables.net/1.13.2/js/dataTables.bootstrap4.min.js-->
     <script type="text/javascript">
         var rootpath = '<?php echo $rootpath ?>';
         var templatePath = '<?php echo $templatePath ?>';
-        var userSecrets = JSON.parse('<?php echo $userLogin->GetSecrets() ?>')
+        //var userSecrets = JSON.parse('<?php //echo $userLogin->GetSecrets() ?>')
         var userRefIds = JSON.parse('<?php if(isset(UserGateway::$user)){echo json_encode(UserGateway::$user->Restaurants_Id);} ?>')
     </script>
         

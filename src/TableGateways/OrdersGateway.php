@@ -33,8 +33,8 @@ class OrdersGateway extends DbObject
                 count(distinct oi.`order_head_id`) 'order_count',
                 sum(oi.`quantity`) as 'qty',
                 sum(oi.`total_item_price`) - sum(oi.`item_discount`) as 'total_Earn'
-            FROM order_items oi
-                LEFT JOIN order_head o on oi.`order_head_id` = o.`id`
+            FROM `tbl_order_items` oi
+                LEFT JOIN `tbl_order_head` o on oi.`order_head_id` = o.`id`
             WHERE o.`ready` = 0
                 AND oi.`type`='item'
                 AND o.`restaurant_id` in (IFNULL(:restaunt_id,o.`restaurant_id`))
@@ -110,11 +110,11 @@ class OrdersGateway extends DbObject
     public function FindById($id): Order|null
     {
         $tblname = $this->getTableName();
-        $statment = "SELECT * FROM `order_head` 
+        $statment = "SELECT * FROM `tbl_order_head` 
         where id = $id";
-        $statment_items = "SELECT * FROM `order_items` 
+        $statment_items = "SELECT * FROM `tbl_order_items` 
         where order_head_id = $id";
-        $statment_taxlist = "SELECT * FROM `ordder_tax_list` 
+        $statment_taxlist = "SELECT * FROM `tbl_ordder_tax_list` 
         where order_head_id = $id";
         //echo "ID: $id <br/>statment: $statment<br/>";
         try {
@@ -173,7 +173,7 @@ class OrdersGateway extends DbObject
         $secretsJ = implode("','", $secrets);
         $sDate = $startDate->format('Y-m-d H:i:s');
         $eDate = $endDate->format('Y-m-d H:i:s');
-        $statment = "SELECT oh.* FROM `order_head` oh 
+        $statment = "SELECT oh.* FROM `tbl_order_head` oh 
                         WHERE
                             oh.`fulfill_at` BETWEEN CAST('$sDate' as DateTime) AND CAST('$eDate' as DateTime)
                             And oh.`restaurant_key` IN ('$secretsJ')
@@ -200,7 +200,7 @@ class OrdersGateway extends DbObject
         $secretsJ = implode("','", $secrets);
         $sDate = $startDate->format('Y-m-d H:i:s');
         $eDate = $endDate->format('Y-m-d H:i:s');
-        $statment = "SELECT oh.`id` FROM `order_head` oh 
+        $statment = "SELECT oh.`id` FROM `tbl_order_head` oh 
                         WHERE
                             oh.`ready` = 0
                             AND oh.`status` = 'accepted'
@@ -227,7 +227,7 @@ class OrdersGateway extends DbObject
         $StrRefIds = implode(",", $refIds);
         $sDate = $startDate->format('Y-m-d H:i:s');
         $eDate = $endDate->format('Y-m-d H:i:s');
-        $statment = "SELECT oh.`id` FROM `order_head` oh 
+        $statment = "SELECT oh.`id` FROM `tbl_order_head` oh 
                         WHERE
                             oh.`ready` = 0
                             AND oh.`status` = 'accepted'
@@ -258,7 +258,7 @@ class OrdersGateway extends DbObject
         $secretsJ = implode("','", $secrets);
         $sDate = $startDate->format('Y-m-d H:i:s');
         $eDate = $endDate->format('Y-m-d H:i:s');
-        $statment = "SELECT oh.* FROM `order_head` oh 
+        $statment = "SELECT oh.* FROM `tbl_order_head` oh 
                         WHERE
                             oh.`ready` = 0
                             AND oh.`status` = 'accepted'
@@ -288,7 +288,7 @@ class OrdersGateway extends DbObject
         $secretsJ = implode("','", $secrets);
         $sDate = $startDate->format('Y-m-d H:i:s');
         $eDate = $endDate->format('Y-m-d H:i:s');
-        $statment = "SELECT oh.`id` FROM `order_head` oh 
+        $statment = "SELECT oh.`id` FROM `tbl_order_head` oh 
                         WHERE
                             oh.`ready` = 0
                             AND oh.`status` = 'accepted'
@@ -320,7 +320,7 @@ class OrdersGateway extends DbObject
         $secretsJ = implode("','", $secrets);
         $sDate = $startDate->format('Y-m-d H:i:s');
         $eDate = $endDate->format('Y-m-d H:i:s');
-        $statment = "SELECT oh.* FROM `order_head` oh 
+        $statment = "SELECT oh.* FROM `tbl_order_head` oh 
                         WHERE
                             oh.`ready` = 0
                             AND oh.`status` = 'accepted'
@@ -371,7 +371,7 @@ class OrdersGateway extends DbObject
     public function InsertOrUpdate_orderHead($order)
     {
 
-        $statement = "INSERT INTO `order_head`
+        $statement = "INSERT INTO `tbl_order_head`
        (`id`,
        `api_version`,
         `type`,
@@ -613,7 +613,7 @@ class OrdersGateway extends DbObject
             $statement->closeCursor();
 
             $this->getDbConnection()->commit();
-            (new Loggy())->info("new order_head Created / Updated: order_id => $order->id, restaurant_id => $order->restaurant_id");
+            (new Loggy())->info("new `tbl_order_head` Created / Updated: order_id => $order->id, restaurant_id => $order->restaurant_id");
             return $statement->rowCount();
         } catch (\PDOException $e) {
             (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
@@ -624,7 +624,7 @@ class OrdersGateway extends DbObject
     public function InsertOrUpdate_OrderTaxList($orderTaxList)
     {
 
-        $statement = "INSERT INTO `ordder_tax_list`
+        $statement = "INSERT INTO `tbl_ordder_tax_list`
         (`order_head_id`,
         `type`,
         `value`,
@@ -661,7 +661,7 @@ class OrdersGateway extends DbObject
     public function InsertOrUpdate_OrderItemOptionList($orderItemOption)
     {
 
-        $statement = "INSERT INTO `order_item_options`
+        $statement = "INSERT INTO `tbl_order_item_options`
         (`id`,
         `order_item_id`,
         `name`,
@@ -715,7 +715,7 @@ class OrdersGateway extends DbObject
     public function Delete_OrderTaxList($order_head_id)
     {
 
-        $statement = "DELETE FROM `ordder_tax_list`
+        $statement = "DELETE FROM `tbl_ordder_tax_list`
         WHERE order_head_id = :order_head_id;";
 
         try {
@@ -740,7 +740,7 @@ class OrdersGateway extends DbObject
     public function InsertOrUpdate_OrderItemsList($orderItemList)
     {
 
-        $statement = "INSERT INTO `order_items`
+        $statement = "INSERT INTO `tbl_order_items`
         (`id`,
         `order_head_id`,
         `name`,
@@ -842,7 +842,7 @@ class OrdersGateway extends DbObject
 
     public function UpdateOrderStatus(int $orderId, bool $status)
     {
-        $statment = "UPDATE `order_head` oh 
+        $statment = "UPDATE `tbl_order_head` oh 
         left join order_items oi on(oh.id=oi.order_head_id)
         SET
         oh.`ready` = :status,

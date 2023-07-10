@@ -1,9 +1,8 @@
 <?php
 
-use Src\TableGateways\UserGateway;
+//use Src\TableGateways\UserGateway;
 
-if(!$userGateway->checkLogin())
-{
+if (!$userGateway->checkLogin()) {
   header("Location: $rootpath/login.php");
   exit();
 }
@@ -21,11 +20,11 @@ include  $templatePath . '/head.php';
 <body class="wide  bg-dark" id="main">
 
 
-<div class="full-div opacity-min bg-secondary" >
-  
-    <?php 
+  <div class="full-div opacity-min bg-secondary">
+
+    <?php
     include  $templatePath . '/header.php';
-    include "$templatePath/kds/index.php" 
+    include "$templatePath/kds/index.php"
     ?>
 
   </div>

@@ -17,6 +17,8 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     $lCompany = Company::NewCompany();
     $SaveType = "add";
     $idUrl = "new";
+    include "company-new.php";
+    exit;
 }
 $companyId = $lCompany->id;
 if (isset($_GET['action'])) {

@@ -45,4 +45,13 @@ $screentypeText = $user->GetScreenTypeText();
 
     </ul>
   </section>
+  <hr />
+  <section class="buttons">
+    <ul class="nav">
+      <li class="nav-item">
+        <a class="nav-link btn btn-fullscreen" id="btn-fullscreen" isFull = "false"><i class="bi bi-fullscreen"></i>Full Screen</a>
+      </li>
+
+    </ul>
+  </section>
 </div>

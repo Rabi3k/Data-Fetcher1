@@ -9,7 +9,7 @@ use Src\Classes\Loggy;
 class OptionsGateway
 {
     private $db = null;
-    private $tblName = "`options`";
+    private $tblName = "`tbl_options`";
 /**
  * 
  */
@@ -76,7 +76,7 @@ class OptionsGateway
             array_push($values,$val);
         }
         $valStr= implode(",",$values);
-        $statement = "INSERT INTO `options`
+        $statement = "INSERT INTO `tbl_options`
         (`type`,
         `name`,
         `value`)

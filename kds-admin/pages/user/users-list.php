@@ -1,5 +1,5 @@
 <?php
-$users = $userLogin->GetAllUsers();
+$users = $userGateway->GetAllUsers();
 
 
 ?>
@@ -23,15 +23,10 @@ echo $hash;
 ?>
     <?php 
     
-    if($_GET['fragment'])
-    {
-        echo $_GET['fragment']; //This variable contains the fragment
-    }
 
     $url=parse_url($_SERVER["REQUEST_URI"]);
-    if($url['fragment'])
+    if(isset($url['fragment']))
     {
-        echo $url["fragment"]; //This variable contains the fragment
     }else
     {
         //var_dump($url);
@@ -39,10 +34,10 @@ echo $hash;
  //This variable contains the fragment
     ?>
 <hr/>
-<div class="table-responsive ">
-    <table class="table table-bordered table-hover" id="tblUsers">
+<div class="container-fluid">
+    <table class="table table-bordered table-sm table-responsive table-hover table-striped table-Light py-3" id="tblUsers">
         <caption>List of users</caption>
-        <thead class="thead-dark">
+        <thead class="table-info">
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">Name</th>
@@ -56,12 +51,12 @@ echo $hash;
             <?php foreach ($users as $user) {
                 $usertype = $user->usertype();
             ?>
-                <tr class='clickable-row' data-href="?id=<?php echo $user->id ?>">
+                <tr class='clickable-row' data-href="users/<?php echo $user->id ?>">
                     <th scope="row"><?php echo $user->id ?></th>
                     <td scope="row"><?php echo $user->full_name ?></td>
                     <td scope="row"><?php echo $user->email ?></td>
                     <td scope="row"><?php echo $user->user_name ?></td>
-                    <td scope="row"><?php echo $user->profile->name ?></td>
+                    <td scope="row"><?php echo $user->Profile->name ?></td>
                     <td scope="row"><?php echo $usertype ?></td>
                 </tr>
             <?php } ?>
