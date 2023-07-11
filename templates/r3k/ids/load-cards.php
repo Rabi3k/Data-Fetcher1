@@ -18,17 +18,9 @@ $idOrders = array_column($data, 'id');
 </script>
 <center class=" bg-primary opacity-90 p2 text-light">Item Panel</center>
 <?php $allBranches = $userGateway->GetUser()->UserBranches();
-if (count($allBranches) > 1) {
-?>
-    <ul class="nav nav-pills nav-fill bg-dark text-light">
-        <?php foreach ($allBranches as $key => $value) { ?>
 
-            <li class="nav-item btn-branch btn btn-outline-light " data-toggle="button" aria-pressed="true" tag="<?php echo $value->reference_id ?>">
-                <?php echo "$value->city, $value->address"; ?>
-            </li>
-        <?php } ?>
-    </ul>
-<?php } ?>
+?>
+
 <div class="card-columns" id="orderCards">
 
 
@@ -39,20 +31,20 @@ if (count($allBranches) > 1) {
     } ?>
 </div>
 <script>
-$(document).ready(function()
-{
-    $(".btn-branch").click(function(){
-        var tag = $(this).attr("tag");
-        if($(this).attr("aria-pressed")==='false')
-        {
-            //show cards
-            $("div[tag="+tag+"]").show()
-        }
-        else
-        {
-            //hide cards
-            $("div[tag="+tag+"]").hide()
-        }
-    })
-})
+// $(document).ready(function()
+// {
+//     $(".btn-branch").click(function(){
+//         var tag = $(this).attr("tag");
+//         if($(this).attr("aria-pressed")==='false')
+//         {
+//             //show cards
+//             $("div[tag="+tag+"]").show()
+//         }
+//         else
+//         {
+//             //hide cards
+//             $("div[tag="+tag+"]").hide()
+//         }
+//     })
+// })
 </script>

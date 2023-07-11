@@ -15,12 +15,15 @@ $(document).ready(function () {
     }
   }).on('click', ".btn-branch", function () {
     var tag = $(this).attr("tag");
-    if ($(this).attr("aria-pressed") === 'false') {
+    if ($(this).hasClass("active")) {
       //show cards
-      $("div[tag='" + tag + "']").show()
+      $("div[tag='" + tag + "']").hide();
+      $(this).removeClass("active");
     } else {
       //hide cards
-      $("div[tag='" + tag + "']").hide()
+      $("div[tag='" + tag + "']").show();
+      $(this).addClass("active");
+      
     }
   }).on('click', ".btn-type", function () {
     var tag = $(this).attr("title");

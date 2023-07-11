@@ -27,7 +27,7 @@ $screentypeText = $user->GetScreenTypeText();
       <ul class="nav nav-pills text-light">
         <?php 
         foreach ($allBranches as $key => $value) { ?>
-          <li class="nav-item btn-branch btn btn-outline-light m-2 w-100" data-toggle="button" aria-pressed="true" tag="<?php echo $value["gf_refid"] ?>">
+          <li class="nav-item btn-branch btn btn-outline-light m-2 w-100 active" data-bs-toggle="button"  tag="<?php echo $value["gf_refid"] ?>">
             <?php echo $value['alias']; ?>
           </li>
         <?php } ?>
