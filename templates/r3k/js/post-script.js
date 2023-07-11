@@ -19,6 +19,7 @@ $(document).ready(function () {
       //show cards
       $("div[tag='" + tag + "']").hide();
       $(this).removeClass("active");
+      var i=1;
     } else {
       //hide cards
       $("div[tag='" + tag + "']").show();
