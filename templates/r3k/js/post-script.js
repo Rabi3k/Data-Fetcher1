@@ -14,7 +14,7 @@ $(document).ready(function () {
       openBottomBar();
     }
   }).on('click', ".btn-branch", function () {
-    var tag = $(this).attr("tag");
+    var tag = $(this).attr("tag"); 
     if ($(this).hasClass("active")) {
       //show cards
       $("div[tag='" + tag + "']").hide();
