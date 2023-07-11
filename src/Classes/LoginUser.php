@@ -142,7 +142,7 @@ class LoginUser extends ClassObj
     {
         $c = new LoginUser();
         $c->setFromJsonStr($userObj);
-        $c->Profile = Profile::GetProfileFromArray($c->Profile);
+        $c->Profile = Profile::GetProfileFromArray($c->Profile[0]);
         return $c;
     }
     public static function GetUserFromArrayJsonStr(array $usersStrs)

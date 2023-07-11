@@ -42,12 +42,15 @@ class UserGateway extends DbObject
                 "isSuperAdmin", u.`isSuperAdmin`,
                 "screen_type", u.`screen_type`,
                 "Restaurants_Id", "[]",
-                "Profile",CONVERT(GROUP_CONCAT(DISTINCT case when p.id is null then "{}" else JSON_OBJECT(
-                "id", p.`id`,
-                "name",p.`name`,
-                "admin",ifnull( p.`admin`,0),
-                "super-admin", ifnull( p.`super-admin`,0)
-             ) end SEPARATOR \',\'),  JSON),
+                "Profile",JSON_ARRAYAGG( 
+         DISTINCT 
+         JSON_OBJECT( 
+            "id", p.`id`, 
+            "name",p.`name`, 
+            "admin",ifnull( p.`admin`,0), 
+            "super-admin", ifnull( p.`super-admin`,0) 
+            ) 
+            ),
               "companies","[]",
               "restaurants","[]"
              )as "user"
@@ -74,59 +77,57 @@ class UserGateway extends DbObject
     public function FindById($id, $forceLoad=true): LoginUser|null
     {
         $statment = 'SELECT 
-
-            /* User */
-            JSON_OBJECT(
-                "id", u.`id`,
-                "email", u.`email`,
-                "user_name", u.`user_name`,
-                "full_name", u.`full_name`,
-                "password", u.`password`,
-                "secret_key", u.`secret_key`,
-                "profile_id", u.`profile_id`,
-                "IsAdmin", u.`IsAdmin`,
-                "isSuperAdmin", u.`isSuperAdmin`,
-                "screen_type", u.`screen_type`,
-                "Restaurants_Id", CONVERT(concat("[",group_concat(distinct r.`gf_refid`),"]"), JSON),
-                "Profile",CONVERT(GROUP_CONCAT(DISTINCT case when p.id is null then "{}" else JSON_OBJECT(
-                "id", p.`id`,
-                "name",p.`name`,
-                "admin",ifnull( p.`admin`,0),
-                "super-admin", ifnull( p.`super-admin`,0)
-             ) end SEPARATOR \',\'),  JSON),
-              "companies",CONVERT(CONCAT (\'[\',GROUP_CONCAT(DISTINCT case when c.id is null then "{}" else JSON_OBJECT(
-                "id", c.`id`,
-                "name", c.`name`,
-                "cvr_nr", c.`cvr_nr`,
-                "address", c.`address`,
-                "city", c.`city`,
-                "zip", c.`zip`,
-                "email", c.`email`,
-                "phone", c.`phone`,
-                "gf_refid", c.`gf_refid`
-             ) end SEPARATOR \',\'),
-                    \']\'),  JSON),
-              "restaurants",CONVERT(CONCAT (\'[\',GROUP_CONCAT(DISTINCT case when r.id is null then "{}" else JSON_OBJECT(
-                "id", r.`id`,
-                "company_id", r.`company_id`,
-                "name", r.`name`,
-                "alias", r.`alias`,
-                "p_nr", r.`p_nr`,
-                "address", r.`address`,
-                "city", r.`city`,
-                "post_nr", r.`post_nr`,
-                "country", r.`country`,
-                "email", r.`email`,
-                "phone", r.`phone`,
-                "is_gf", r.`is_gf`,
-                "is_managed", r.`is_managed`,
-                "gf_refid", r.`gf_refid`,
-                "gf_urid", r.`gf_urid`,
-                "gf_cdn_base_path", r.`gf_cdn_base_path`
-             ) end  SEPARATOR \',\'),
-                    \']\'),  JSON)
-             
-             )as "user"
+        /* User */ 
+        JSON_OBJECT( 
+        "id", u.`id`, 
+        "email", u.`email`, 
+        "user_name", u.`user_name`, "full_name", u.`full_name`, 
+        "password", u.`password`, 
+        "secret_key", u.`secret_key`, 
+        "profile_id", u.`profile_id`, 
+        "IsAdmin", u.`IsAdmin`, 
+        "isSuperAdmin", u.`isSuperAdmin`,
+         "screen_type", u.`screen_type`, 
+         "Restaurants_Id", Json_Array(group_concat(distinct r.`gf_refid`)), 
+         "Profile",JSON_ARRAYAGG( 
+         DISTINCT 
+         JSON_OBJECT( 
+            "id", p.`id`, 
+            "name",p.`name`, 
+            "admin",ifnull( p.`admin`,0), 
+            "super-admin", ifnull( p.`super-admin`,0) 
+            ) 
+            ),
+         "companies",JSON_ARRAYAGG(DISTINCT JSON_OBJECT
+         ( "id", c.`id`, 
+            "name", c.`name`, 
+            "cvr_nr", c.`cvr_nr`, 
+            "address", c.`address`, 
+            "city", c.`city`, 
+            "zip", c.`zip`, 
+            "email", c.`email`, 
+            "phone", c.`phone`, 
+            "gf_refid", c.`gf_refid`
+            ) ),
+         "restaurants",JSON_ARRAYAGG(DISTINCT 
+         JSON_OBJECT( "id", r.`id`, 
+         "company_id", r.`company_id`, 
+         "name", r.`name`, 
+         "alias", r.`alias`, 
+         "p_nr", r.`p_nr`, 
+         "address", r.`address`, 
+         "city", r.`city`, 
+         "post_nr", r.`post_nr`, 
+         "country", r.`country`,
+         "email", r.`email`,
+         "phone", r.`phone`, 
+         "is_gf",  convert(r.`is_gf`,int), 
+         "is_managed", convert(r.`is_managed`,int), 
+         "gf_refid", r.`gf_refid`
+         ) )
+        
+         )as "user"
+        
             FROM `tbl_users` u
             LEFT JOIN `tbl_profiles` as p on (u.profile_id = p.id)
             LEFT JOIN `tbl_user_relations` ur on(u.id = ur.user_id)

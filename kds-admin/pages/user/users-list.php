@@ -7,8 +7,8 @@ $users = $userGateway->GetAllUsers();
         <div class="col-4"></div>
         <div class="col-4"></div>
         <div class="col-4">
-            <a class="btn btn-primary float-right" href="#print" role="button"><i data-feather='printer'></i><span> print</span></a>    
-            <a class="btn btn-primary float-right" href="?new=" role="button"><i data-feather='plus-circle'></i><span> Ny</span></a>
+            <a class="btn btn-primary float-end" href="#print" role="button"><i data-feather='printer'></i><span> print</span></a>    
+            <a class="btn btn-primary float-end" href="?new=" role="button"><i data-feather='plus-circle'></i><span> Ny</span></a>
         </div>
     </div>
     <script>

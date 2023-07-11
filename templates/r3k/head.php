@@ -50,11 +50,10 @@ use Src\TableGateways\UserGateway;
 
     <!-- Swiper JS -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
-
     <script type="text/javascript">
         var rootpath = "<?php echo "$rootpath" ?>";
         var templatePath = "<?php echo "$templatePath" ?>";
-        var userRefIds = JSON.parse("<?php echo isset(UserGateway::$user)? json_encode(UserGateway::$user->Restaurants_Id):"[]" ?>");
+        var userRefIds = JSON.parse('<?php echo isset(UserGateway::$user)? json_encode(UserGateway::$user->Restaurants_Id):"[]" ?>');
     </script>
     
     <script type="text/javascript" src="<?php echo "$rootpath/$templatePath" ?>/js/playsound.min.js"></script>
