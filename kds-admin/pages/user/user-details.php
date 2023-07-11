@@ -33,8 +33,6 @@ if (isset($_GET['action'])) {
         if (isset($_POST['password1'])) {
             $userGateway->UpdateUserPassword($lUser, $_POST['password1']);
         } else if (array_key_exists('SendRestPaswordEmail', $_POST)) {
-
-            //$secret = $userLogin->GetEncryptedKey($lUser->email);
             KMail::sendResetPasswordMail($lUser, $userSecret);
         }
     } else if ($_GET['action'] == 'edit-details') {
@@ -256,7 +254,7 @@ foreach ($companiesTree as $c) {
                     </tr>
                 </thead>
                 <tbody>
-                    
+
                 </tbody>
             </table>
 

@@ -48,10 +48,10 @@ class Loggy
     private function initValues(string $stacktrace, $exception)
     {
         global $dbConnection;
-        $userLogin = $GLOBALS["userGateway"]??new UserGateway($dbConnection);
-        $userLogin->checkLogin();
-        $user = $userLogin->GetUser();
-        //var_dump($userLogin);
+        $userGateway = $GLOBALS["userGateway"]??new UserGateway($dbConnection);
+        $userGateway->checkLogin();
+        $user = $userGateway->GetUser();
+        //var_dump($userGateway);
         $u = array(
             'id'        =>  $user->id,
             'Name'      =>  $user->full_name,

@@ -8,7 +8,7 @@ use Src\Enums\UploadType;
 
 function RedirectToErrorPage($_code, $_message)
 {
-    global $code, $PageTitle, $httpResponseMessage, $templatePath, $rootpath, $userLogin;
+    global $code, $PageTitle, $httpResponseMessage, $templatePath, $rootpath, $userGateway;
 
 
     $httpResponseMessage = $PageTitle = $_message;

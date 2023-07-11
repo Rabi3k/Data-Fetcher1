@@ -9,7 +9,7 @@ if (!$userGateway->checkLogin()) {
         header("Location: /login.php?returnurl=" . $_SERVER['REQUEST_URI']);
         exit();
 }
-$loggedUser = $userLogin->GetUser();
+$loggedUser = userGateway->GetUser();
 if (!$loggedUser->isAdmin && !$loggedUser->isSuperAdmin) {
         header("Location: /");
         exit();

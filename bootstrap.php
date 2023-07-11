@@ -58,7 +58,6 @@ if (session_status() === PHP_SESSION_NONE) {
     $githubToken = base64_decode("Z2hwX0V3cFp4V3VQTk1QcFE4anFlNXUzakJDSWo2TUV3SjF0N2NMYg==");
     define('GIT_ACCESS_TOKEN',$githubToken);
     
-    //$userLogin = new UserLoginGateway($dbConnection);
     $userGateway = new UserGateway($dbConnection);
     
     $templatePath = "templates/$template";

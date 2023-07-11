@@ -1,6 +1,6 @@
 <?php
-$BranchesId = ($userLogin->GetUser())->UserBranchesId();
-$users = $userLogin->GetAllBranchesUsers($BranchesId);
+$BranchesId = ($userGateway->GetUser())->UserBranchesId();
+$users = $userGateway->GetAllBranchesUsers($BranchesId);
 $userid = array_column($users,'id');
 if(isset($_GET['id']) && in_array(intval($_GET['id']),$userid))
 {

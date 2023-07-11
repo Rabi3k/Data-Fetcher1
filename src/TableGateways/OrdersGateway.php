@@ -661,7 +661,7 @@ class OrdersGateway extends DbObject
     public function InsertOrUpdate_OrderItemOptionList($orderItemOption)
     {
 
-        $statement = "INSERT INTO `tbl_ `tbl_order_item_options` `
+        $statement = "INSERT INTO `tbl_order_item_options`
         (`id`,
         `order_item_id`,
         `name`,

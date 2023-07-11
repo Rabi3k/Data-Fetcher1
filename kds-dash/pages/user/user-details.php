@@ -20,15 +20,15 @@ if (isset($_GET['id'])) {
 $profiles = (new UserProfilesGateway($dbConnection))->GetAllProfiles();
 $restaurants = (new RestaurantsGateway($dbConnection))->GetAllRestaurants();
 
-$userSecret = $userLogin->GetEncryptedKey($lUser->email);
+$userSecret = $userGateway->GetEncryptedKey($lUser->email);
 
 if (isset($_GET['action'])) {
     if ($_GET['action'] == 'change-password') {
         if (isset($_POST['password1'])) {
-            $userLogin->UpdateUserPassword($lUser, $_POST['password1']);
+            $userGateway->UpdateUserPassword($lUser, $_POST['password1']);
         } else if (array_key_exists('SendRestPaswordEmail', $_POST)) {
 
-            //$secret = $userLogin->GetEncryptedKey($lUser->email);
+            //$secret = $userGateway->GetEncryptedKey($lUser->email);
             KMail::sendResetPasswordMail($lUser, $userSecret);
         }
     } else if ($_GET['action'] == 'edit-details') {
@@ -49,7 +49,7 @@ if (isset($_GET['action'])) {
         if (isset($_POST['inputProfile']) && !empty($_POST['inputProfile'])) {
             $lUser->profile->id = intval($_POST['inputProfile']);
         }
-        $lUser = $userLogin->InsertOrUpdate($lUser);
+        $lUser = $userGateway->InsertOrUpdate($lUser);
         $idUrl = "id=$lUser->id";
     }
 }
@@ -83,7 +83,7 @@ if (isset($_POST['set-access'])) {
         $ur->branch_id = null;
         array_push($userRelations, $ur);
     }
-    $userLogin->updateUserRelations($userRelations);
+    $userGateway->updateUserRelations($userRelations);
     $lUser = UserLoginGateway::GetUserClass($_GET['id'], false);
 }
 ?>

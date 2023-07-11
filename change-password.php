@@ -2,7 +2,7 @@
 require "bootstrap.php";
 
 /*
-if(!$userLogin->checkLogin())
+if(!userGateway->checkLogin())
 {
     header("Location: $rootpath/login.php");
 }

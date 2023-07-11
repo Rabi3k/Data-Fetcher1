@@ -3,7 +3,6 @@ require_once("../bootstrap.php");
 if (!$userGateway->checkLogin()) {
     exit();
   }
-//echo json_encode($userLogin->GetUser());
-$screentype = $userLogin->GetUser()->GetScreenType();
+$screentype = $userGateway->GetUser()->GetScreenType();
 
 include "../$templatePath/$screentype/create-card.php";

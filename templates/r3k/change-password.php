@@ -5,10 +5,10 @@ $passwordChanged = false;
 $lUser = null;
 if (isset($_GET['secret']))
 {
-  $keys = $userLogin->DecryptSecretKey($_GET['secret']);
+  $keys = $userGateway->DecryptSecretKey($_GET['secret']);
   if(isset($keys) && count($keys)>1)
   {
-    $lUser= $userLogin->GetUserByUsernameSecretKey($keys[0],$keys[1]);
+    $lUser= $userGateway->GetUserByUsernameSecretKey($keys[0],$keys[1]);
   }
 }
 if(!isset($lUser))
@@ -19,23 +19,12 @@ if(!isset($lUser))
 if (isset($_GET['action'])) {
   if ($_GET['action'] == 'change-password') {
     if (isset($_POST['password1']) && isset($_POST['password2'])) {
-      $userLogin->UpdateUserPassword($lUser, $_POST['password1']);
+      $userGateway->UpdateUserPassword($lUser, $_POST['password1']);
       $passwordChanged = true;
     }
   }
 }
-/*
-if ($userLogin->checkLogin()) {
-  $returnUrl = "$rootpath/";
-  if (isset($_GET['returnurl'])) {
-    $returnUrl = $_GET['returnurl'];
-    
-    header("Location: $returnUrl");
-  } else {
-    header("Location: $returnUrl");
-  }
-  exit();
-}*/
+
 $PageTitle = "KDS System Login";
 include  $templatePath . '/head.php';
 

@@ -13,12 +13,5 @@
     }*/
 
 require "bootstrap.php";
-
-/*
-if(!$userLogin->checkLogin())
-{
-    header("Location: $rootpath/login.php");
-}
-*/
 include "$templatePath/error.php";
 //die("silence is the key");

@@ -19,7 +19,7 @@
 
     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
       <a class="dropdown-item" href="/logout.php">Sign out</a>
-      <a class="dropdown-item" href="/admin/users?id=<?php echo $userLogin->GetUser()->id  ?>">my Profile</a>
+      <a class="dropdown-item" href="/admin/users?id=<?php echo userGateway->GetUser()->id  ?>">my Profile</a>
       <a class="dropdown-item" href="#">Something else here</a>
     </div>
   </div>

@@ -7,7 +7,7 @@ use Src\Classes\KMail;
 $orderstGateway = new OrdersGateway($dbConnection);
 $datas = $orderstGateway->GetItemsSold();
 $str = json_encode($datas);
-//$secret = $userLogin->GetEncryptedKey('rabih@kbs-leb.com');
+//$secret = $userGateway->GetEncryptedKey('rabih@kbs-leb.com');
 //KMail::sendResetPasswordMail("rabih@kbs-leb.com",$secret);
 $PageTitle = "KDS System Order ";
 include "../$templatePath/head.php";

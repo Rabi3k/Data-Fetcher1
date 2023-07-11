@@ -9,7 +9,7 @@ $ordersGateway = new OrdersGateway($dbConnection);
 $sDate = (new \DateTime('today midnight', new \DateTimeZone('Europe/Copenhagen')));
 $eDate = (new \DateTime('tomorrow midnight', new \DateTimeZone('Europe/Copenhagen')));
 
-$secrets = $userLogin->GetUser()?->secrets ?? array();
+$secrets = $userGateway->GetUser()?->secrets ?? array();
 $data = $ordersGateway->FindInHouseActiveByDate($sDate, $eDate, $secrets);
 
 $now = (new \DateTime('now', new \DateTimeZone('Europe/Copenhagen')));
