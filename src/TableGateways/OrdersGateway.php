@@ -362,6 +362,7 @@ class OrdersGateway extends DbObject
         foreach ($order->items as  $orderItem) {
             $orderItem->order_head_id = $order->id;
             $orderItem->status = $order->ready == true ? ItemStatus::Complete->name : ItemStatus::ToDo->name;
+            $orderItem->isDone = false;
             $this->InsertOrUpdate_OrderItemsList($orderItem);
             if (isset($orderItem->options) && count($orderItem->options) > 0) {
                 foreach ($orderItem->options as  $option) {
@@ -433,8 +434,7 @@ class OrdersGateway extends DbObject
         `tax_value`,
         `coupons`,
         `reference`,
-        `pos_system_id`,
-        `is_done`
+        `pos_system_id`
         )
         VALUES
         (:id,
@@ -493,8 +493,7 @@ class OrdersGateway extends DbObject
         :tax_value,
         :coupons,
         :reference,
-        :pos_system_id,
-        :is_done)
+        :pos_system_id)
                 ON DUPLICATE KEY UPDATE
         `api_version` = :api_version,
         `type` = :type,
@@ -552,7 +551,6 @@ class OrdersGateway extends DbObject
         `coupons` = :coupons,
         `reference` = :reference,
         `pos_system_id` = :pos_system_id
-        `is_done` = :is_done
         ;";
 
         try {
@@ -618,8 +616,7 @@ class OrdersGateway extends DbObject
                 'tax_value' => $order->tax_value,
                 'coupons' => json_encode($order->coupons),
                 'reference' => $order->reference,
-                'pos_system_id' => $order->pos_system_id,
-                'is_done' => $order->isDone
+                'pos_system_id' => $order->pos_system_id
             ));
             $statement->closeCursor();
 
