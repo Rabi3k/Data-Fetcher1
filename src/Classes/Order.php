@@ -4,7 +4,7 @@ use Src\Classes\ClassObj;
 
 class Order extends ClassObj
 {
-
+public bool $isDone =false;
 #region Private props
 #endregion
 

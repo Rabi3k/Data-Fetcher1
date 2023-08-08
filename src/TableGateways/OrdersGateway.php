@@ -230,6 +230,7 @@ class OrdersGateway extends DbObject
         $statment = "SELECT oh.`id` FROM `tbl_order_head` oh 
                         WHERE
                             oh.`ready` = 0
+                            AND oh.`is_done` = 0
                             AND oh.`status` = 'accepted'
                             AND oh.`fulfill_at` BETWEEN CAST('$sDate' as DateTime) AND CAST('$eDate' as DateTime)
                             And oh.`restaurant_id` IN ($StrRefIds)
@@ -261,6 +262,7 @@ class OrdersGateway extends DbObject
         $statment = "SELECT oh.* FROM `tbl_order_head` oh 
                         WHERE
                             oh.`ready` = 0
+                            AND oh.`is_done` = 0
                             AND oh.`status` = 'accepted'
                             AND oh.`fulfill_at` BETWEEN CAST('$sDate' as DateTime) AND CAST('$eDate' as DateTime)
                             And oh.`restaurant_key` IN ('$secretsJ')
@@ -291,6 +293,7 @@ class OrdersGateway extends DbObject
         $statment = "SELECT oh.`id` FROM `tbl_order_head` oh 
                         WHERE
                             oh.`ready` = 0
+                            AND oh.`is_done` = 1
                             AND oh.`status` = 'accepted'
                             AND oh.`fulfill_at` BETWEEN CAST('$sDate' as DateTime) AND CAST('$eDate' as DateTime)
                             And oh.`restaurant_key` IN ('$secretsJ')
@@ -323,6 +326,7 @@ class OrdersGateway extends DbObject
         $statment = "SELECT oh.* FROM `tbl_order_head` oh 
                         WHERE
                             oh.`ready` = 0
+                            AND oh.`is_done` = 1
                             AND oh.`status` = 'accepted'
                             AND oh.`fulfill_at` BETWEEN CAST('$sDate' as DateTime) AND CAST('$eDate' as DateTime)
                             And oh.`restaurant_id` IN ($secretsJ)
@@ -429,7 +433,9 @@ class OrdersGateway extends DbObject
         `tax_value`,
         `coupons`,
         `reference`,
-        `pos_system_id`)
+        `pos_system_id`,
+        `is_done`
+        )
         VALUES
         (:id,
         :api_version,
@@ -487,7 +493,8 @@ class OrdersGateway extends DbObject
         :tax_value,
         :coupons,
         :reference,
-        :pos_system_id)
+        :pos_system_id,
+        :is_done)
                 ON DUPLICATE KEY UPDATE
         `api_version` = :api_version,
         `type` = :type,
@@ -544,7 +551,9 @@ class OrdersGateway extends DbObject
         `tax_value` = :tax_value,
         `coupons` = :coupons,
         `reference` = :reference,
-        `pos_system_id` = :pos_system_id;";
+        `pos_system_id` = :pos_system_id
+        `is_done` = :is_done
+        ;";
 
         try {
 
@@ -609,7 +618,8 @@ class OrdersGateway extends DbObject
                 'tax_value' => $order->tax_value,
                 'coupons' => json_encode($order->coupons),
                 'reference' => $order->reference,
-                'pos_system_id' => $order->pos_system_id
+                'pos_system_id' => $order->pos_system_id,
+                'is_done' => $order->isDone
             ));
             $statement->closeCursor();
 
@@ -846,7 +856,7 @@ class OrdersGateway extends DbObject
         $statment = "UPDATE `tbl_order_head` oh 
         left join `tbl_order_items` oi on(oh.id=oi.order_head_id)
         SET
-        oh.`ready` = :status,
+        oh.`is_done` = :status,
         oi.`status` = :orderItemStatus
         WHERE 
         oh.`id`= :orderId;
