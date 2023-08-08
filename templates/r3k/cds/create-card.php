@@ -17,30 +17,30 @@ $now = (new \DateTime('now', new \DateTimeZone('Europe/Copenhagen')));
 
 $retval = array();
 foreach ($data as $order) {
-   // echo ($order->getJsonStr());
+    // echo ($order->getJsonStr());
     $OrderDate = new \DateTime($order->fulfill_at ?? $order->updated_at);
     $OrderDate->setTimezone(new \DateTimeZone($order->restaurant_timezone));
 
     $timeToEnd = $now->diff($OrderDate);
     $timeToEndTxt = "";
-   
-    if ($timeToEnd->h > 0) {
-        $timeToEndTxt .= $timeToEnd->h . "h";
-    }
-    if ($timeToEnd->i > 0) {
-        $timeToEndTxt .= $timeToEnd->i . "m";
-    }
-    if ($timeToEnd->s > 0) {
-        $timeToEndTxt .= $timeToEnd->s . "s";
-    }
+    if ($order->is_done) {
+        $timeToEndTxt = "Nu";
+    } else {
+        if ($timeToEnd->h > 0) {
+            $timeToEndTxt .= $timeToEnd->h . "h";
+        }
+        if ($timeToEnd->i > 0) {
+            $timeToEndTxt .= $timeToEnd->i . "m";
+        }
+        if ($timeToEnd->s > 0) {
+            $timeToEndTxt .= $timeToEnd->s . "s";
+        }
 
-    if ($timeToEnd->invert > 0) {
-        if($order->is_done)
-        {$timeToEndTxt = "Nu";}
-        else
-        {$timeToEndTxt = "Næsten klar";}
+        if ($timeToEnd->invert > 0) { {
+                $timeToEndTxt = "Næsten klar";
+            }
+        }
     }
-
     switch ($order->type) {
         case 'pickup':
             $orderTypeText = 'Afhentning';
@@ -63,7 +63,7 @@ foreach ($data as $order) {
 
     $retval[] = array(
         "id" => $order->id,
-        "client_name" => $order->client_first_name." ".$order->client_last_name,
+        "client_name" => $order->client_first_name . " " . $order->client_last_name,
         "table_number" => $order->table_number,
         "fulfill_at" => $OrderDate->format("Y-m-d h:i:s a"),
         "type" => $orderTypeText,
