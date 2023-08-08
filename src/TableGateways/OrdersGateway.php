@@ -293,7 +293,6 @@ class OrdersGateway extends DbObject
         $statment = "SELECT oh.`id` FROM `tbl_order_head` oh 
                         WHERE
                             oh.`ready` = 0
-                            AND oh.`is_done` = 1
                             AND oh.`status` = 'accepted'
                             AND oh.`fulfill_at` BETWEEN CAST('$sDate' as DateTime) AND CAST('$eDate' as DateTime)
                             And oh.`restaurant_key` IN ('$secretsJ')
@@ -326,7 +325,6 @@ class OrdersGateway extends DbObject
         $statment = "SELECT oh.* FROM `tbl_order_head` oh 
                         WHERE
                             oh.`ready` = 0
-                            AND oh.`is_done` = 1
                             AND oh.`status` = 'accepted'
                             AND oh.`fulfill_at` BETWEEN CAST('$sDate' as DateTime) AND CAST('$eDate' as DateTime)
                             And oh.`restaurant_id` IN ($secretsJ)

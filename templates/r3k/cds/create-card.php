@@ -35,7 +35,10 @@ foreach ($data as $order) {
     }
 
     if ($timeToEnd->invert > 0) {
-        $timeToEndTxt = "Nu";
+        if($order->is_done)
+        {$timeToEndTxt = "Nu";}
+        else
+        {$timeToEndTxt = "Næsten klar";}
     }
 
     switch ($order->type) {
