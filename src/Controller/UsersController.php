@@ -20,7 +20,7 @@ class UsersController {
         $this->db = $db;
         $this->requestMethod = $requestMethod;
         $this->params = $params;
-        $this->usersGateway = new UserLoginGateway($db);
+        //$this->usersGateway = new UserLoginGateway($db);
         $this->userGateway = new UserGateway($db);
     }
 

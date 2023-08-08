@@ -304,6 +304,7 @@ class UserGateway extends DbObject
                 }
             }
         }
+        
         return $loggedIn;
     }
 

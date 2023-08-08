@@ -325,9 +325,10 @@ class OrdersGateway extends DbObject
                             oh.`ready` = 0
                             AND oh.`status` = 'accepted'
                             AND oh.`fulfill_at` BETWEEN CAST('$sDate' as DateTime) AND CAST('$eDate' as DateTime)
-                            And oh.`restaurant_key` IN ('$secretsJ')
+                            And oh.`restaurant_id` IN ($secretsJ)
                             AND oh.`type` in ('pickup','table_reservation','order_ahead','dine_in')
                         ORDER BY oh.`fulfill_at`";
+                        //echo $statment;
         //echo "secretsJ: $secretsJ \nstatment: $statment\n";
         //'pickup' , 'delivery' , 'table_reservation' , 'order_ahead' , 'dine_in'
         try {

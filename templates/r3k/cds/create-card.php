@@ -2,7 +2,7 @@
 
 use Src\TableGateways\OrdersGateway;
 use Src\Classes\Order;
-
+use Src\TableGateways\UserGateway;
 
 $ordersGateway = new OrdersGateway($dbConnection);
 
@@ -10,8 +10,8 @@ $sDate = (new \DateTime('today midnight', new \DateTimeZone('Europe/Copenhagen')
 $eDate = (new \DateTime('tomorrow midnight', new \DateTimeZone('Europe/Copenhagen')));
 
 $secrets = $userGateway->GetUser()?->secrets ?? array();
-$data = $ordersGateway->FindInHouseActiveByDate($sDate, $eDate, $secrets);
-
+$data = $ordersGateway->FindInHouseActiveByDate($sDate, $eDate, UserGateway::$user->Restaurants_Id);
+//var_dump(UserGateway::$user->Restaurants_Id);
 $now = (new \DateTime('now', new \DateTimeZone('Europe/Copenhagen')));
 
 
