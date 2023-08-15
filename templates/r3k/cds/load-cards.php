@@ -199,7 +199,7 @@
             }
         });
         setInterval(function() {
-            //table.ajax.reload();
+            table.ajax.reload();
             //table.draw();
         }, 2000);
 
