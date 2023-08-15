@@ -22,12 +22,14 @@ foreach ($data as $order) {
     $OrderDate->setTimezone(new \DateTimeZone($order->restaurant_timezone));
 
     $timeToEnd = $now->diff($OrderDate);
+    
+//echo $timeToEnd->format("%H:%I:%S");
 
     $timeToEndTxt = "";
     if ($order->is_done) {
         $timeToEndTxt = "Nu";
     } else {
-            $timeToEndTxt .= "$timeToEnd->h:$timeToEnd->i:$timeToEnd->s";
+            $timeToEndTxt = $timeToEnd->format("%H:%I:%S");
         if ($timeToEnd->invert > 0) { {
                 $timeToEndTxt = "Om et øjeblik";
             }
