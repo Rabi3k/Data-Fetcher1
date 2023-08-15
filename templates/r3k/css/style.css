@@ -188,7 +188,8 @@ footer {
 }
 .InProgress span
 {
-  color: #4444ffcc;
+  color: green;
+  font-weight: bold;
 }
 .Complete span
 {

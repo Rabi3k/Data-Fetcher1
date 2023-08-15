@@ -62,15 +62,22 @@
         text-align: center;
     }
 
-tbody td .red
-{
-    background-color: red !important;
-}
+    .dataTables_filter {
+        right: 1em;
+        position: absolute;
+    }
+
+    li.paginate_button.page-item.active a {
+        background-color: #36304a;
+        border-color: #36304a;
+        color: #DFAA0A;
+    }
+
     thead th,
     tfoot th {
         font-family: OpenSans-Regular;
         font-size: 18px;
-        color: #fff;
+        color: #DFAA0A;
         line-height: 1.2;
         font-weight: unset;
     }
@@ -89,22 +96,24 @@ tbody td .red
         color: black
     } */
     header.customer-panel {
-        border-bottom: 10px solid;
-        border-image: linear-gradient(180deg, #007bff, #6c757d);
-        border-image-slice: 220;
+        /* border-bottom: 10px solid; */
+        /* border-image: linear-gradient(180deg, #DFAA0A, #6c757d); */
+        /* border-image-slice: 220; */
+        color: #DFAA0A;
+
     }
 </style>
-<header class="customer-panel bg-primary text-light">
+<header class="customer-panel bg-light p-2">
     <div class="container ">
         <div class="row">
             <div class="col-12 text-center">
-                <span class="h2"><strong>Hvem er den næste</strong></span>
+                <span class="h2"><strong>Hvem er den næste?</strong></span>
             </div>
         </div>
     </div>
 </header>
 <table id="example" class="" style="width:100%">
-    <thead>
+    <thead class="fs-5 fw-bold">
         <tr>
             <th>Order #</th>
             <th>Navn</th>
@@ -132,10 +141,14 @@ tbody td .red
             scrollY: '60vh',
             scrollCollapse: true,
             fixedHeader: true,
+            "pageLength": 50,
             "language": {
                 "emptyTable": "Ingen tilgængelige data i tabellen",
                 "infoEmpty": "Viser 0 til 0 af 0 poster",
+                "info": "Viser _START_ til _END_ af _TOTAL_ poster",
                 "loadingRecords": "Indlæser...",
+                "search": "Søg:",
+                "sLengthMenu": "Vis _MENU_ antal",
                 "zeroRecords": "Ingen matchende registreringer fundet",
                 "paginate": {
                     "first": "Først",
@@ -163,7 +176,8 @@ tbody td .red
                     data: 'type'
                 },
                 {
-                    data: 'timeToEnd'
+                    data: 'timeToEnd',
+                    className: "timeToEnd"
                 },
                 {
                     data: 'fulfill_at',
@@ -171,16 +185,23 @@ tbody td .red
                     searchable: false
                 },
             ],
-            order: [[4, 'asc']],
+            order: [
+                [4, 'asc']
+            ],
             "createdRow": function(row, data, dataIndex) {
-                if (data[4] == "Nu") {
-                    $(row).addClass('red');
+                console.log(data);
+                if (data["timeToEnd"] === "Nu") {
+                    $(row).addClass('bg-success text-white fs-4 fw-bold');
+                } else {
+                    $(row).addClass('fs-5 fw-normal');
                 }
+
             }
         });
         setInterval(function() {
-            table.ajax.reload();
+            //table.ajax.reload();
             //table.draw();
         }, 2000);
+
     });
 </script>

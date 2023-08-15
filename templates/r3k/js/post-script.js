@@ -28,12 +28,16 @@ $(document).ready(function () {
     }
   }).on('click', ".btn-type", function () {
     var tag = $(this).attr("title");
-    if ($(this).attr("aria-pressed") === 'false') {
+
+    if ($(this).hasClass("active")) {
       //show cards
-      $("div[order-type='" + tag + "']").show()
+      $("div[order-type='" + tag + "']").hide()
+      $(this).removeClass("active");
     } else {
       //hide cards
-      $("div[order-type='" + tag + "']").hide()
+      $("div[order-type='" + tag + "']").show()
+      $(this).addClass("active");
+      
     }
   }).on("click", ".order-item", function (event) //Replace 4000 with your desired milliseconds
   {

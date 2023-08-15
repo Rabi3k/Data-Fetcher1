@@ -70,7 +70,7 @@ switch ($row->type) {
                     <div class='col-5 text-right'>
                         <!-- <span>Payment: <?php //echo $row->payment 
                                             ?></span> -->
-                        <span><?php echo $OrderDate->format('h:i a'); ?></span>
+                        <span><?php echo $OrderDate->format('H:i '); ?></span>
                     </div>
                     <div class='col-12 text-right'>
                         <span>Kunde: <?php echo $row->client_first_name . " " . $row->client_last_name; ?></span>
