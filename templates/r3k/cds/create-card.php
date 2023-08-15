@@ -35,9 +35,8 @@ foreach ($data as $order) {
         if ($timeToEnd->s > 0) {
             $timeToEndTxt .= $timeToEnd->s . "s";
         }
-
         if ($timeToEnd->invert > 0) { {
-                $timeToEndTxt = "Næsten klar";
+                $timeToEndTxt = "Om et øjeblik";
             }
         }
     }

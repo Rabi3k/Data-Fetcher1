@@ -109,7 +109,7 @@ tbody td .red
             <th>Order #</th>
             <th>Navn</th>
             <th>Ordretype</th>
-            <th>Til klar</th>
+            <th>Bestilling klar</th>
         </tr>
     </thead>
     <tfoot>
@@ -117,7 +117,7 @@ tbody td .red
             <th>Order #</th>
             <th>Navn</th>
             <th>Ordretype</th>
-            <th>Til klar</th>
+            <th>Bestilling klar</th>
         </tr>
     </tfoot>
 </table>
