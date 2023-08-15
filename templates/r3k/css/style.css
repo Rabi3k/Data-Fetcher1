@@ -137,7 +137,6 @@ a:hover {
 
 footer {
   box-shadow: inset 0 3px 6px rgba(0, 0, 0, 0.16), 0 4px 6px rgba(0, 0, 0, 0.45);
-  /* border-radius: 10px; */
 }
 
 .h-90 {
@@ -173,7 +172,6 @@ footer {
   display: flex;
   position: absolute;
   bottom: 10vh;
-
   left: 48vw
 }
 .bottom-bar
@@ -190,6 +188,7 @@ footer {
 {
   color: green;
   font-weight: bold;
+  font-size: medium;
 }
 .Complete span
 {
