@@ -22,23 +22,26 @@ foreach ($data as $order) {
     $OrderDate->setTimezone(new \DateTimeZone($order->restaurant_timezone));
 
     $timeToEnd = $now->diff($OrderDate);
+    $timeToEnd->format("H:I:S");
+
     $timeToEndTxt = "";
     if ($order->is_done) {
         $timeToEndTxt = "Nu";
     } else {
         if ($timeToEnd->h > 0) {
-            $timeToEndTxt .= $timeToEnd->h . "h";
+            $timeToEndTxt .= $timeToEnd->h . ":";
         }
         if ($timeToEnd->i > 0) {
-            $timeToEndTxt .= $timeToEnd->i . "m";
+            $timeToEndTxt .= $timeToEnd->i . ":";
         }
         if ($timeToEnd->s > 0) {
-            $timeToEndTxt .= $timeToEnd->s . "s";
+            $timeToEndTxt .= $timeToEnd->s . "";
         }
         if ($timeToEnd->invert > 0) { {
                 $timeToEndTxt = "Om et øjeblik";
             }
         }
+        
     }
     switch ($order->type) {
         case 'pickup':

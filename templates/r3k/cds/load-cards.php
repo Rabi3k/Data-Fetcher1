@@ -110,6 +110,7 @@ tbody td .red
             <th>Navn</th>
             <th>Ordretype</th>
             <th>Bestilling klar</th>
+            <th>Bestilling tid</th>
         </tr>
     </thead>
     <tfoot>
@@ -118,6 +119,7 @@ tbody td .red
             <th>Navn</th>
             <th>Ordretype</th>
             <th>Bestilling klar</th>
+            <th>Bestilling tid</th>
         </tr>
     </tfoot>
 </table>
@@ -163,7 +165,13 @@ tbody td .red
                 {
                     data: 'timeToEnd'
                 },
+                {
+                    data: 'fulfill_at',
+                    visible: false,
+                    searchable: false
+                },
             ],
+            order: [[4, 'asc']],
             "createdRow": function(row, data, dataIndex) {
                 if (data[4] == "Nu") {
                     $(row).addClass('red');
