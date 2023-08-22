@@ -169,11 +169,12 @@ switch ($OrderClass->type) {
                 <img src="<?php echo $logoPath ?>" alt="Logo">
                 <h2><b>Order# <?php echo $OrderClass->id  ?></b></h2>
                 <h2>Kunde Info</h2>
+                <p><?php if ($OrderClass->type === "delivery") { ?>
+                        Adresse :<b> <?php echo $OrderClass->client_address; ?></b></br>
+                    <?php } ?></p>
                 <p>
                     Navn : <?php echo $OrderClass->client_first_name . " " . $OrderClass->client_last_name; ?></br>
-                    <?php if ($OrderClass->type === "delivery") { ?>
-                        Adresse : <?php echo $OrderClass->client_address; ?></br>
-                    <?php } ?>
+                  
                     E-mail : <?php echo $OrderClass->client_email; ?></br>
                     Mobil nr. : <?php echo $OrderClass->client_phone; ?></br>
                 </p>

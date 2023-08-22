@@ -69,7 +69,7 @@ include "../$templatePath/head.php";
                 <h2>Kunder Info</h2>
                 <p>
                     Name : <?php echo $OrderClass->client_first_name . " " . $OrderClass->client_last_name; ?></br>
-                    Address : <?php echo $OrderClass->client_address; ?></br>
+                    Address :<b> <?php echo $OrderClass->client_address; ?></b></br>
                     Email : <?php echo $OrderClass->client_email; ?></br>
                     Phone : <?php echo $OrderClass->client_phone; ?></br>
                 </p>
