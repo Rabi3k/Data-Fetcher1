@@ -93,6 +93,9 @@ switch ($OrderClass->type) {
         .border {
             border: 1px solid #dee2e6 !important;
         }
+        .border-solid{
+            border-style: solid;
+        }
 
         .border-dark {
             border-color: #343a40 !important;
@@ -169,7 +172,7 @@ switch ($OrderClass->type) {
                 <img src="<?php echo $logoPath ?>" alt="Logo">
                 <h2><b>Order# <?php echo $OrderClass->id  ?></b></h2>
                 <h2>Kunde Info</h2>
-                <p><?php if ($OrderClass->type === "delivery") { ?>
+                <p class="border-solid"><?php if ($OrderClass->type === "delivery") { ?>
                         Adresse :<b> <?php echo $OrderClass->client_address; ?></b></br>
                     <?php } ?></p>
                 <p>
