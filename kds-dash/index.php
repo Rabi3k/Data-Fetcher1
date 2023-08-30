@@ -14,7 +14,7 @@ if (!$loggedUser->IsAdmin && !$loggedUser->isSuperAdmin) {
         header("Location: /");
         exit();
 }
-$userid = $loggedUser->id;
+$userid = $loggedUser->id; 
 
 
 $orderstGateway = new OrdersGateway($dbConnection);
