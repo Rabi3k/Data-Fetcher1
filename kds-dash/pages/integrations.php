@@ -56,9 +56,10 @@
 
                 });
 
-                $("#btnSave").click(function(){
+                $("#btnSave").click(function() {
                     PostCategories(categoryNames);
                 });
+
                 function fetchMenu(Urid) {
 
                     var settings = {
@@ -78,33 +79,26 @@
                         console.log(categoryNames);
                         let text = cats.join(", ");
                         $("#txt-categories").text(text);
-                        
+
 
                     });
                 };
-                let categoryNames ={};
+                let categoryNames = {};
 
                 function PostCategories(cats) {
-                    $.each(cats, function(key, value) {
-                        alert(key + ": " + value);
-                        var settings = {
-                            "url": "https://api.loyverse.com/v1.0/categories",
-                            "method": "POST",
-                            "timeout": 0,
-                            "headers": {
-                                "Content-Type": "application/json",
-                                "Authorization": "Bearer 685a16950383408ca5dd9f883f291d5e"
-                            },
-                            "data": JSON.stringify({
-                                "name": value,
-                                "color": "RED"
-                            }),
-                        };
 
-                        $.ajax(settings).done(function(response) {
-                            console.log(response);
-                        });
+
+                    var settings = {
+                        "url": "/api/potCategories/" + cats.join(", "),
+                        "method": "POST",
+                        "timeout": 0,
+                    };
+
+
+                    $.ajax(settings).done(function(response) {
+                        console.log(response);
                     });
+
 
                 }
             </script>

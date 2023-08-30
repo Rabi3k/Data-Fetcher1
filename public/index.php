@@ -5,6 +5,7 @@ use Src\Controller\RequestController;
 use Src\Controller\OrderController;
 use Src\Controller\ActiveOrderController;
 use Src\Controller\GeneralController;
+use Src\Controller\IntegrationController;
 use Src\Controller\OrderItemController;
 use Src\Controller\UsersController;
 
@@ -27,8 +28,10 @@ $username = $_GET["u"] ?? NULL;
 $password = $_GET["p"] ?? null;
 $secrets = $_GET["secrets"] ?? null;
 $userRefIds = $_GET["userRefIds"] ?? null;
+$categories = $_GET["categories"] ?? null;
 $secrets = isset($secrets) ? json_decode($secrets) : array();
 $userRefIds = isset($userRefIds) ? explode(",",$userRefIds) : array();
+$categories = isset($categories) ? explode(",",$categories) : array();
 //echo file_get_contents('php://input');
 //echo $_GET["secrets"]??"Get Nothing";
 //echo $_POST["secrets"]??"Post nothing";
@@ -79,6 +82,9 @@ switch ($oper) {
         break;
 
 
+    case 'potCategories':
+        IntegrationController::PostCategories($categories);
+        break;
     case 'restaurant':
         
             $curl = curl_init();
