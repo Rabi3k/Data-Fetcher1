@@ -24,7 +24,6 @@ if (isset($_GET["page"]) && !empty($_GET["page"]) && file_exists("pages/" . $_GE
 
         $page = strtolower($_GET["page"]);
 }
-$str = "Visit microsoft!";
 $pattern = "/-/i";
 $pag= preg_replace($pattern, " ", $page);
 $pageTitle = ucfirst($pag);
