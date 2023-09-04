@@ -105,6 +105,8 @@ if (isset($_POST['action'])) {
         echo "Posting items";
     }
 }
+
+
 function filterArrayByKeys(array $input, array $column_keys)
 {
     global $integration, $integrationGateway;
@@ -270,6 +272,7 @@ function PostCategory(array $Cats)
             <ul class="list-group list-group-numbered overflow-auto max-list-5">
                 <?php foreach ($aCats as $key => $value) { ?>
                     <li class='list-group-item' id="<?php echo $value["id"] ?>" name="<?php echo $value["loyverse_category_id"]  ?>">
+                        <?php echo isset($value["loyverse_category_id"]) && $value["loyverse_category_id"] != null ? '<i class="bi bi-cloud-arrow-down-fill float-end"></i>' : ""   ?>
                         <?php echo $value["name"] ?>
                     </li>
                 <?php } ?>
@@ -279,7 +282,13 @@ function PostCategory(array $Cats)
             <center class="fs-4">Modifiers</center>
             <ul class="list-group list-group-numbered overflow-auto max-list-5">
                 <?php foreach ($modifiers as $key => $value) { ?>
-                    <li class='list-group-item'><?php echo $value->name ?><span class="float-end fs-6 text-dark"><?php echo $value->optionsNames ?></span></li>
+                    <li class='list-group-item'>
+                        <?php echo isset($value->loyverse_modifier_id) && $value->loyverse_modifier_id != null ? '<i class="bi bi-cloud-arrow-down-fill float-end"></i>' : ""   ?>
+                        <?php echo $value->name ?>
+                        <span class="float-end fs-6 text-dark">
+                            <?php echo $value->optionsNames ?>
+                        </span>
+                    </li>
                 <?php } ?>
             </ul>
         </div>
