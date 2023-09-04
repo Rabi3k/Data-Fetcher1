@@ -36,45 +36,45 @@ class IntegrationController
             echo $response['body'];
         }
     }
-    static private function PostCategory(string $catName)
-    {
+//     static private function PostCategory(string $catName)
+//     {
 
-        $curl = curl_init();
+//         $curl = curl_init();
 
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api.loyverse.com/v1.0/categories',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => '{
+//         curl_setopt_array($curl, array(
+//             CURLOPT_URL => 'https://api.loyverse.com/v1.0/categories',
+//             CURLOPT_RETURNTRANSFER => true,
+//             CURLOPT_ENCODING => '',
+//             CURLOPT_MAXREDIRS => 10,
+//             CURLOPT_TIMEOUT => 0,
+//             CURLOPT_FOLLOWLOCATION => true,
+//             CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+//             CURLOPT_CUSTOMREQUEST => 'POST',
+//             CURLOPT_POSTFIELDS => '{
     
-    "name": "' . $catName . '",
-    "color": "RED"
+//     "name": "' . $catName . '",
+//     "color": "RED"
     
-}',
-            CURLOPT_HTTPHEADER => array(
-                'Content-Type: application/json',
-                'Authorization: Bearer 685a16950383408ca5dd9f883f291d5e'
-            ),
-        ));
+// }',
+//             CURLOPT_HTTPHEADER => array(
+//                 'Content-Type: application/json',
+//                 'Authorization: Bearer '
+//             ),
+//         ));
 
-        $response = curl_exec($curl);
+//         $response = curl_exec($curl);
 
-        curl_close($curl);
-        echo $response;
-    }
-    static public function PostCategories(array $categories)
-    {
-        foreach ($categories as $key => $value) {
-            # code...
-            IntegrationController::PostCategory($value);
-        }
-        return GeneralController::CreateResponser(implode(", ", $categories));
-    }
+//         curl_close($curl);
+//         echo $response;
+//     }
+//     static public function PostCategories(array $categories)
+//     {
+//         foreach ($categories as $key => $value) {
+//             # code...
+//             IntegrationController::PostCategory($value);
+//         }
+//         return GeneralController::CreateResponser(implode(", ", $categories));
+//     }
     private function unprocessableEntityResponse()
     {
         $response['status_code_header'] = 'HTTP/1.1 422 Unprocessable Entity';

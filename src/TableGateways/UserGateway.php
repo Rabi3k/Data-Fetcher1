@@ -123,7 +123,9 @@ class UserGateway extends DbObject
          "phone", r.`phone`, 
          "is_gf",  convert(r.`is_gf`,int), 
          "is_managed", convert(r.`is_managed`,int), 
-         "gf_refid", r.`gf_refid`
+         "gf_refid", r.`gf_refid`,
+         "gf_urid", convert(r.`gf_urid`,varchar(64))
+         
          ) )
         
          )as "user"

@@ -16,7 +16,6 @@ if (!$loggedUser->IsAdmin && !$loggedUser->isSuperAdmin) {
 }
 $userid = $loggedUser->id; 
 
-
 $orderstGateway = new OrdersGateway($dbConnection);
 
 $page = "dashboard";

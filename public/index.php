@@ -83,7 +83,7 @@ switch ($oper) {
 
 
     case 'potCategories':
-        IntegrationController::PostCategories($categories);
+        //IntegrationController::PostCategories($categories);
         break;
     case 'restaurant':
         
