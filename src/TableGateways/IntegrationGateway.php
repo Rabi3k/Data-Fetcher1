@@ -215,7 +215,7 @@ class IntegrationGateway extends DbObject
     {
         
         
-        $statement = "INSERT INTO `funa4298_relax_B`.`tbl_posted_category`
+        $statement = "INSERT INTO `tbl_posted_category`
         (`gf_category_id`,
         `integration_id`,
         `gf_menu_id`,
@@ -246,7 +246,7 @@ class IntegrationGateway extends DbObject
             return $this->GetCategoryByIntegrationAndCategoryId($gf_category_id, $integration_id);
         } catch (\PDOException $e) {
             (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
-            exit($e->getMessage());
+            exit($e->getMessage().", $categoryName");
         }
     }
 }
