@@ -302,10 +302,10 @@ function PostCategory($Cats)
                     <span class="btn btn-success fs-4" name="postCategories" id="btnPostCategories">Post Categories</span>
                 </div>
                 <div class="col d-grid gap-2 mx-auto">
-                    <input type="submit" class="btn btn-success fs-4" name="postModifiers" value="Post Modifiers" />
+                    <span class="btn btn-success fs-4" name="postModifiers" id="btnPostModifiers">Post Modifiers</span>
                 </div>
                 <div class="col d-grid gap-2 mx-auto">
-                    <input type="submit" class="btn btn-success fs-4" name="postItems" value="Post Items" />
+                    <span class="btn btn-success fs-4" name="postItems" id="btnPostItems">Post Items</span>
                 </div>
 
             </div>
@@ -316,7 +316,7 @@ function PostCategory($Cats)
             <center class="fs-4">Categories</center>
             <ul class="categories card list-group list-group-numbered overflow-auto max-list-5">
                 <?php foreach ($aCats as $key => $value) { ?>
-                    <li class='category list-group-item form-control <?php echo isset($value->hasIssue) && $value->hasIssue != false ? "has-issue" :(isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid'  : "is-invalid")  ?>' id="c-<?php echo $value->gf_id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
+                    <li class='category list-group-item form-control <?php echo isset($value->hasIssue) && $value->hasIssue != false ? "has-issue" : (isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid'  : "is-invalid")  ?>' id="c-<?php echo $value->gf_id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
                         <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
                         <?php echo $value->name ?>
                     </li>
@@ -357,7 +357,7 @@ function PostCategory($Cats)
             $(this).find(".spinner").toggleClass("visually-hidden");
             $(this).removeClass("has-issue");
             $(this).removeClass("is-invalid");
-            
+
             let gfid = $(value).attr("id").substring(2);
             let lid = $(value).attr("lid");
             let name = $(value).attr("name");
@@ -368,7 +368,7 @@ function PostCategory($Cats)
                 "l_id": lid,
                 "name": name,
             });
-            
+
             //console.log(data);
             PostCategory(data, this);
         })
