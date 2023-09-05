@@ -21,14 +21,17 @@ class DatabaseConnector {
                 $user,
                 $pass
             );
+            $this->dbConnection->query("SET session wait_timeout=28800", FALSE);
         } catch (\PDOException $e) {
             (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
+        
         }
     }
 
     public function getConnection()
     {
         return $this->dbConnection;
+        
     }
 }
