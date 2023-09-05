@@ -314,7 +314,7 @@ function PostCategory($Cats)
         </div>
         <div class="col-4 ">
             <center class="fs-4">Categories</center>
-            <ul class="categories list-group list-group-numbered overflow-auto max-list-5">
+            <ul class="categories card list-group list-group-numbered overflow-auto max-list-5">
                 <?php foreach ($aCats as $key => $value) { ?>
                     <li class='category list-group-item form-control <?php echo isset($value->hasIssue) && $value->hasIssue != false ? "has-issue" :(isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid'  : "is-invalid")  ?>' id="c-<?php echo $value->gf_id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
                         <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
@@ -325,7 +325,7 @@ function PostCategory($Cats)
         </div>
         <div class="col-4 ">
             <center class="fs-4">Modifiers</center>
-            <ul class="list-group list-group-numbered overflow-auto max-list-5">
+            <ul class="modifiers card list-group list-group-numbered overflow-auto max-list-5">
                 <?php foreach ($modifiers as $key => $value) { ?>
                     <li class='list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="m-<?php echo $value->id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
 
@@ -339,7 +339,7 @@ function PostCategory($Cats)
         </div>
         <div class="col-4 ">
             <center class="fs-4">items</center>
-            <ul class="list-group list-group-numbered overflow-auto max-list-5">
+            <ul class="items card list-group list-group-numbered overflow-auto max-list-5">
                 <?php foreach ($fItems as $key => $value) { ?>
                     <li class='list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="i-<?php echo $value->id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
                         <?php echo $value->name ?><span class="float-end fs-6 text-dark"><?php echo $value->sizesNames ?></span></li>
