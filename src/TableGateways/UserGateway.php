@@ -298,8 +298,14 @@ class UserGateway extends DbObject
         } else {
             if (isset($this::$user) && $this::$user->id > 0) {
                 $loggedIn = true;
-            } else {
+            } 
+            else if (isset($_SESSION["User"]) && $_SESSION["User"]->id > 0) {
+                $this::$user = $_SESSION["User"];
+                $loggedIn = true;
+            } 
+            else {
                 $us = $this->FindById($_SESSION["UserId"]);
+                $_SESSION["User"] = $us;
                 $this::$user = $us;
                 if (isset($this::$user) && $this::$user->id != null) {
                     $loggedIn = true;
