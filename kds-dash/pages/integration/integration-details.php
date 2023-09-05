@@ -53,7 +53,22 @@ if (isset($gfMenu->menu) && $gfMenu->menu != null) {
 
     $CatsIds = array_column($gfMenuObj->categories, 'id');
     $aCats = $integrationGateway->GetBatchTypeByIntegrationAndGfId($CatsIds, $integration->Id, "category");
-    //$aCats = filterArrayByKeys($gfMenuObj->categories, ['id', 'name']);
+    $aCatse = filterArrayByKeys($gfMenuObj->categories, ['id', 'name']);
+    foreach ($aCatse as  $value) {
+        if (array_key_exists($value['id'], $aCats)) {
+            $aCats[$value['id']]->name = $value['name'];
+        } else {
+            $aCats[$value['id']] = (object)array(
+                "gf_id" => $value['id'],
+                "integration_id" => $integration->Id,
+                "type" => "category",
+                "gf_menu_id" => $gfMenu->restaurant_id,
+                "loyverse_id" => null,
+                "name" => $value['name']
+            );
+        }
+        # code...
+    }
     $items = array_column($gfMenuObj->categories, 'items');
 
     $cItems = array();
@@ -267,33 +282,29 @@ function PostCategory($Cats)
     <div class="row justify-content-center g-2 ">
         <div class="col-12">
             <!-- <form method="post"> -->
-                <div class="row justify-content-center align-items-center g-2 ">
-                    <div class="col d-grid gap-2 mx-auto">
-                        <span class="btn btn-success fs-4" name="postCategories" id="btnPostCategories" >Post Categories</span>
-                    </div>
-                    <div class="col d-grid gap-2 mx-auto">
-                        <input type="submit" class="btn btn-success fs-4" name="postModifiers" value="Post Modifiers" />
-                    </div>
-                    <div class="col d-grid gap-2 mx-auto">
-                        <input type="submit" class="btn btn-success fs-4" name="postItems" value="Post Items" />
-                    </div>
-
+            <div class="row justify-content-center align-items-center g-2 ">
+                <div class="col d-grid gap-2 mx-auto">
+                    <span class="btn btn-success fs-4" name="postCategories" id="btnPostCategories">Post Categories</span>
                 </div>
-                <input type="hidden" name="action" value="submit" />
+                <div class="col d-grid gap-2 mx-auto">
+                    <input type="submit" class="btn btn-success fs-4" name="postModifiers" value="Post Modifiers" />
+                </div>
+                <div class="col d-grid gap-2 mx-auto">
+                    <input type="submit" class="btn btn-success fs-4" name="postItems" value="Post Items" />
+                </div>
+
+            </div>
+            <input type="hidden" name="action" value="submit" />
             <!-- </form> -->
         </div>
         <div class="col-4 ">
             <center class="fs-4">Categories</center>
             <ul class="categories list-group list-group-numbered overflow-auto max-list-5">
                 <?php foreach ($aCats as $key => $value) { ?>
-                    <li class='category list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' 
-                    id="c-<?php echo $value->gf_id ?>" 
-                    lid="<?php echo $value->loyverse_id  ?>"
-                    name="<?php echo $value->name ?>"
-                    >
-                    <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
+                    <li class='category list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="c-<?php echo $value->gf_id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
+                        <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
                         <?php echo $value->name ?>
-                        
+
                     </li>
                 <?php } ?>
             </ul>
@@ -302,11 +313,7 @@ function PostCategory($Cats)
             <center class="fs-4">Modifiers</center>
             <ul class="list-group list-group-numbered overflow-auto max-list-5">
                 <?php foreach ($modifiers as $key => $value) { ?>
-                    <li class='list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' 
-                    id="m-<?php echo $value->id ?>" 
-                    lid="<?php echo $value->loyverse_id  ?>"
-                    name="<?php echo $value->name ?>"
-                    >
+                    <li class='list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="m-<?php echo $value->id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
 
                         <?php echo $value->name ?>
                         <span class="float-end fs-6 text-dark">
@@ -320,11 +327,7 @@ function PostCategory($Cats)
             <center class="fs-4">items</center>
             <ul class="list-group list-group-numbered overflow-auto max-list-5">
                 <?php foreach ($fItems as $key => $value) { ?>
-                    <li class='list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' 
-                    id="i-<?php echo $value->id ?>" 
-                    lid="<?php echo $value->loyverse_id  ?>"
-                    name="<?php echo $value->name ?>"
-                    >
+                    <li class='list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="i-<?php echo $value->id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
                         <?php echo $value->name ?><span class="float-end fs-6 text-dark"><?php echo $value->sizesNames ?></span></li>
                 <?php } ?>
             </ul>
@@ -334,8 +337,8 @@ function PostCategory($Cats)
 </div>
 <script type="text/javascript">
     $("#btnPostCategories").on("click", function() {
-        let integrationId= $(hdfIntegrationId).val();
-        let gfMenuId= $(txtGfMenuId).text();
+        let integrationId = $(hdfIntegrationId).val();
+        let gfMenuId = $(txtGfMenuId).text();
         $("li.category").each(function(key, value) {
             $(this).find(".spinner").toggleClass("visually-hidden");
             $(this).removeClass("is-valid is-invalid");
@@ -343,18 +346,18 @@ function PostCategory($Cats)
             let lid = $(value).attr("lid");
             let name = $(value).attr("name");
             let data = JSON.stringify({
-                "integration_id":integrationId,
-                "gf_menu_id":gfMenuId,
-                "gf_id":gfid,
-                "l_id":lid,
-                "name":name,
+                "integration_id": integrationId,
+                "gf_menu_id": gfMenuId,
+                "gf_id": gfid,
+                "l_id": lid,
+                "name": name,
             });
             //console.log(data);
-            PostCategory(data,this);
+            PostCategory(data, this);
         })
     });
 
-    function PostCategory(data,elem) {
+    function PostCategory(data, elem) {
         /*
         integration_id =>hdfIntegrationId
         gf_id
@@ -371,13 +374,13 @@ function PostCategory($Cats)
                 "Content-Type": "application/json",
             },
             "data": data,
-            "success":function(response) {
-            console.log(response);
-            $(elem).find(".spinner").toggleClass("visually-hidden");
-            $(elem).addClass("is-valid");
-        }
+            "success": function(response) {
+                console.log(response);
+                $(elem).find(".spinner").toggleClass("visually-hidden");
+                $(elem).addClass("is-valid");
+            }
         };
-        $.ajax(settings).done().fail(function(response) {
+        $.ajax(settings).fail(function(response) {
             console.log(response);
             $(elem).find(".spinner").toggleClass("visually-hidden");
             $(elem).addClass("is-invalid");

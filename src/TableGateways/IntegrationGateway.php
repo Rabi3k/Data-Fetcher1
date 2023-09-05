@@ -279,7 +279,7 @@ class IntegrationGateway extends DbObject
             $retval = array();
             foreach ($result as $key => $value) {
                 # code...
-                $retval[$key] = (object)$value;
+                $retval[$value["gf_id"]] = (object)$value;
             }
             return $retval;
         } catch (\PDOException $e) {
