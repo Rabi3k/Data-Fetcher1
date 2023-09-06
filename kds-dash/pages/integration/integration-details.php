@@ -98,14 +98,17 @@ if (isset($gfMenu->menu) && $gfMenu->menu != null) {
         $i = new stdClass();
         $i->id = $value->id;
         $i->name = $value->name;
+        $i->gf_category_id = $value->menu_category_id;
         $i->sizes = $value->sizes;
+        $i->groups = $value->groups;
         $i->price = $value->price;
         $i->sizese = array_column($value->sizes, 'name');
         $i->sizesNames = implode(" / ", $i->sizese);
         $i->loyverse_id = isset($pItems[$value->id]) ? $pItems[$value->id] : null;
-        $fItems[] = $i;
+        $fItems[$value->id] = $i;
 
         foreach ($value->sizes as $s) {
+            $s->loyverse_id = isset($pVariant[$g->id]) ? $pVariant[$g->id]->loyverse_id : null;
             foreach ($s->groups as $g) {
                 $g->optionsa = array_column($g->options, 'name');
                 $g->optionsNames = implode(" / ", $g->optionsa);
@@ -365,7 +368,7 @@ function PostCategory($Cats)
 
                         <ul class="options card list-group  overflow-auto max-list-5">
                             <?php foreach ($value->sizes as $o) { ?>
-                                <li class='menu option list-group-item form-control <?php echo isset($pVariant[$o->id]) && $pVariant[$o->id]->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="m-<?php echo $o->id ?>" lid="<?php echo  $pOption[$o->id]->loyverse_id  ?>" name="<?php echo $o->name ?>" price="<?php echo $o->price ?>">
+                                <li class='menu variant list-group-item form-control <?php echo isset($pVariant[$o->id]) && $pVariant[$o->id]->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="m-<?php echo $o->id ?>" lid="<?php echo  $pOption[$o->id]->loyverse_id  ?>" name="<?php echo $o->name ?>" price="<?php echo $o->price ?>">
                                     <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
                                     <span class="fs-6 fw-semibold"><?php echo $o->name ?> </span>
                                     <span class="fs-6 float-end"><?php echo $o->price ?> DKK</span>
@@ -380,6 +383,7 @@ function PostCategory($Cats)
 
 </div>
 <script type="text/javascript">
+    var items =  JSON.parse('<?php echo json_encode( $fItems) ?>');
     $("#btnPostCategories").on("click", function() {
         let integrationId = $(hdfIntegrationId).val();
         let gfMenuId = $(txtGfMenuId).text();
@@ -453,6 +457,28 @@ function PostCategory($Cats)
             PostModifier(data, this);
         })
     });
+    $("#btnPostItems").on("click", function() {
+        let integrationId = $(hdfIntegrationId).val();
+        let gfMenuId = $(txtGfMenuId).text();
+        $("li.item.has-issue,li.item.is-invalid").each(function(key, value) {
+            $(this).find(".spinner").toggleClass("visually-hidden");
+            $(this).removeClass("has-issue");
+            $(this).removeClass("is-invalid");
+
+            let gfid = $(this).attr("id").substring(2);
+            $($(this).find("li.variant")).each(function(oKey, oVal) {
+                $(this).removeClass("has-issue");
+                $(this).removeClass("is-invalid");
+                $(this).removeClass("is-valid");
+
+            })
+            
+            let data = JSON.stringify(items[gfid]);
+
+            //console.log(data);
+            PostItem(data, this);
+        })
+    });
 
 
     function PostCategory(data, elem) {
@@ -484,7 +510,37 @@ function PostCategory($Cats)
             $(elem).addClass("is-invalid");
         });
     }
-
+    function PostItem(data, elem) {
+        /*
+        integration_id =>hdfIntegrationId
+        gf_id
+        l_id
+        name
+        gf_menu_id =>txtGfMenuId
+         */
+        var settings = {
+            "url": "/sessionservices/integration.php?q=postitem",
+            "method": "POST",
+            "timeout": 0,
+            //"async": true,
+            "headers": {
+                "Content-Type": "application/json",
+            },
+            "data": data,
+            "success": function(response) {
+                console.log(response);
+                $(elem).find(".spinner").toggleClass("visually-hidden");
+                $(elem).addClass("is-valid");
+                $(elem).find("li.variant").addClass("is-valid");
+            }
+        };
+        $.ajax(settings).fail(function(response) {
+            console.log(response);
+            $(elem).find(".spinner").toggleClass("visually-hidden");
+            $(elem).addClass("is-invalid");
+            $(elem).find("li.variant").addClass("is-invalid");
+        });
+    }
     function PostModifier(data, elem) {
         /*
         integration_id =>hdfIntegrationId

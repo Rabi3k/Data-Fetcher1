@@ -19,9 +19,49 @@ if (isset($_GET['q']) && $_GET['q'] != null) {
             # code...
             modifierProcessRequest();
             break;
+        case 'postitem':
+            # code...
+            itemProcessRequest();
+            break;
 
         default:
             # code...
+            break;
+    }
+}
+
+function itemProcessRequest()
+{
+    global $dbConnection, $requestMethod;
+
+    switch ($requestMethod) {
+        case 'GET':
+            break;
+        case 'POST':
+
+            $body = file_get_contents('php://input');
+            //echo $body;
+            $item = json_decode($body);
+            echo json_encode($item);
+            // $l_ids = PostModifier($modifier);
+            // $integrationGateway = new IntegrationGateway($dbConnection);
+            // $respModifier = $integrationGateway->InsertOrUpdatePostedType($modifier->name, $modifier->gf_id, "item", $modifier->integration_id, $modifier->gf_menu_id, $l_ids->l_id);
+            // $opts = array();
+            // foreach ($modifier->options as $key => $value) {
+            //     # code... PostOptions
+            //     $opts[] = array(
+            //         "gf_id" => $value->gf_id,
+            //         "name" => $value->name,
+            //         "l_id" => $l_ids->ol_id[$key],
+            //     );
+            // }
+            // $respOptions = $integrationGateway->InsertOrUpdateBatchPostedType("option", $modifier->integration_id, $modifier->gf_menu_id, $opts);
+            // $respModifier->options = $respOptions;
+            // echo GeneralController::CreateResponserBody($respModifier);
+            break;
+        case 'PUT':
+        case 'DELETE':
+        default:
             break;
     }
 }

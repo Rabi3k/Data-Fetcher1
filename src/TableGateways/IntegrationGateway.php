@@ -320,6 +320,39 @@ class IntegrationGateway extends DbObject
             exit($e->getMessage());
         }
     }
+    /**
+     * get 2D array of posted type by menuid and integration id
+     */
+    public function GetBatchTypeByIntegrationAndMenuAndType(
+        int $integration_id,
+        int $menu_id,
+        string $type,
+    ) {
+
+        $statment = "SELECT * FROM tbl_posted_type 
+        Where `gf_menu_id` = $menu_id AND
+        `integration_id` = $integration_id AND
+        `type` = $type;
+        ";
+
+        try {
+            $statement = $this->getDbConnection()->query($statment);
+            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $statement->closeCursor();
+            if (count($result) < 1) {
+                return null;
+            }
+            $retval = array();
+            foreach ($result as $key => $value) {
+                # code...
+                $retval[$value["gf_id"]] = (object)$value;
+            }
+            return $retval;
+        } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
+            exit($e->getMessage());
+        }
+    }
 
     public function InsertOrUpdateBatchPostedType(
         //int $gf_id,
