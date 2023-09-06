@@ -1,5 +1,6 @@
 <?php
 
+use PhpParser\Node\Expr\Cast\Object_;
 use React\Http\Message\Response;
 use Src\Controller\GeneralController;
 use Src\TableGateways\IntegrationGateway;
@@ -14,9 +15,9 @@ if (isset($_GET['q']) && $_GET['q'] != null) {
             # code...
             categoryProcessRequest();
             break;
-        case 'postcategories':
+        case 'postmodifier':
             # code...
-            categoriesProcessRequest();
+            modifierProcessRequest();
             break;
 
         default:
@@ -24,8 +25,41 @@ if (isset($_GET['q']) && $_GET['q'] != null) {
             break;
     }
 }
-function getFunction()
+
+function modifierProcessRequest()
 {
+    global $dbConnection, $requestMethod;
+
+    switch ($requestMethod) {
+        case 'GET':
+            break;
+        case 'POST':
+
+            $body = file_get_contents('php://input');
+            //echo $body;
+            $modifier = json_decode($body);
+            //echo json_encode($modifier);
+            $l_ids = PostModifier($modifier);
+            $integrationGateway = new IntegrationGateway($dbConnection);
+            $respModifier = $integrationGateway->InsertOrUpdatePostedType($modifier->name, $modifier->gf_id, "modifier", $modifier->integration_id, $modifier->gf_menu_id, $l_ids->l_id);
+            $opts = array();
+            foreach ($modifier->options as $key => $value) {
+                # code... PostOptions
+                $opts[] = array(
+                    "gf_id" => $value->gf_id,
+                    "name" => $value->name,
+                    "l_id" => $l_ids->ol_id[$key],
+                );
+            }
+            $respOptions = $integrationGateway->InsertOrUpdateBatchPostedType("option", $modifier->integration_id, $modifier->gf_menu_id, $opts);
+            $respModifier->options = $respOptions;
+            echo GeneralController::CreateResponserBody($respModifier);
+            break;
+        case 'PUT':
+        case 'DELETE':
+        default:
+            break;
+    }
 }
 function categoryProcessRequest()
 {
@@ -52,53 +86,65 @@ function categoryProcessRequest()
     }
 }
 
-function categoriesProcessRequest()
+function PostModifier($modifier)
 {
-    global $requestMethod;
-
-    switch ($requestMethod) {
-        case 'GET':
-            break;
-        case 'POST':
-
-            $body = file_get_contents('php://input');
-            //echo $body;
-            $input = json_decode($body);
-            //echo json_encode($input);
-            $respCats = PostCategories($input);
-            echo GeneralController::CreateResponserBody($respCats);
-            break;
-        case 'PUT':
-        case 'DELETE':
-        default:
-            break;
-    }
-}
-
-
-function PostCategories($Cats)
-{
-    //echo json_encode($Cats);
     global $dbConnection;
     $integrationGateway = new IntegrationGateway($dbConnection);
-    // $integration = $integrationGateway->findById($Cats->integration_id);
-    /*
-    {"integration_id":"1","gf_menu_id":"433279","gf_id":"2628705","l_id":"4925a8cf-3645-428e-8c01-aeb181a99ca6","name":"Pizza"}
-     */
-    $cni = array();
+    $integration = $integrationGateway->findById($modifier->integration_id);
 
-    foreach ($Cats->categories as $key => $cat) {
-        $Catsi = new stdClass();
-        $cat->integration_id=$Cats->integration_id;
-        $cat->gf_menu_id=$Cats->gf_menu_id;
-        $cat->l_id = PostCategory($cat);
-        $cni[] = array(
-            "categoryName" => $cat->name,
-            "loyverse_id" => $cat->l_id,
-            "gf_id" => $cat->gf_id,
+    $curl = curl_init();
+    $postFieldId = isset($modifier->l_id) && $modifier->l_id != null ? '"id": "' . $modifier->l_id . '", ' : "";
+    $mo = array();
+    foreach ($modifier->options as $key => $value) {
+        # code...
+        $opostFieldId = isset($modifier->l_id) && $modifier->l_id != null ? '"id": "' . $modifier->l_id . '", ' : "";
+        $mo[] = (object)array(
+            "id" => (isset($value->l_id) && $value->l_id != null ? $value->l_id:null),
+            "name" => $value->name,
+            "price" =>$value->price
         );
+        //'{'. $opostFieldId .'"name": "'. $value->name .'","price": '. $value->price .'}';
     }
-   return $integrationGateway->InsertOrUpdateBatchPostedType("category", $Cats->integration_id, $Cats->gf_menu_id, $cni);
+    $datas = (object)array(
+        "id" => (isset($modifier->l_id) && $modifier->l_id != null ? $modifier->l_id:null),
+        "name" => $modifier->name,
+        "stores"=> array("$integration->StoreId"),
+        "modifier_options" =>$mo
+    );
+    $data = json_encode($datas);
+    //echo $data;
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://api.loyverse.com/v1.0/modifiers',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => $data,
+        CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json',
+            "Authorization: Bearer $integration->LoyverseToken"
+        ),
+    ));
+
+    $response = curl_exec($curl);
+
+    curl_close($curl);
+    //echo $response;
+    $resp = json_decode($response);
+    if(!isset($resp->id))
+    {
+        unprocessableEntityResponse($resp);
+        exit;
+    }
+    $optIds = array_column($resp->modifier_options, "id");
+    $m_id = $resp->id;
+    return (object)array(
+        "l_id" => $m_id,
+        "ol_id" => $optIds
+    );
 }
 function PostCategory($Cat)
 {
@@ -127,3 +173,13 @@ function PostCategory($Cat)
     curl_close($curl);
     return json_decode($response)->id;
 }
+function unprocessableEntityResponse($error)
+    {
+        http_response_code(422);
+        $response = json_encode([
+            'error' => $error
+        ]);
+
+        echo GeneralController::CreateResponserBody(json_decode($response));
+       // $response['status_code_header'] = 'HTTP/1.1 422 Unprocessable Entity';
+    }

@@ -209,7 +209,9 @@ class IntegrationGateway extends DbObject
             exit($e->getMessage());
         }
     }
-
+/**
+ * 
+ */
     public function InsertOrUpdatePostedType(
         string $categoryName,
         int $gf_category_id,
@@ -287,6 +289,37 @@ class IntegrationGateway extends DbObject
             exit($e->getMessage());
         }
     }
+    /**
+     * get 2D array of posted type by menuid and integration id
+     */
+    public function GetBatchTypeByIntegrationAndMenu(
+        int $menu_id,
+        int $integration_id
+    ) {
+
+        $statment = "SELECT * FROM tbl_posted_type 
+        Where `gf_menu_id` = $menu_id AND
+        `integration_id` = $integration_id;
+        ";
+
+        try {
+            $statement = $this->getDbConnection()->query($statment);
+            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $statement->closeCursor();
+            if (count($result) < 1) {
+                return null;
+            }
+            $retval = array();
+            foreach ($result as $key => $value) {
+                # code...
+                $retval[$value["type"]][$value["gf_id"]] = (object)$value;
+            }
+            return $retval;
+        } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
+            exit($e->getMessage());
+        }
+    }
 
     public function InsertOrUpdateBatchPostedType(
         //int $gf_id,
@@ -311,38 +344,36 @@ class IntegrationGateway extends DbObject
         foreach ($name_loyverseId as $key => $value) {
             # code...
             $statements[] = "
-                            (:gf_id,
-                            :integration_id,
-                            :type,
-                            :gf_menu_id,
-                            :loyverse_id,
-                            :name)";
-                            $values2  = array(
-                                'gf_id' => $value["gf_id"],
-                                'integration_id' => $integration_id,
-                                'type' => $type,
-                                'gf_menu_id' => $gf_menu_id,
-                                'loyverse_id' => $value["loyverse_id"],
-                                'name' => $value["categoryName"],
-                            );
-                            $values = array_merge($values,$values2);
+                            (".$value["gf_id"].",
+                            $integration_id,
+                            '$type',
+                            $gf_menu_id,
+                            '".$value["l_id"]."',
+                            '".$value["name"]."')";
+            $values2  = array(
+                "gf_menu_id" => $gf_menu_id,
+                "loyverse_id" => $value["l_id"],
+                "name" => $value["name"],
+            );
+            $values = array_merge($values,$values2);
         }
 
 
         $statement .=implode(", ",$statements);
         $statement .= "ON DUPLICATE KEY UPDATE
-        `gf_menu_id` = :gf_menu_id,
-        `loyverse_id` = :loyverse_id,
-        `name` = :name;";
-        //echo $statement;
+        `gf_menu_id` = VALUES(`gf_menu_id`),
+        `loyverse_id` = VALUES(`loyverse_id`),
+        `name` = VALUES(`name`);";
+        //echo $statement ."<br/>" . json_encode($values);
         try {
 
             $statement = $this->getDbConnection()->prepare($statement);
             $this->getDbConnection()->beginTransaction();
-            $statement->execute($values);
+            $statement->execute();
 
             $this->getDbConnection()->commit();
             $ids = array_column($name_loyverseId,"gf_id");
+
             return $this->GetBatchTypeByIntegrationAndGfId($ids, $integration_id, $type);
         } catch (\PDOException $e) {
             (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);

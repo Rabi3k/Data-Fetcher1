@@ -51,8 +51,9 @@ if (isset($_POST["fetchMenu"])) {
 if (isset($gfMenu->menu) && $gfMenu->menu != null) {
     $gfMenuObj = json_decode($gfMenu->menu);
 
+    $postedElements = $integrationGateway->GetBatchTypeByIntegrationAndMenu($gfMenu->menu_id, $integration->Id,);
     $CatsIds = array_column($gfMenuObj->categories, 'id');
-    $aCats = $integrationGateway->GetBatchTypeByIntegrationAndGfId($CatsIds, $integration->Id, "category");
+    $aCats = $postedElements['category'];
     $aCatse = filterArrayByKeys($gfMenuObj->categories, ['id', 'name']);
     foreach ($aCatse as  $value) {
         if (array_key_exists($value['id'], $aCats)) {
@@ -73,8 +74,13 @@ if (isset($gfMenu->menu) && $gfMenu->menu != null) {
                 "hasIssue" => false
             );
         }
-        # code...
     }
+    /*,'modifier','option','item','variant'
+     */
+    $pItems = $postedElements['item'];
+    $pModifier = $postedElements['modifier'];
+    $pOption = $postedElements['option'];
+    $pVariant = $postedElements['variant'];
     $items = array_column($gfMenuObj->categories, 'items');
 
     $cItems = array();
@@ -92,14 +98,18 @@ if (isset($gfMenu->menu) && $gfMenu->menu != null) {
         $i = new stdClass();
         $i->id = $value->id;
         $i->name = $value->name;
-        $i->sizes = array_column($value->sizes, 'name');
-        $i->sizesNames = implode(" / ", $i->sizes);
+        $i->sizes = $value->sizes;
+        $i->price = $value->price;
+        $i->sizese = array_column($value->sizes, 'name');
+        $i->sizesNames = implode(" / ", $i->sizese);
+        $i->loyverse_id = isset($pItems[$value->id]) ? $pItems[$value->id] : null;
         $fItems[] = $i;
 
         foreach ($value->sizes as $s) {
             foreach ($s->groups as $g) {
                 $g->optionsa = array_column($g->options, 'name');
                 $g->optionsNames = implode(" / ", $g->optionsa);
+                $g->loyverse_id = isset($pModifier[$g->id]) ? $pModifier[$g->id]->loyverse_id : null;
                 if (!in_array($g, $modifiers)) {
                     $modifiers[] = $g;
                 }
@@ -108,6 +118,7 @@ if (isset($gfMenu->menu) && $gfMenu->menu != null) {
         foreach ($value->groups as $g) {
             $g->optionsa = array_column($g->options, 'name');
             $g->optionsNames = implode(" / ", $g->optionsa);
+            $g->loyverse_id = isset($pModifier[$g->id]) ? $pModifier[$g->id]->loyverse_id : null;
             if (!in_array($g, $modifiers)) {
                 $modifiers[] = $g;
             }
@@ -314,9 +325,9 @@ function PostCategory($Cats)
         </div>
         <div class="col-4 ">
             <center class="fs-4">Categories</center>
-            <ul class="categories card list-group list-group-numbered overflow-auto max-list-5">
+            <ul class="categories card list-group  overflow-auto max-list-5">
                 <?php foreach ($aCats as $key => $value) { ?>
-                    <li class='category list-group-item form-control <?php echo isset($value->hasIssue) && $value->hasIssue != false ? "has-issue" : (isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid'  : "is-invalid")  ?>' id="c-<?php echo $value->gf_id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
+                    <li class='menu category list-group-item form-control <?php echo isset($value->hasIssue) && $value->hasIssue != false ? "has-issue" : (isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid'  : "is-invalid")  ?>' id="c-<?php echo $value->gf_id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
                         <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
                         <?php echo $value->name ?>
                     </li>
@@ -325,25 +336,44 @@ function PostCategory($Cats)
         </div>
         <div class="col-4 ">
             <center class="fs-4">Modifiers</center>
-            <ul class="modifiers card list-group list-group-numbered overflow-auto max-list-5">
+            <ul class="modifiers card list-group  overflow-auto max-list-5">
                 <?php foreach ($modifiers as $key => $value) { ?>
-                    <li class='list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="m-<?php echo $value->id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
-
+                    <li class='menu modifier list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="m-<?php echo $value->id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
+                        <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
                         <?php echo $value->name ?>
-                        <span class="float-end fs-6 text-dark">
-                            <?php echo $value->optionsNames ?>
-                        </span>
+                        <ul class="options card list-group  overflow-auto max-list-5">
+                            <?php foreach ($value->options as $o) { ?>
+                                <li class='menu option list-group-item form-control <?php echo isset($pOption[$o->id]) && $pOption[$o->id]->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="m-<?php echo $o->id ?>" lid="<?php echo  $pOption[$o->id]->loyverse_id  ?>" name="<?php echo $o->name ?>" price="<?php echo $o->price ?>">
+                                    <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
+                                    <span class="fs-5"><?php echo $o->name ?> </span>
+                                    <span class="fs-6 float-end"><?php echo $o->price ?> DKK</span>
+                                </li>
+                            <?php } ?>
+                        </ul>
                     </li>
                 <?php } ?>
             </ul>
         </div>
         <div class="col-4 ">
             <center class="fs-4">items</center>
-            <ul class="items card list-group list-group-numbered overflow-auto max-list-5">
+            <ul class="items card list-group  overflow-auto max-list-5">
                 <?php foreach ($fItems as $key => $value) { ?>
-                    <li class='list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="i-<?php echo $value->id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
-                        <?php echo $value->name ?><span class="float-end fs-6 text-dark"><?php echo $value->sizesNames ?></span></li>
-                <?php } ?>
+                    <li class='menu item list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="i-<?php echo $value->id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>" price="<?php echo $value->price ?>">
+                        <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
+                        <span class="fs-5"><?php echo $value->name ?></span>
+                        <span class="fs-6 float-end"><?php echo $value->price ?> DKK</span>
+
+                        <ul class="options card list-group  overflow-auto max-list-5">
+                            <?php foreach ($value->sizes as $o) { ?>
+                                <li class='menu option list-group-item form-control <?php echo isset($pVariant[$o->id]) && $pVariant[$o->id]->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="m-<?php echo $o->id ?>" lid="<?php echo  $pOption[$o->id]->loyverse_id  ?>" name="<?php echo $o->name ?>" price="<?php echo $o->price ?>">
+                                    <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
+                                    <span class="fs-5"><?php echo $o->name ?> </span>
+                                    <span class="fs-6 float-end"><?php echo $o->price ?> DKK</span>
+                                </li>
+                            <?php } ?>
+                        </ul>
+
+                    <?php } ?>
             </ul>
         </div>
     </div>
@@ -373,6 +403,57 @@ function PostCategory($Cats)
             PostCategory(data, this);
         })
     });
+    $("li.menu").on("click",function(){
+        if($(this).hasClass("is-valid"))
+        {
+            $(this).addClass("has-issue");
+            $(this).removeClass("is-valid");
+        }
+    })
+
+    $("#btnPostModifiers").on("click", function() {
+        let integrationId = $(hdfIntegrationId).val();
+        let gfMenuId = $(txtGfMenuId).text();
+        $("li.modifier.has-issue,li.modifier.is-invalid").each(function(key, value) {
+            $(this).find(".spinner").toggleClass("visually-hidden");
+            $(this).removeClass("has-issue");
+            $(this).removeClass("is-invalid");
+
+
+            let options = [];
+            $($(this).find("li.option")).each(function(oKey, oVal) {
+                $(this).removeClass("has-issue");
+                $(this).removeClass("is-invalid");
+                $(this).removeClass("is-valid");
+                let gfid = $(oVal).attr("id").substring(2);
+                let lid = $(oVal).attr("lid");
+                let name = $(oVal).attr("name");
+                let price = $(oVal).attr("price");
+                options.push({
+                    "gf_id": gfid,
+                    "l_id": lid,
+                    "name": name,
+                    "price": parseInt(price)
+                })
+            })
+            let gfid = $(value).attr("id").substring(2);
+            let lid = $(value).attr("lid");
+            let name = $(value).attr("name");
+            let data = JSON.stringify({
+                "integration_id": integrationId,
+                "gf_menu_id": gfMenuId,
+                "gf_id": gfid,
+                "l_id": lid,
+                "name": name,
+                "options": options
+
+            });
+
+            //console.log(data);
+            PostModifier(data, this);
+        })
+    });
+
 
     function PostCategory(data, elem) {
         /*
@@ -401,6 +482,38 @@ function PostCategory($Cats)
             console.log(response);
             $(elem).find(".spinner").toggleClass("visually-hidden");
             $(elem).addClass("is-invalid");
+        });
+    }
+
+    function PostModifier(data, elem) {
+        /*
+        integration_id =>hdfIntegrationId
+        gf_id
+        l_id
+        name
+        gf_menu_id =>txtGfMenuId
+         */
+        var settings = {
+            "url": "/sessionservices/integration.php?q=postmodifier",
+            "method": "POST",
+            "timeout": 0,
+            //"async": true,
+            "headers": {
+                "Content-Type": "application/json",
+            },
+            "data": data,
+            "success": function(response) {
+                console.log(response);
+                $(elem).find(".spinner").toggleClass("visually-hidden");
+                $(elem).addClass("is-valid");
+                $(elem).find("li.option").addClass("is-valid");
+            }
+        };
+        $.ajax(settings).fail(function(response) {
+            console.log(response);
+            $(elem).find(".spinner").toggleClass("visually-hidden");
+            $(elem).addClass("is-invalid");
+            $(elem).find("li.option").addClass("is-invalid");
         });
     }
 </script>
