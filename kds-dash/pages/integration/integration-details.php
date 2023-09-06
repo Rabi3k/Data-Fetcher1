@@ -329,7 +329,7 @@ function PostCategory($Cats)
                 <?php foreach ($aCats as $key => $value) { ?>
                     <li class='menu category list-group-item form-control <?php echo isset($value->hasIssue) && $value->hasIssue != false ? "has-issue" : (isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid'  : "is-invalid")  ?>' id="c-<?php echo $value->gf_id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
                         <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
-                        <?php echo $value->name ?>
+                        <span class="fs-5 fw-bolder"><?php echo $value->name ?></span>
                     </li>
                 <?php } ?>
             </ul>
@@ -340,12 +340,12 @@ function PostCategory($Cats)
                 <?php foreach ($modifiers as $key => $value) { ?>
                     <li class='menu modifier list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="m-<?php echo $value->id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
                         <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
-                        <?php echo $value->name ?>
+                        <span class="fs-5 fw-bolder"><?php echo $value->name ?></span>
                         <ul class="options card list-group  overflow-auto max-list-5">
                             <?php foreach ($value->options as $o) { ?>
                                 <li class='menu option list-group-item form-control <?php echo isset($pOption[$o->id]) && $pOption[$o->id]->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="m-<?php echo $o->id ?>" lid="<?php echo  $pOption[$o->id]->loyverse_id  ?>" name="<?php echo $o->name ?>" price="<?php echo $o->price ?>">
                                     <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
-                                    <span class="fs-5"><?php echo $o->name ?> </span>
+                                    <span class="fs-6 fw-semibold"><?php echo $o->name ?> </span>
                                     <span class="fs-6 float-end"><?php echo $o->price ?> DKK</span>
                                 </li>
                             <?php } ?>
@@ -360,14 +360,14 @@ function PostCategory($Cats)
                 <?php foreach ($fItems as $key => $value) { ?>
                     <li class='menu item list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="i-<?php echo $value->id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>" price="<?php echo $value->price ?>">
                         <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
-                        <span class="fs-5"><?php echo $value->name ?></span>
-                        <span class="fs-6 float-end"><?php echo $value->price ?> DKK</span>
+                        <span class="fs-5 fw-bolder"><?php echo $value->name ?></span>
+                        <span class="fs-6 fw-bolder float-end"><?php echo $value->price ?> DKK</span>
 
                         <ul class="options card list-group  overflow-auto max-list-5">
                             <?php foreach ($value->sizes as $o) { ?>
                                 <li class='menu option list-group-item form-control <?php echo isset($pVariant[$o->id]) && $pVariant[$o->id]->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="m-<?php echo $o->id ?>" lid="<?php echo  $pOption[$o->id]->loyverse_id  ?>" name="<?php echo $o->name ?>" price="<?php echo $o->price ?>">
                                     <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
-                                    <span class="fs-5"><?php echo $o->name ?> </span>
+                                    <span class="fs-6 fw-semibold"><?php echo $o->name ?> </span>
                                     <span class="fs-6 float-end"><?php echo $o->price ?> DKK</span>
                                 </li>
                             <?php } ?>
