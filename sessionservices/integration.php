@@ -42,8 +42,10 @@ function itemProcessRequest()
             $body = file_get_contents('php://input');
             //echo $body;
             $item = json_decode($body);
-            echo json_encode($item);
-            // $l_ids = PostModifier($modifier);
+            // echo json_encode($item);
+            $l_ids = PostItem($item);
+            http_response_code(200);
+            echo GeneralController::CreateResponserBody($l_ids);
             // $integrationGateway = new IntegrationGateway($dbConnection);
             // $respModifier = $integrationGateway->InsertOrUpdatePostedType($modifier->name, $modifier->gf_id, "item", $modifier->integration_id, $modifier->gf_menu_id, $l_ids->l_id);
             // $opts = array();
@@ -126,6 +128,106 @@ function categoryProcessRequest()
     }
 }
 
+function PostItem($item)
+{
+    global $dbConnection;
+    $integrationGateway = new IntegrationGateway($dbConnection);
+    $integration = $integrationGateway->findById($item->integration_id);
+    $cat = $integrationGateway->GetTypeByIntegrationAndGfId($item->gf_category_id, $item->integration_id, "category");
+
+    //echo json_encode($cat);
+
+    $curl = curl_init();
+    $mo = array();
+    $si = array();
+    foreach ($item->sizes as $key => $s) {
+        # code...
+        $si[] = (object)array(
+            "id" => (isset($s->loyverse_id) && $s->loyverse_id != null ? $s->loyverse_id : null),
+            //"name" => $s->name,
+            "default_price" => ($s->price) + ($item->price),
+            "reference_variant_id" => $s->id,
+            "default_pricing_type" => "FIXED",
+            "option1_value" => $s->name,
+            "option2_value" => null,
+            "option3_value" => null,
+            //"stores"=> array("$integration->StoreId"),
+        );
+        foreach ($s->groups as $key => $g) {
+            # code...
+            if (!in_array($g->loyverse_id, $mo)) {
+                $mo[] = $g->loyverse_id;
+            }
+        }
+
+        //'{'. $opostFieldId .'"name": "'. $value->name .'","price": '. $value->price .'}';
+    }
+    foreach ($item->groups as $key => $g) {
+        # code...
+        if (!in_array($g->loyverse_id, $mo)) {
+            $mo[] = $g->loyverse_id;
+        }
+    }
+    $datas = (object)array(
+        "id" => (isset($item->loyverse_id) && $item->loyverse_id != null ? $item->loyverse_id : null),
+        "item_name" => $item->name,
+        "reference_id" => $item->id,
+        "description" => $item->description,
+        "category_id" => $cat->loyverse_id,
+        "form" => "SQUARE",
+        "color" => "GREY",
+        "is_composite" => false,
+        "option1_name" =>  count($si) > 0 ? "Size" : null,
+        "option2_name" => null,
+        "option3_name" => null,
+        "sold_by_weight" => false,
+        "track_stock" => false,
+        "use_production" => false,
+        "tax_ids" => array("4be403d7-741f-40f8-b9ef-8adb03fcbc0a"),
+        //"stores"=> array("$integration->StoreId"),
+        "variants" => count($si) > 0 ? $si : array((object)array(
+            "default_pricing_type" => "FIXED",
+            "default_price" => $item->price,
+        )),
+        "modifier_ids" => $mo,
+
+    );
+    
+    $data = json_encode($datas);
+    //echo $data;
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://api.loyverse.com/v1.0/items',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => $data,
+        CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json',
+            "Authorization: Bearer $integration->LoyverseToken"
+        ),
+    ));
+
+    $response = curl_exec($curl);
+
+    curl_close($curl);
+    //echo $response;
+    $resp = json_decode($response);
+    if (!isset($resp->id)) {
+        unprocessableEntityResponse($resp);
+        exit;
+    }
+    $optIds = array_column($resp->variants, "variant_id");
+    $m_id = $resp->id;
+    return (object)array(
+        "l_id" => $m_id,
+        "ol_id" => $optIds
+    );
+}
+
 function PostModifier($modifier)
 {
     global $dbConnection;
@@ -133,23 +235,22 @@ function PostModifier($modifier)
     $integration = $integrationGateway->findById($modifier->integration_id);
 
     $curl = curl_init();
-    $postFieldId = isset($modifier->l_id) && $modifier->l_id != null ? '"id": "' . $modifier->l_id . '", ' : "";
     $mo = array();
     foreach ($modifier->options as $key => $value) {
         # code...
         $opostFieldId = isset($modifier->l_id) && $modifier->l_id != null ? '"id": "' . $modifier->l_id . '", ' : "";
         $mo[] = (object)array(
-            "id" => (isset($value->l_id) && $value->l_id != null ? $value->l_id:null),
+            "id" => (isset($value->l_id) && $value->l_id != null ? $value->l_id : null),
             "name" => $value->name,
-            "price" =>$value->price
+            "price" => $value->price
         );
         //'{'. $opostFieldId .'"name": "'. $value->name .'","price": '. $value->price .'}';
     }
     $datas = (object)array(
-        "id" => (isset($modifier->l_id) && $modifier->l_id != null ? $modifier->l_id:null),
+        "id" => (isset($modifier->l_id) && $modifier->l_id != null ? $modifier->l_id : null),
         "name" => $modifier->name,
-        "stores"=> array("$integration->StoreId"),
-        "modifier_options" =>$mo
+        "stores" => array("$integration->StoreId"),
+        "modifier_options" => $mo
     );
     $data = json_encode($datas);
     //echo $data;
@@ -174,8 +275,7 @@ function PostModifier($modifier)
     curl_close($curl);
     //echo $response;
     $resp = json_decode($response);
-    if(!isset($resp->id))
-    {
+    if (!isset($resp->id)) {
         unprocessableEntityResponse($resp);
         exit;
     }
@@ -210,16 +310,21 @@ function PostCategory($Cat)
     ));
 
     $response = curl_exec($curl);
+    $resp = json_decode($response);
     curl_close($curl);
-    return json_decode($response)->id;
+    if (!isset($resp->id)) {
+        unprocessableEntityResponse($resp);
+        exit;
+    }
+    return $resp->id;
 }
 function unprocessableEntityResponse($error)
-    {
-        http_response_code(422);
-        $response = json_encode([
-            'error' => $error
-        ]);
+{
+    http_response_code(422);
+    $response = json_encode([
+        'error' => $error
+    ]);
 
-        echo GeneralController::CreateResponserBody(json_decode($response));
-       // $response['status_code_header'] = 'HTTP/1.1 422 Unprocessable Entity';
-    }
+    echo GeneralController::CreateResponserBody(json_decode($response));
+    // $response['status_code_header'] = 'HTTP/1.1 422 Unprocessable Entity';
+}

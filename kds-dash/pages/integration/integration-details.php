@@ -98,6 +98,7 @@ if (isset($gfMenu->menu) && $gfMenu->menu != null) {
         $i = new stdClass();
         $i->id = $value->id;
         $i->name = $value->name;
+        $i->description = $value->description;
         $i->gf_category_id = $value->menu_category_id;
         $i->sizes = $value->sizes;
         $i->groups = $value->groups;
@@ -472,9 +473,10 @@ function PostCategory($Cats)
                 $(this).removeClass("is-valid");
 
             })
-            
+            items[gfid].integration_id = integrationId;
+            items[gfid].gf_menu_id= gfMenuId;
             let data = JSON.stringify(items[gfid]);
-
+            
             //console.log(data);
             PostItem(data, this);
         })
