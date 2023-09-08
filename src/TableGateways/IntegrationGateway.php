@@ -209,16 +209,18 @@ class IntegrationGateway extends DbObject
             exit($e->getMessage());
         }
     }
-/**
- * 
- */
+    /**
+     * 
+     */
     public function InsertOrUpdatePostedType(
         string $categoryName,
-        int $gf_category_id,
+        int $gf_id,
         string $type,
         int $integration_id,
         int $gf_menu_id,
         string $loyverse_id,
+        int $parent_gf_id = null,
+        string $parent_l_id = null,
     ) {
 
 
@@ -228,32 +230,40 @@ class IntegrationGateway extends DbObject
         `type`,
         `gf_menu_id`,
         `loyverse_id`,
-        `name`)
+        `name`,
+        parent_gfid,
+        parent_lid)
         VALUES
         (:gf_id,
         :integration_id,
         :type,
         :gf_menu_id,
         :loyverse_id,
-        :name)
+        :name,
+        :parent_gfid,
+        :parent_lid)
         ON DUPLICATE KEY UPDATE
         `gf_menu_id` = :gf_menu_id,
         `loyverse_id` = :loyverse_id,
+        `parent_gfid` = :parent_gfid,
+        `parent_lid` = :parent_lid,
         `name` = :name;";
         try {
             $statement = $this->getDbConnection()->prepare($statement);
             $this->getDbConnection()->beginTransaction();
             $statement->execute(array(
-                'gf_id' => $gf_category_id,
+                'gf_id' => $gf_id,
                 'integration_id' => $integration_id,
                 'type' => $type,
                 'gf_menu_id' => $gf_menu_id,
                 'loyverse_id' => $loyverse_id,
                 'name' => $categoryName,
+                'parent_gfid' => $parent_gf_id,
+                'parent_lid' => $parent_l_id,
             ));
 
             $this->getDbConnection()->commit();
-            return $this->GetTypeByIntegrationAndGfId($gf_category_id, $integration_id, $type);
+            return $this->GetTypeByIntegrationAndGfId($gf_id, $integration_id, $type);
         } catch (\PDOException $e) {
             (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage() . ", $categoryName");
@@ -359,7 +369,9 @@ class IntegrationGateway extends DbObject
         string $type,
         int $integration_id,
         int $gf_menu_id,
-        array $name_loyverseId
+        array $name_loyverseId,
+        int $parent_gf_id = null,
+        string $parent_l_id = null
         /*string $loyverse_id,
     string $categoryName*/
     ) {
@@ -371,33 +383,37 @@ class IntegrationGateway extends DbObject
         `type`,
         `gf_menu_id`,
         `loyverse_id`,
-        `name`)VALUES";
+        `name`,
+        parent_gfid,
+        parent_lid)
+        VALUES";
         $statements = array();
-        $values = array();
         foreach ($name_loyverseId as $key => $value) {
             # code...
-            $statements[] = "
-                            (".$value["gf_id"].",
+            //var_dump($value);
+
+            $statements[] = "(" . $value["gf_id"] . ",
                             $integration_id,
                             '$type',
                             $gf_menu_id,
-                            '".$value["l_id"]."',
-                            '".$value["name"]."')";
-            $values2  = array(
-                "gf_menu_id" => $gf_menu_id,
-                "loyverse_id" => $value["l_id"],
-                "name" => $value["name"],
-            );
-            $values = array_merge($values,$values2);
+                            '" . $value["l_id"] . "',
+                            '" . $value["name"] . "'," 
+                            .(isset($parent_gf_id)  && $parent_gf_id != null ? $parent_gf_id : "null" )
+                            . ", " 
+                            . (isset($parent_l_id) && $parent_l_id != null ? "'$parent_l_id'" : "null")
+                . ")";
+            //echo $statements;
         }
 
 
-        $statement .=implode(", ",$statements);
+        $statement .= implode(", ", $statements);
         $statement .= "ON DUPLICATE KEY UPDATE
         `gf_menu_id` = VALUES(`gf_menu_id`),
         `loyverse_id` = VALUES(`loyverse_id`),
+        `parent_gfid` = VALUES(`parent_gfid`),
+        `parent_lid` = VALUES(`parent_lid`),
         `name` = VALUES(`name`);";
-        //echo $statement ."<br/>" . json_encode($values);
+        //echo $statement;
         try {
 
             $statement = $this->getDbConnection()->prepare($statement);
@@ -405,7 +421,7 @@ class IntegrationGateway extends DbObject
             $statement->execute();
 
             $this->getDbConnection()->commit();
-            $ids = array_column($name_loyverseId,"gf_id");
+            $ids = array_column($name_loyverseId, "gf_id");
 
             return $this->GetBatchTypeByIntegrationAndGfId($ids, $integration_id, $type);
         } catch (\PDOException $e) {

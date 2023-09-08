@@ -29,7 +29,7 @@ if (isset($_POST["fetchMenu"])) {
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
-        CURLOPT_URL => "https://www.restaurantlogin.com/api/restaurant/$integration->gfUid/menu?active=true&pictures=false",
+        CURLOPT_URL => "https://www.restaurantlogin.com/api/restaurant/$integration->gfUid/menu?active=true&pictures=true",
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,
@@ -105,11 +105,12 @@ if (isset($gfMenu->menu) && $gfMenu->menu != null) {
         $i->price = $value->price;
         $i->sizese = array_column($value->sizes, 'name');
         $i->sizesNames = implode(" / ", $i->sizese);
-        $i->loyverse_id = isset($pItems[$value->id]) ? $pItems[$value->id] : null;
+        $i->loyverse_id = isset($pItems[$value->id]) ? $pItems[$value->id]->loyverse_id : null;
+        $i->picture_hi_res = $value->picture_hi_res;
         $fItems[$value->id] = $i;
 
         foreach ($value->sizes as $s) {
-            $s->loyverse_id = isset($pVariant[$g->id]) ? $pVariant[$g->id]->loyverse_id : null;
+            $s->loyverse_id = isset($pVariant[$s->id]) ? $pVariant[$s->id]->loyverse_id : null;
             foreach ($s->groups as $g) {
                 $g->optionsa = array_column($g->options, 'name');
                 $g->optionsNames = implode(" / ", $g->optionsa);
@@ -133,26 +134,6 @@ if (isset($gfMenu->menu) && $gfMenu->menu != null) {
     $itemsNames = array_column($cItems, 'name');
 }
 
-if (isset($_POST['action'])) {
-
-    if (isset($_POST['postCategories'])) {
-        $cni = array();
-
-        foreach ($aCats as $key => $cat) {
-            $Catsi = new stdClass();
-            $cat->loyverseId = PostCategory($cat);
-            $cni[] = array(
-                "categoryName" => $cat->name,
-                "loyverse_id" => $cat->loyverseId,
-                "gf_id" => $cat->gf_id,
-            );
-        }
-        $aCats = $integrationGateway->InsertOrUpdateBatchPostedType("category", $integration->Id, $gfMenu->menu_id, $cni);
-    }
-    if (isset($_POST['postItems'])) {
-        echo "Posting items";
-    }
-}
 
 
 function filterArrayByKeys(array $input, array $column_keys)
@@ -172,37 +153,6 @@ function filterArrayByKeys(array $input, array $column_keys)
 }
 
 
-function PostCategory($Cats)
-{
-    global $gfMenu, $integrationGateway, $integration;
-    $curl = curl_init();
-    $postFieldId = isset($Cats->loyverse_id) && $Cats->loyverse_id != null ? '"id": "' . $Cats->loyverse_id . '", ' : "";
-    echo $$postFieldId . "<br/>";
-    curl_setopt_array($curl, array(
-        CURLOPT_URL => 'https://api.loyverse.com/v1.0/categories',
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'POST',
-        CURLOPT_POSTFIELDS => '{' . $postFieldId . ' "name": "' . $Cats->name . '","color": "GREY"}',
-        CURLOPT_HTTPHEADER => array(
-            'Content-Type: application/json',
-            "Authorization: Bearer $integration->LoyverseToken"
-        ),
-    ));
-
-    $response = curl_exec($curl);
-
-    curl_close($curl);
-    //  echo $Cats->loyverse_id." => $response";
-
-    //return json_decode($response)->id;
-
-    //$integrationGateway->InsertOrUpdatePostedType($Cats["name"], $Cats["id"], "category" ,$integration->Id, $gfMenu->menu_id, json_decode($response)->id);
-}
 ?>
 <style>
     .max-list-5 {
@@ -216,6 +166,14 @@ function PostCategory($Cats)
         background-repeat: no-repeat;
         background-position: right calc(0.375em + 0.1875rem) center;
         background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+
+    span.toogle-items.select-all:after {
+        content: "Select all";
+    }
+
+    span.toogle-items.unselect-all:after {
+        content: "Unselect all";
     }
 </style>
 <div class="container-fluid">
@@ -328,7 +286,10 @@ function PostCategory($Cats)
             <!-- </form> -->
         </div>
         <div class="col-4 ">
-            <center class="fs-4">Categories</center>
+            <div class="d-flex">
+                <div class="p-2 flex-grow-1 text-center"><span class="fs-4">Categories</span></div>
+                <div class="p-2"><span class="toogle-items select-all btn btn-sm btn-info " for-ul="categories"></span></div>
+            </div>
             <ul class="categories card list-group  overflow-auto max-list-5">
                 <?php foreach ($aCats as $key => $value) { ?>
                     <li class='menu category list-group-item form-control <?php echo isset($value->hasIssue) && $value->hasIssue != false ? "has-issue" : (isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid'  : "is-invalid")  ?>' id="c-<?php echo $value->gf_id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
@@ -339,7 +300,10 @@ function PostCategory($Cats)
             </ul>
         </div>
         <div class="col-4 ">
-            <center class="fs-4">Modifiers</center>
+            <div class="d-flex">
+                <div class="p-2 flex-grow-1 text-center"><span class="fs-4">Modifiers</span></div>
+                <div class="p-2"><span class="toogle-items select-all btn btn-sm btn-info " for-ul="modifiers"></span></div>
+            </div>
             <ul class="modifiers card list-group  overflow-auto max-list-5">
                 <?php foreach ($modifiers as $key => $value) { ?>
                     <li class='menu modifier list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="m-<?php echo $value->id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
@@ -359,17 +323,25 @@ function PostCategory($Cats)
             </ul>
         </div>
         <div class="col-4 ">
-            <center class="fs-4">items</center>
+            <div class="d-flex">
+                <div class="p-2 flex-grow-1 text-center"><span class="fs-4">Items</span></div>
+                <div class="p-2"><span class="toogle-items select-all btn btn-sm btn-info " for-ul="items"></span></div>
+            </div>
+
             <ul class="items card list-group  overflow-auto max-list-5">
                 <?php foreach ($fItems as $key => $value) { ?>
-                    <li class='menu item list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="i-<?php echo $value->id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>" price="<?php echo $value->price ?>">
+                    
+                    <li class='menu item list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' 
+                    id="i-<?php echo $value->id ?>" 
+                    lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>" price="<?php echo $value->price ?>">
                         <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
                         <span class="fs-5 fw-bolder"><?php echo $value->name ?></span>
                         <span class="fs-6 fw-bolder float-end"><?php echo $value->price ?> DKK</span>
 
                         <ul class="options card list-group  overflow-auto max-list-5">
                             <?php foreach ($value->sizes as $o) { ?>
-                                <li class='menu variant list-group-item form-control <?php echo isset($pVariant[$o->id]) && $pVariant[$o->id]->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="m-<?php echo $o->id ?>" lid="<?php echo  $pOption[$o->id]->loyverse_id  ?>" name="<?php echo $o->name ?>" price="<?php echo $o->price ?>">
+                                <li class='menu variant list-group-item form-control <?php echo isset($pVariant[$o->id]) && $pVariant[$o->id]->loyverse_id != null ? 
+                                'is-valid' : "is-invalid"   ?>' id="m-<?php echo $o->id ?>" lid="<?php echo  $pVariant[$o->id]->loyverse_id  ?>" name="<?php echo $o->name ?>" price="<?php echo $o->price ?>">
                                     <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
                                     <span class="fs-6 fw-semibold"><?php echo $o->name ?> </span>
                                     <span class="fs-6 float-end"><?php echo $o->price ?> DKK</span>
@@ -384,7 +356,7 @@ function PostCategory($Cats)
 
 </div>
 <script type="text/javascript">
-    var items =  JSON.parse('<?php echo json_encode( $fItems) ?>');
+    var items = JSON.parse('<?php echo json_encode($fItems) ?>');
     $("#btnPostCategories").on("click", function() {
         let integrationId = $(hdfIntegrationId).val();
         let gfMenuId = $(txtGfMenuId).text();
@@ -408,13 +380,52 @@ function PostCategory($Cats)
             PostCategory(data, this);
         })
     });
-    $("li.menu").on("click",function(){
-        if($(this).hasClass("is-valid"))
-        {
-            $(this).addClass("has-issue");
-            $(this).removeClass("is-valid");
+    $("span.toogle-items").on("click", function() {
+        var ulElm = $(this).attr("for-ul");
+
+        var selct =$(this).hasClass("select-all");
+       
+        $("." + ulElm + ">li.menu").each(function() {
+            if(selct)
+            {
+                selectMenuItem(this);
+            }
+            else 
+            {
+                unselectMenuItem(this);
+            }
+        });
+
+        $(this).toggleClass("select-all unselect-all")
+    });
+    $("li.menu").on("click", function() {
+        if (!$(this).hasClass("is-invalid") && !$(this).hasClass("has-issue")) {
+            selectMenuItem(this);
+        } else {
+            unselectMenuItem(this);
         }
     })
+
+    function selectMenuItem(element) {
+        if ($(element).hasClass("is-valid")) {
+            $(element).addClass("has-issue");
+            $(element).removeClass("is-valid");
+        } else if (!$(element).hasClass("is-invalid") && !$(element).hasClass("has-issue")) {
+            $(element).addClass("is-invalid");
+            //$(this).removeClass("is-invalid");
+        }
+
+    }
+
+    function unselectMenuItem(element) {
+        if ($(element).hasClass("has-issue")) {
+            $(element).removeClass("has-issue");
+            $(element).addClass("is-valid");
+        } else if ($(element).hasClass("is-invalid")) {
+            //$(this).addClass("has-issue");
+            $(element).removeClass("is-invalid");
+        }
+    }
 
     $("#btnPostModifiers").on("click", function() {
         let integrationId = $(hdfIntegrationId).val();
@@ -474,9 +485,9 @@ function PostCategory($Cats)
 
             })
             items[gfid].integration_id = integrationId;
-            items[gfid].gf_menu_id= gfMenuId;
+            items[gfid].gf_menu_id = gfMenuId;
             let data = JSON.stringify(items[gfid]);
-            
+
             //console.log(data);
             PostItem(data, this);
         })
@@ -512,6 +523,7 @@ function PostCategory($Cats)
             $(elem).addClass("is-invalid");
         });
     }
+
     function PostItem(data, elem) {
         /*
         integration_id =>hdfIntegrationId
@@ -543,6 +555,7 @@ function PostCategory($Cats)
             $(elem).find("li.variant").addClass("is-invalid");
         });
     }
+
     function PostModifier(data, elem) {
         /*
         integration_id =>hdfIntegrationId

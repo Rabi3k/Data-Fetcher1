@@ -1,6 +1,7 @@
 <?php
 
 use PhpParser\Node\Expr\Cast\Object_;
+use Pinq\Queries\Requests\IsEmpty;
 use React\Http\Message\Response;
 use Src\Controller\GeneralController;
 use Src\TableGateways\IntegrationGateway;
@@ -44,22 +45,27 @@ function itemProcessRequest()
             $item = json_decode($body);
             // echo json_encode($item);
             $l_ids = PostItem($item);
-            http_response_code(200);
-            echo GeneralController::CreateResponserBody($l_ids);
-            // $integrationGateway = new IntegrationGateway($dbConnection);
-            // $respModifier = $integrationGateway->InsertOrUpdatePostedType($modifier->name, $modifier->gf_id, "item", $modifier->integration_id, $modifier->gf_menu_id, $l_ids->l_id);
-            // $opts = array();
-            // foreach ($modifier->options as $key => $value) {
-            //     # code... PostOptions
-            //     $opts[] = array(
-            //         "gf_id" => $value->gf_id,
-            //         "name" => $value->name,
-            //         "l_id" => $l_ids->ol_id[$key],
-            //     );
-            // }
-            // $respOptions = $integrationGateway->InsertOrUpdateBatchPostedType("option", $modifier->integration_id, $modifier->gf_menu_id, $opts);
-            // $respModifier->options = $respOptions;
-            // echo GeneralController::CreateResponserBody($respModifier);
+            // http_response_code(200);
+            // echo GeneralController::CreateResponserBody($l_ids);
+
+            $integrationGateway = new IntegrationGateway($dbConnection);
+            if (count($item->sizes) > 0) {
+                $respItem = $integrationGateway->InsertOrUpdatePostedType($item->name, $item->id, "item", $item->integration_id, $item->gf_menu_id, $l_ids->l_id);
+                $variants = array();
+                foreach ($item->sizes as $key => $value) {
+                    # code... PostOptions
+                    $variants[] = array(
+                        "gf_id" => $value->id,
+                        "name" => $value->name,
+                        "l_id" => $l_ids->ol_id[$value->id] ?? $l_ids->ol_id[$key],
+                    );
+                }
+                $respOptions = $integrationGateway->InsertOrUpdateBatchPostedType("variant",  $item->integration_id, $item->gf_menu_id, $variants, $item->id, $l_ids->l_id);
+                $respItem->variants = $respOptions;
+            } else {
+                $respItem = $integrationGateway->InsertOrUpdatePostedType($item->name, $item->id, "item", $item->integration_id, $item->gf_menu_id, $l_ids->l_id, NULL, $l_ids->ol_id[0]);
+            }
+            echo GeneralController::CreateResponserBody($respItem);
             break;
         case 'PUT':
         case 'DELETE':
@@ -93,7 +99,7 @@ function modifierProcessRequest()
                     "l_id" => $l_ids->ol_id[$key],
                 );
             }
-            $respOptions = $integrationGateway->InsertOrUpdateBatchPostedType("option", $modifier->integration_id, $modifier->gf_menu_id, $opts);
+            $respOptions = $integrationGateway->InsertOrUpdateBatchPostedType("option", $modifier->integration_id, $modifier->gf_menu_id, $opts, $modifier->gf_id, $l_ids->l_id);
             $respModifier->options = $respOptions;
             echo GeneralController::CreateResponserBody($respModifier);
             break;
@@ -174,8 +180,6 @@ function PostItem($item)
         "reference_id" => $item->id,
         "description" => $item->description,
         "category_id" => $cat->loyverse_id,
-        "form" => "SQUARE",
-        "color" => "GREY",
         "is_composite" => false,
         "option1_name" =>  count($si) > 0 ? "Size" : null,
         "option2_name" => null,
@@ -192,7 +196,7 @@ function PostItem($item)
         "modifier_ids" => $mo,
 
     );
-    
+
     $data = json_encode($datas);
     //echo $data;
     curl_setopt_array($curl, array(
@@ -214,13 +218,54 @@ function PostItem($item)
     $response = curl_exec($curl);
 
     curl_close($curl);
-    //echo $response;
-    $resp = json_decode($response);
-    if (!isset($resp->id)) {
-        unprocessableEntityResponse($resp);
-        exit;
+     //echo $response;
+     $resp = json_decode($response);
+     if (!isset($resp->id)) {
+         unprocessableEntityResponse($resp);
+         exit;
+     }
+    if (isset($item->picture_hi_res) && $item->picture_hi_res != "") {
+        $contents = file_get_contents($item->picture_hi_res);
+       
+        //echo $contents;
+        $curl1 = curl_init();
+
+        curl_setopt_array($curl1, array(
+            CURLOPT_URL => "https://api.loyverse.com/v1.0/items/$resp->id/image",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => $contents,
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: image/png',
+                "Authorization: Bearer $integration->LoyverseToken"
+            ),
+        ));
+
+        $response2 = curl_exec($curl1);
+        echo $response2;
+        //echo(json_encode(curl_getinfo($curl1)));
+
+        curl_close($curl1);
+
+        
     }
-    $optIds = array_column($resp->variants, "variant_id");
+   
+    $optIds = array(); //array_column($resp->variants, "variant_id");
+    foreach ($resp->variants as $key => $value) {
+        if (isset($value->reference_variant_id) && !is_null($value->reference_variant_id) && $value->reference_variant_id != "") {
+            $optIds[$value->reference_variant_id] = $value->variant_id;
+        } else {
+            $optIds[] = $value->variant_id;
+        }
+
+        # code...
+    }
+
     $m_id = $resp->id;
     return (object)array(
         "l_id" => $m_id,
