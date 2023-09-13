@@ -676,7 +676,7 @@ function filterArrayByKeys(array $input, array $column_keys)
             });
 
             console.log(data);
-            //PostCategory(data, this);
+            PostCategory(data, this);
         })
     });
     $("span.toogle-items").on("click", function() {
