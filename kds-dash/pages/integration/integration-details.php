@@ -74,7 +74,7 @@ if (isset($_POST["fetchDeliveryItem"])) {
     $noDItemChecked = true;
 }
 if (isset($_POST["postDeliveryItem"])) {
-    IntegrationController::PostFeeItem($integration,$gfMenu->menu_id);
+    IntegrationController::PostFeeItem($integration, $gfMenu->menu_id);
     $postedDItem = $integrationGateway->GetBatchTypeByIntegrationAndType($integration->Id, 'delivery_fee');
     $noDItemChecked = true;
 }
@@ -488,8 +488,42 @@ function filterArrayByKeys(array $input, array $column_keys)
         </div>
         <!-- END  Gloria Food Menu -->
         <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-            EFGH
+            <div class="row justify-content-center g-2 ">
+                <div class="col-12">
+                    <!-- <form method="post"> -->
+                    <div class="row justify-content-center align-items-center g-2 ">
+                        <div class="col d-grid gap-2 mx-auto">
+                            <span class="btn btn-success fs-4" name="postPromotions" id="btnPostPromotions">Post Promotions</span>
+                        </div>
+                    </div>
+                    <!-- </form> -->
+                </div>
+                <div class="col">
+                    <div class="d-flex">
+                        <div class="p-2 flex-grow-1 text-center"><span class="fs-4">Promotions</span></div>
+                        <div class="p-2"><span class="toogle-items select-all btn btn-sm btn-info " for-ul="promotions"></span></div>
+                    </div>
+                    <div class="table-responsive-sm">
+                        <table id="tblPromotions" class="table table-striped  w-100">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Outcomes</th>
+                                    <th>Udated at</th>
+                                    <th>Loyverse Id</th>
+                                    <th></th>
+                                </tr>
+                                <tbody class="promotions">
+                                </tbody>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
+        <!-- Delivery Fee Item -->
         <div class="tab-pane" id="delivery" role="tabpanel" aria-labelledby="delivery-tab">
             <div class="container">
 
@@ -523,6 +557,7 @@ function filterArrayByKeys(array $input, array $column_keys)
 
             </div>
         </div>
+        <!-- END Delivery Fee Item -->
         <!-- Orders -->
         <div class="tab-pane" id="orders" role="tabpanel" aria-labelledby="orders-tab">
             <div class="row justify-content-center g-2 ">
@@ -574,16 +609,6 @@ function filterArrayByKeys(array $input, array $column_keys)
                             </tbody>
                         </table>
                     </div>
-
-                    <ul class="orders card list-group  overflow-auto max-list-5">
-                        <?php
-                        foreach ($Orders as $key => $order) { ?>
-                            <li class='menu order list-group-item form-control <?php echo isset($order->hasIssue) && $order->hasIssue != false ? "has-issue" : (isset($order->loyverse_id) && $order->loyverse_id != null ? 'is-valid'  : "is-invalid")  ?>' id="o-<?php echo $order->id ?>" lid="<?php echo $order->loyverse_id  ?>" o-type="<?php echo $order->type ?>">
-                                <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
-                                <span class="fs-5 fw-bolder"><?php echo "$order->id - $order->client_first_name $order->client_last_name " ?></span>
-                            </li>
-                        <?php } ?>
-                    </ul>
                 </div>
             </div>
         </div>
@@ -597,6 +622,63 @@ function filterArrayByKeys(array $input, array $column_keys)
 <script type="text/javascript">
     var items = JSON.parse('<?php echo json_encode($fItems) ?>');
     var orders = JSON.parse('<?php echo json_encode($Orders) ?>');
+    $( document ).ready(function() {
+    // DataTables initialisation
+    var tblPromotions = $('#tblPromotions').DataTable({
+
+        ajax: {
+            url: "/sessionservices/promotions.php?uid=<?php echo $integration->gfUid ?>&iid=<?php echo $integration->Id ?>",
+            dataType: 'json',
+            type: 'GET',
+        },
+        //data: jsonfile,
+        columns: [{
+                data: 'id'
+            },
+            {
+                data: 'name'
+            },
+            {
+                data: 'description'
+            },
+            {
+                data: 'outcomes[0]'
+            },
+            {
+                data: 'updatedAt'
+
+            },
+            {
+                data: 'loyverseId',
+                visible: false
+
+            },
+        ],
+        columnDefs: [{
+            targets: 6,
+            visible: true,
+            data: function(row, type, val, meta) {
+                console.log(type); 
+
+                let retval = ' <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>';
+                if (row.loyverseId === null) {
+                    retval =retval+ "<span class='is-invalid'></span>";
+                } else {
+                    retval= retval+"<span class='is-valid'></span>";
+                }
+                return retval ;
+
+            }
+        }],
+        createdRow: function(row, data, dataIndex) {
+            $(row).addClass("menu promotion");
+            if (data.loyverseId === null) {
+                $(row).addClass('is-invalid');
+            } else {
+                $(row).addClass('is-valid');
+            }
+        }
+    });
 
     var tblOrders = $('#tblOrders').DataTable({
         columnDefs: [{
@@ -679,6 +761,7 @@ function filterArrayByKeys(array $input, array $column_keys)
             PostCategory(data, this);
         })
     });
+
     $("span.toogle-items").on("click", function() {
         var ulElm = $(this).attr("for-ul");
 
@@ -694,13 +777,16 @@ function filterArrayByKeys(array $input, array $column_keys)
 
         $(this).toggleClass("select-all unselect-all")
     });
-    $("li.menu, tr.menu").on("click", function() {
+    
+        $("li.menu, tr.menu").on("click", function() {
         if (!$(this).hasClass("is-invalid") && !$(this).hasClass("has-issue")) {
             selectMenuItem(this);
         } else {
             unselectMenuItem(this);
         }
     })
+
+});
 
     function selectMenuItem(element) {
         if ($(element).hasClass("is-valid")) {

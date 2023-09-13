@@ -8,7 +8,6 @@ RewriteEngine On
 RewriteCond %{THE_REQUEST} %{ENV:ROOT_PATH}/public/([^\s?]*) [NC]
 RewriteRule ^ %1 [L,NE,R=302]
 
-RewriteRule ^api/potCategories/(.*)$ public/index.php?q=potCategories&categories=$1 [L,QSA]
 RewriteRule ^api/(.*)/([0-9]+)-([0-9]+)$ public/index.php?q=$1&s=$2&e=$3 [L,QSA]
 RewriteRule ^api/(.*)/([0-9]+)$ public/index.php?q=$1&id=$2 [L,QSA]
 RewriteRule ^api/(.*)/([0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12})$ public/index.php?q=$1&uid=$2 [L,QSA]
