@@ -2,7 +2,9 @@
 
 use Pinq\Traversable;
 use Src\Controller\GeneralController;
+use Src\Controller\IntegrationController;
 use Src\TableGateways\IntegrationGateway;
+use Src\TableGateways\OrdersGateway;
 use Src\TableGateways\RestaurantsGateway;
 
 
@@ -21,6 +23,7 @@ if (isset($_GET['id'])) {
         $gfMenu = new stdClass();
         $gfMenu->restaurant_id = $restaurant->id;
     }
+    $Orders = (new OrdersGateway($dbConnection))->FindByRestaurantRefId($restaurant->gf_refid);
 } else {
     echo " <script> location.href = '/dash/integrations' </script> ";
 }
@@ -47,7 +50,41 @@ if (isset($_POST["fetchMenu"])) {
 
     $gfMenu = $integrationGateway->InsertOrupdateGfMenu($gfMenu->menu, $gfMenu->restaurant_id);
 }
+$postedDItem = $integrationGateway->GetBatchTypeByIntegrationAndType($integration->Id, 'delivery_fee');
+$noDItemChecked = false;
+if (isset($_POST["fetchDeliveryItem"])) {
+    $dItem = fetchDeliveryItem();
+    if ($dItem != null) {
+        $m_id = $dItem->id;
+        $optIds = array();
+        foreach ($dItem->variants as $key => $value) {
+            $optIds[] = $value->variant_id;
+        }
 
+
+        $l_ids = (object)array(
+            "l_id" => $m_id,
+            "ol_id" => $optIds
+        );
+        $respItem = $integrationGateway->InsertOrUpdatePostedType($dItem->item_name, "1", "delivery_fee", $integration->Id, $gfMenu->menu_id, $l_ids->l_id, NULL, $l_ids->ol_id[0]);
+        $postedDItem = $integrationGateway->GetBatchTypeByIntegrationAndType($integration->Id, 'delivery_fee');
+    } else {
+        echo "No Delivery Fee Item";
+    }
+    $noDItemChecked = true;
+}
+if (isset($_POST["postDeliveryItem"])) {
+    IntegrationController::PostFeeItem($integration,$gfMenu->menu_id);
+    $postedDItem = $integrationGateway->GetBatchTypeByIntegrationAndType($integration->Id, 'delivery_fee');
+    $noDItemChecked = true;
+}
+if (isset($Orders) && count($Orders) > 0) {
+    $postedOrders = $integrationGateway->GetBatchTypeByIntegrationAndType($integration->Id, 'order');
+
+    foreach ($Orders as $key => $value) {
+        # code...
+    }
+}
 if (isset($gfMenu->menu) && $gfMenu->menu != null) {
     $gfMenuObj = json_decode($gfMenu->menu);
 
@@ -134,7 +171,48 @@ if (isset($gfMenu->menu) && $gfMenu->menu != null) {
     $itemsNames = array_column($cItems, 'name');
 }
 
+function fetchDeliveryItem()
+{
 
+    $retval = null;
+    $cursor = null;
+    do {
+        # code...
+        $itemsResp = fetchItems($cursor);
+        foreach ($itemsResp->items as $key => $value) {
+            if ($value->reference_id == "delivery_fee") {
+                $retval = $value;
+                return $retval;
+            }
+        }
+        $cursor =  isset($itemsResp->cursor) && $itemsResp->cursor != "" ? $itemsResp->cursor : null;
+    } while ($cursor != null);
+    return $retval;
+}
+function fetchItems(string $cursor = null)
+{
+    global $integration;
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => "https://api.loyverse.com/v1.0/items?show_deleted=false&cursor=$cursor&limit=250",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_HTTPHEADER => array(
+            "Authorization: Bearer $integration->LoyverseToken"
+        ),
+    ));
+
+    $response = curl_exec($curl);
+
+    curl_close($curl);
+    return json_decode($response);
+}
 
 function filterArrayByKeys(array $input, array $column_keys)
 {
@@ -168,6 +246,42 @@ function filterArrayByKeys(array $input, array $column_keys)
         background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
     }
 
+    .has-issue {
+        padding-right: calc(1.5em + 0.75rem);
+        background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23ffc107" class="bi bi-exclamation-triangle" viewBox="0 0 16 16"><path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/><path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+
+    .is-invalid {
+        padding-right: calc(1.5em + 0.75rem);
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath stroke-linejoin='round' d='M5.8 3.6h.4L6 6.5z'/%3e%3ccircle cx='6' cy='8.2' r='.6' fill='%23dc3545' stroke='none'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+
+    .is-valid {
+        padding-right: calc(1.5em + 0.75rem);
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%23198754' d='M2.3 6.73.6 4.53c-.4-1.04.46-1.4 1.1-.8l1.1 1.4 3.4-3.8c.6-.63 1.6-.27 1.2.7l-4 4.6c-.43.5-.8.4-1.1.1z'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right calc(0.375em + 0.1875rem) center;
+        background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+    }
+
+    tr.has-issue {
+        border-color: var(--bs-yellow);
+    }
+
+    tr.is-invalid {
+        border-color: var(--bs-red);
+    }
+
+    tr.is-valid {
+        border-color: var(--bs-green);
+    }
+
     span.toogle-items.select-all:after {
         content: "Select all";
     }
@@ -184,6 +298,8 @@ function filterArrayByKeys(array $input, array $column_keys)
         </div>
     </center>
     <hr />
+
+    <!-- integration Inf -->
     <div class="row justify-content-center align-items-center g-2 mb-2">
         <div class="col">
             <div class="input-group mb-3">
@@ -198,165 +314,348 @@ function filterArrayByKeys(array $input, array $column_keys)
             </div>
         </div>
     </div>
-    <!-- Gloria food Menu -->
-    <div class="row justify-content-center align-items-center g-2 mb-2">
-        <div class="col">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="prefixrestaurantId">Restaurnt Id</span>
-                <span class="form-control fs-5 " aria-describedby="prefixrestaurantId">
-                    <?php echo $gfMenu->restaurant_id ?>
-                </span>
-            </div>
-        </div>
-        <div class="col-4">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="prefixId">Date Updated</span>
-                <span class="form-control fs-5" aria-describedby="prefixId">
-                    <!-- <i class="bi bi-exclamation-diamond"></i> -->
-                    <?php echo $gfMenu->update_date ?>
-
-                </span>
-            </div>
-        </div>
-        <div class="col">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="prefixrestaurantId">menu Id</span>
-                <span class="form-control fs-5 " aria-describedby="prefixrestaurantId" id="txtGfMenuId"><?php echo $gfMenu->menu_id ?></span>
-            </div>
-        </div>
-        <div class="col-2">
-            <form method="post">
-                <input type="hidden" name="fetchMenu" value="submit" />
-                <input type="submit" class="btn btn-primary float-end fs-4" name="fetchMenu" value="Fetch Menu" />
-            </form>
-        </div>
-        <div class="col-12">
-            <div class="mb-3">
-                <label for="txtMenu" class="form-label">Menu Details</label>
-                <textarea class="form-control" name="" id="txtMenu" rows="3"><?php echo $gfMenu->menu ?></textarea>
-            </div>
-        </div>
-    </div>
-
-    <!-- Menu Info -->
-    <div class="row justify-content-center align-items-center g-2 mb-2">
-        <div class="col">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="prefixrestaurantId">Categories</span>
-                <span class="form-control fs-5 " aria-describedby="prefixrestaurantId">
-                    <?php echo count($aCats) ?>
-                </span>
-            </div>
-        </div>
-        <div class="col">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="prefixId">Modifiers</span>
-                <span class="form-control fs-5" aria-describedby="prefixId">
-                    <?php echo count($modifiers) ?>
-                </span>
-            </div>
-        </div>
-        <div class="col">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="prefixId">Items</span>
-                <span class="form-control fs-5" aria-describedby="prefixId">
-                    <?php echo count($itemsNames) ?>
-                </span>
-            </div>
-        </div>
-    </div>
-    <!-- END Menu Info -->
-
-    <div class="row justify-content-center g-2 ">
-        <div class="col-12">
-            <!-- <form method="post"> -->
-            <div class="row justify-content-center align-items-center g-2 ">
-                <div class="col d-grid gap-2 mx-auto">
-                    <span class="btn btn-success fs-4" name="postCategories" id="btnPostCategories">Post Categories</span>
+    <!-- Nav tabs -->
+    <ul class="nav nav-pills nav-fill navbar-light justify-content-center align-items-center g-2" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="btn btn-outline-dark active" id="menu-tab" data-bs-toggle="tab" data-bs-target="#menu" type="button" role="tab" aria-controls="menu" aria-selected="true">Menu</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="btn btn-outline-dark" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Promotions</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="btn btn-outline-dark" id="delivery-tab" data-bs-toggle="tab" data-bs-target="#delivery" type="button" role="tab" aria-controls="delivery" aria-selected="false">Delivery</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="btn btn-outline-dark" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab" aria-controls="orders" aria-selected="false">Orders</button>
+        </li>
+    </ul>
+    <hr />
+    <!-- Tab panes -->
+    <div class="tab-content">
+        <!-- Gloria food Menu -->
+        <div class="tab-pane active" id="menu" role="tabpanel" aria-labelledby="menu-tab">
+            <div class="row justify-content-center align-items-center g-2 mb-2">
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="prefixrestaurantId">Restaurnt Id</span>
+                        <span class="form-control fs-5 " aria-describedby="prefixrestaurantId">
+                            <?php echo $gfMenu->restaurant_id ?>
+                        </span>
+                    </div>
                 </div>
-                <div class="col d-grid gap-2 mx-auto">
-                    <span class="btn btn-success fs-4" name="postModifiers" id="btnPostModifiers">Post Modifiers</span>
-                </div>
-                <div class="col d-grid gap-2 mx-auto">
-                    <span class="btn btn-success fs-4" name="postItems" id="btnPostItems">Post Items</span>
-                </div>
+                <div class="col-4">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="prefixId">Date Updated</span>
+                        <span class="form-control fs-5" aria-describedby="prefixId">
+                            <!-- <i class="bi bi-exclamation-diamond"></i> -->
+                            <?php echo $gfMenu->update_date ?>
 
+                        </span>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="prefixrestaurantId">menu Id</span>
+                        <span class="form-control fs-5 " aria-describedby="prefixrestaurantId" id="txtGfMenuId"><?php echo $gfMenu->menu_id ?></span>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <form method="post">
+                        <input type="hidden" name="fetchMenu" value="submit" />
+                        <input type="submit" class="btn btn-primary float-end fs-4" name="fetchMenu" value="Fetch Menu" />
+                    </form>
+                </div>
+                <div class="col-12">
+                    <div class="mb-3">
+                        <label for="txtMenu" class="form-label">Menu Details</label>
+                        <textarea class="form-control" name="" id="txtMenu" rows="3"><?php echo $gfMenu->menu ?></textarea>
+                    </div>
+                </div>
             </div>
-            <input type="hidden" name="action" value="submit" />
-            <!-- </form> -->
-        </div>
-        <div class="col-4 ">
-            <div class="d-flex">
-                <div class="p-2 flex-grow-1 text-center"><span class="fs-4">Categories</span></div>
-                <div class="p-2"><span class="toogle-items select-all btn btn-sm btn-info " for-ul="categories"></span></div>
+
+            <!-- Menu Info -->
+            <div class="row justify-content-center align-items-center g-2 mb-2">
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="prefixrestaurantId">Categories</span>
+                        <span class="form-control fs-5 " aria-describedby="prefixrestaurantId">
+                            <?php echo count($aCats) ?>
+                        </span>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="prefixId">Modifiers</span>
+                        <span class="form-control fs-5" aria-describedby="prefixId">
+                            <?php echo count($modifiers) ?>
+                        </span>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="prefixId">Items</span>
+                        <span class="form-control fs-5" aria-describedby="prefixId">
+                            <?php echo count($itemsNames) ?>
+                        </span>
+                    </div>
+                </div>
             </div>
-            <ul class="categories card list-group  overflow-auto max-list-5">
-                <?php foreach ($aCats as $key => $value) { ?>
-                    <li class='menu category list-group-item form-control <?php echo isset($value->hasIssue) && $value->hasIssue != false ? "has-issue" : (isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid'  : "is-invalid")  ?>' id="c-<?php echo $value->gf_id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
-                        <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
-                        <span class="fs-5 fw-bolder"><?php echo $value->name ?></span>
-                    </li>
-                <?php } ?>
-            </ul>
-        </div>
-        <div class="col-4 ">
-            <div class="d-flex">
-                <div class="p-2 flex-grow-1 text-center"><span class="fs-4">Modifiers</span></div>
-                <div class="p-2"><span class="toogle-items select-all btn btn-sm btn-info " for-ul="modifiers"></span></div>
-            </div>
-            <ul class="modifiers card list-group  overflow-auto max-list-5">
-                <?php foreach ($modifiers as $key => $value) { ?>
-                    <li class='menu modifier list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="m-<?php echo $value->id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
-                        <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
-                        <span class="fs-5 fw-bolder"><?php echo $value->name ?></span>
-                        <ul class="options card list-group  overflow-auto max-list-5">
-                            <?php foreach ($value->options as $o) { ?>
-                                <li class='menu option list-group-item form-control <?php echo isset($pOption[$o->id]) && $pOption[$o->id]->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="m-<?php echo $o->id ?>" lid="<?php echo  $pOption[$o->id]->loyverse_id  ?>" name="<?php echo $o->name ?>" price="<?php echo $o->price ?>">
-                                    <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
-                                    <span class="fs-6 fw-semibold"><?php echo $o->name ?> </span>
-                                    <span class="fs-6 float-end"><?php echo $o->price ?> DKK</span>
-                                </li>
+            <!-- END Menu Info -->
+
+            <div class="row justify-content-center g-2 ">
+                <div class="col-12">
+                    <!-- <form method="post"> -->
+                    <div class="row justify-content-center align-items-center g-2 ">
+                        <div class="col d-grid gap-2 mx-auto">
+                            <span class="btn btn-success fs-4" name="postCategories" id="btnPostCategories">Post Categories</span>
+                        </div>
+                        <div class="col d-grid gap-2 mx-auto">
+                            <span class="btn btn-success fs-4" name="postModifiers" id="btnPostModifiers">Post Modifiers</span>
+                        </div>
+                        <div class="col d-grid gap-2 mx-auto">
+                            <span class="btn btn-success fs-4" name="postItems" id="btnPostItems">Post Items</span>
+                        </div>
+
+                    </div>
+                    <!-- </form> -->
+                </div>
+                <div class="col-4 ">
+                    <div class="d-flex">
+                        <div class="p-2 flex-grow-1 text-center"><span class="fs-4">Categories</span></div>
+                        <div class="p-2"><span class="toogle-items select-all btn btn-sm btn-info " for-ul="categories"></span></div>
+                    </div>
+                    <ul class="categories card list-group  overflow-auto max-list-5">
+                        <?php foreach ($aCats as $key => $value) { ?>
+                            <li class='menu category list-group-item form-control <?php echo isset($value->hasIssue) && $value->hasIssue != false ? "has-issue" : (isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid'  : "is-invalid")  ?>' id="c-<?php echo $value->gf_id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
+                                <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
+                                <span class="fs-5 fw-bolder"><?php echo $value->name ?></span>
+                            </li>
+                        <?php } ?>
+                    </ul>
+                </div>
+                <div class="col-4 ">
+                    <div class="d-flex">
+                        <div class="p-2 flex-grow-1 text-center"><span class="fs-4">Modifiers</span></div>
+                        <div class="p-2"><span class="toogle-items select-all btn btn-sm btn-info " for-ul="modifiers"></span></div>
+                    </div>
+                    <ul class="modifiers card list-group  overflow-auto max-list-5">
+                        <?php foreach ($modifiers as $key => $value) { ?>
+                            <li class='menu modifier list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="m-<?php echo $value->id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>">
+                                <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
+                                <span class="fs-5 fw-bolder"><?php echo $value->name ?></span>
+                                <ul class="options card list-group  overflow-auto max-list-5">
+                                    <?php foreach ($value->options as $o) { ?>
+                                        <li class='menu option list-group-item form-control <?php echo isset($pOption[$o->id]) && $pOption[$o->id]->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="m-<?php echo $o->id ?>" lid="<?php echo  $pOption[$o->id]->loyverse_id  ?>" name="<?php echo $o->name ?>" price="<?php echo $o->price ?>">
+                                            <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
+                                            <span class="fs-6 fw-semibold"><?php echo $o->name ?> </span>
+                                            <span class="fs-6 float-end"><?php echo $o->price ?> DKK</span>
+                                        </li>
+                                    <?php } ?>
+                                </ul>
+                            </li>
+                        <?php } ?>
+                    </ul>
+                </div>
+                <div class="col-4 ">
+                    <div class="d-flex">
+                        <div class="p-2 flex-grow-1 text-center"><span class="fs-4">Items</span></div>
+                        <div class="p-2"><span class="toogle-items select-all btn btn-sm btn-info " for-ul="items"></span></div>
+                    </div>
+
+                    <ul class="items card list-group  overflow-auto max-list-5">
+                        <?php foreach ($fItems as $key => $value) { ?>
+
+                            <li class='menu item list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' id="i-<?php echo $value->id ?>" lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>" price="<?php echo $value->price ?>">
+                                <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
+                                <span class="fs-5 fw-bolder"><?php echo $value->name ?></span>
+                                <span class="fs-6 fw-bolder float-end"><?php echo $value->price ?> DKK</span>
+
+                                <ul class="options card list-group  overflow-auto max-list-5">
+                                    <?php foreach ($value->sizes as $o) { ?>
+                                        <li class='menu variant list-group-item form-control <?php echo isset($pVariant[$o->id]) && $pVariant[$o->id]->loyverse_id != null ?
+                                                                                                    'is-valid' : "is-invalid"   ?>' id="m-<?php echo $o->id ?>" lid="<?php echo  $pVariant[$o->id]->loyverse_id  ?>" name="<?php echo $o->name ?>" price="<?php echo $o->price ?>">
+                                            <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
+                                            <span class="fs-6 fw-semibold"><?php echo $o->name ?> </span>
+                                            <span class="fs-6 float-end"><?php echo $o->price ?> DKK</span>
+                                        </li>
+                                    <?php } ?>
+                                </ul>
+
                             <?php } ?>
-                        </ul>
-                    </li>
-                <?php } ?>
-            </ul>
-        </div>
-        <div class="col-4 ">
-            <div class="d-flex">
-                <div class="p-2 flex-grow-1 text-center"><span class="fs-4">Items</span></div>
-                <div class="p-2"><span class="toogle-items select-all btn btn-sm btn-info " for-ul="items"></span></div>
+                    </ul>
+                </div>
             </div>
-
-            <ul class="items card list-group  overflow-auto max-list-5">
-                <?php foreach ($fItems as $key => $value) { ?>
-                    
-                    <li class='menu item list-group-item form-control <?php echo isset($value->loyverse_id) && $value->loyverse_id != null ? 'is-valid' : "is-invalid"   ?>' 
-                    id="i-<?php echo $value->id ?>" 
-                    lid="<?php echo $value->loyverse_id  ?>" name="<?php echo $value->name ?>" price="<?php echo $value->price ?>">
-                        <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
-                        <span class="fs-5 fw-bolder"><?php echo $value->name ?></span>
-                        <span class="fs-6 fw-bolder float-end"><?php echo $value->price ?> DKK</span>
-
-                        <ul class="options card list-group  overflow-auto max-list-5">
-                            <?php foreach ($value->sizes as $o) { ?>
-                                <li class='menu variant list-group-item form-control <?php echo isset($pVariant[$o->id]) && $pVariant[$o->id]->loyverse_id != null ? 
-                                'is-valid' : "is-invalid"   ?>' id="m-<?php echo $o->id ?>" lid="<?php echo  $pVariant[$o->id]->loyverse_id  ?>" name="<?php echo $o->name ?>" price="<?php echo $o->price ?>">
-                                    <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
-                                    <span class="fs-6 fw-semibold"><?php echo $o->name ?> </span>
-                                    <span class="fs-6 float-end"><?php echo $o->price ?> DKK</span>
-                                </li>
-                            <?php } ?>
-                        </ul>
-
-                    <?php } ?>
-            </ul>
         </div>
+        <!-- END  Gloria Food Menu -->
+        <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            EFGH
+        </div>
+        <div class="tab-pane" id="delivery" role="tabpanel" aria-labelledby="delivery-tab">
+            <div class="container">
+
+                <div class="mb-3 row">
+                    <label for="inputName" class="col-4 col-form-label">Name</label>
+                    <div class="col-8">
+                        <?php
+                        $d_lid = isset($postedDItem) && count($postedDItem) > 0 && isset($postedDItem[1]->loyverse_id) && $postedDItem[1]->loyverse_id != "" ? $postedDItem[1]->name : null;
+                        ?>
+                        <span class="form-control" name="inputName" id="inputName"><?php echo isset($d_lid) ? "$d_lid" : "" ?></span>
+                    </div>
+                </div>
+                <div class="mb-3 row">
+                    <div class="offset-sm-4 col-sm-8">
+                        <?php
+                        if (!isset($postedDItem) && $noDItemChecked == false) {
+                        ?>
+                            <form method="post">
+                                <input type="hidden" name="fetchDeliveryItem" value="submit" />
+                                <input type="submit" class="btn btn-primary float-end fs-4" name="fetchMenu" value="Fetch Delivery Item" />
+                            </form>
+                        <?php } else if (!isset($postedDItem) && $noDItemChecked == true) { ?>
+                            <form method="post">
+                                <input type="hidden" name="postDeliveryItem" value="submit" />
+                                <input type="submit" class="btn btn-success float-end fs-4" name="fetchMenu" value="Post Delivery Item" />
+                            </form>
+                        <?php } else { ?>
+                        <?php } ?>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- Orders -->
+        <div class="tab-pane" id="orders" role="tabpanel" aria-labelledby="orders-tab">
+            <div class="row justify-content-center g-2 ">
+                <div class="col-12">
+                    <!-- <form method="post"> -->
+                    <div class="row justify-content-center align-items-center g-2 ">
+                        <div class="col d-grid gap-2 mx-auto">
+                            <span class="btn btn-success fs-4" name="postOrders" id="btnPostOrders">Post Orders</span>
+                        </div>
+                    </div>
+                    <!-- </form> -->
+                </div>
+                <div class="col">
+                    <div class="d-flex">
+                        <div class="p-2 flex-grow-1 text-center"><span class="fs-4">Orders</span></div>
+                        <div class="p-2"><span class="toogle-items select-all btn btn-sm btn-info " for-ul="orders"></span></div>
+                    </div>
+
+                    <div class="table-responsive-sm">
+                        <table id="tblOrders" class="table table-striped w-100">
+                            <thead class="table-secondary">
+                                <tr>
+                                    <th scope="col">ID</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Total</th>
+                                    <th scope="col">loyverse Id</th>
+                                    <th scope="col">Validaty</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="orders">
+                                <?php foreach ($Orders as $key => $order) {
+                                    $fmt = numfmt_create('da_DK', NumberFormatter::CURRENCY);
+                                    $amount = numfmt_format_currency($fmt, $order->total_price, $order->currency);
+                                    $validationClass =  isset($order->hasIssue) && $order->hasIssue != false ? "has-issue" : (isset($order->loyverse_id) && $order->loyverse_id != null ? 'is-valid'  : "is-invalid")
+                                ?>
+                                    <tr class='menu order <?php echo $validationClass ?>' id="o-<?php echo $order->id ?>" lid="<?php echo $order->loyverse_id  ?>" o-type="<?php echo $order->type ?>">
+                                        <td class="fs-5"><?php echo "$order->id" ?></td>
+                                        <td class="fs-5"><?php echo "$order->client_first_name $order->client_last_name " ?></td>
+                                        <td class="fs-5"><?php echo "$amount" ?></td>
+                                        <td class="fs-5"><?php echo $order->loyverse_id ?? null ?></td>
+
+                                        <td><?php echo $validationClass ?></td>
+                                        <td class="<?php echo $validationClass ?>">
+                                            <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
+                                        </td>
+                                    </tr>
+                                <?php } ?>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <ul class="orders card list-group  overflow-auto max-list-5">
+                        <?php
+                        foreach ($Orders as $key => $order) { ?>
+                            <li class='menu order list-group-item form-control <?php echo isset($order->hasIssue) && $order->hasIssue != false ? "has-issue" : (isset($order->loyverse_id) && $order->loyverse_id != null ? 'is-valid'  : "is-invalid")  ?>' id="o-<?php echo $order->id ?>" lid="<?php echo $order->loyverse_id  ?>" o-type="<?php echo $order->type ?>">
+                                <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>
+                                <span class="fs-5 fw-bolder"><?php echo "$order->id - $order->client_first_name $order->client_last_name " ?></span>
+                            </li>
+                        <?php } ?>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- END Orders -->
     </div>
+    <hr />
+
+
 
 </div>
 <script type="text/javascript">
     var items = JSON.parse('<?php echo json_encode($fItems) ?>');
+    var orders = JSON.parse('<?php echo json_encode($Orders) ?>');
+
+    var tblOrders = $('#tblOrders').DataTable({
+        columnDefs: [{
+                target: 0,
+                visible: true
+            },
+            {
+                target: 1,
+                visible: true
+            },
+            {
+                target: 2,
+                visible: true
+            },
+            {
+                target: 3,
+                visible: false
+            },
+            {
+                target: 5,
+                visible: true,
+                searchable: false
+            },
+            {
+                target: 4,
+                visible: false,
+
+            }
+        ]
+    });
+    $("#btnPostOrders").on("click", function() {
+        let integrationId = $(hdfIntegrationId).val();
+        let gfMenuId = $(txtGfMenuId).text();
+        $("tr.order.has-issue,tr.order.is-invalid").each(function(key, value) {
+            $(this).find("td>.spinner").toggleClass("visually-hidden");
+            $(this).removeClass("has-issue");
+            $(this).removeClass("is-invalid");
+            $($(this).find("td.is-invalid")).removeClass("is-invalid").addClass("is-none");
+            var rowId = $(this).attr("id");
+            var rowData = tblOrders.row(this);
+            console.log(rowData.data());
+            let gfid = $(value).attr("id").substring(2);
+            let lid = $(value).attr("lid");
+            let name = $(value).attr("name");
+            // let data = JSON.stringify({
+            //     "integration_id": integrationId,
+            //     "gf_menu_id": gfMenuId,
+            //     "gf_id": gfid,
+            //     "l_id": lid,
+            //     "name": name,
+            // });
+
+            //console.log(data);
+            //PostCategory(data, this);
+            $(this).find("td>.spinner").addClass("visually-hidden");
+            $(this).addClass("is-valid");
+            $($(this).find("td.is-none")).addClass("is-valid");
+        });
+    });
     $("#btnPostCategories").on("click", function() {
         let integrationId = $(hdfIntegrationId).val();
         let gfMenuId = $(txtGfMenuId).text();
@@ -376,29 +675,26 @@ function filterArrayByKeys(array $input, array $column_keys)
                 "name": name,
             });
 
-            //console.log(data);
-            PostCategory(data, this);
+            console.log(data);
+            //PostCategory(data, this);
         })
     });
     $("span.toogle-items").on("click", function() {
         var ulElm = $(this).attr("for-ul");
 
-        var selct =$(this).hasClass("select-all");
-       
-        $("." + ulElm + ">li.menu").each(function() {
-            if(selct)
-            {
+        var selct = $(this).hasClass("select-all");
+
+        $("." + ulElm + ">.menu").each(function() {
+            if (selct) {
                 selectMenuItem(this);
-            }
-            else 
-            {
+            } else {
                 unselectMenuItem(this);
             }
         });
 
         $(this).toggleClass("select-all unselect-all")
     });
-    $("li.menu").on("click", function() {
+    $("li.menu, tr.menu").on("click", function() {
         if (!$(this).hasClass("is-invalid") && !$(this).hasClass("has-issue")) {
             selectMenuItem(this);
         } else {
@@ -410,8 +706,10 @@ function filterArrayByKeys(array $input, array $column_keys)
         if ($(element).hasClass("is-valid")) {
             $(element).addClass("has-issue");
             $(element).removeClass("is-valid");
+            $($(element).find("td.is-valid")).removeClass("is-valid").addClass("has-issue");
         } else if (!$(element).hasClass("is-invalid") && !$(element).hasClass("has-issue")) {
             $(element).addClass("is-invalid");
+            $($(element).find("td.is-none")).removeClass("is-none").addClass("is-invalid");
             //$(this).removeClass("is-invalid");
         }
 
@@ -421,9 +719,11 @@ function filterArrayByKeys(array $input, array $column_keys)
         if ($(element).hasClass("has-issue")) {
             $(element).removeClass("has-issue");
             $(element).addClass("is-valid");
+            $($(element).find("td.has-issue")).removeClass("has-issue").addClass("is-valid");
         } else if ($(element).hasClass("is-invalid")) {
             //$(this).addClass("has-issue");
             $(element).removeClass("is-invalid");
+            $($(element).find("td.is-invalid")).removeClass("is-invalid").addClass("is-none");
         }
     }
 

@@ -87,11 +87,13 @@ class IntegrationGateway extends DbObject
                     `restaurant_id`,
                     `gf_urid`,
                     `store_id`,
+                    `tax_id`,
                     `loyverse_token`)
                     VALUES
                     (:restaurant_id,
                     :gf_urid,
                     :store_id,
+                    :tax_id,
                     :loyverse_token);";
 
         try {
@@ -102,6 +104,7 @@ class IntegrationGateway extends DbObject
                 'gf_urid' => $input->gfUid,
                 'loyverse_token' => $input->LoyverseToken,
                 'store_id' => $input->StoreId,
+                'tax_id' => $input->TaxId,
             ));
             $input->Id = intval($this->getDbConnection()->lastInsertId());
             $this->getDbConnection()->commit();
@@ -118,7 +121,8 @@ class IntegrationGateway extends DbObject
                     `restaurant_id` = :restaurant_id,
                     `gf_urid` = :gf_urid,
                     `loyverse_token` = :loyverse_token,
-                    `store_id` = :store_id
+                    `store_id` = :store_id,
+                    `tax_id` = :tax_id
                     
                     WHERE `id` = :id;";
         try {
@@ -128,6 +132,7 @@ class IntegrationGateway extends DbObject
                 'restaurant_id' => $input->RestaurantId,
                 'gf_urid' => $input->gfUid,
                 'store_id' => $input->StoreId,
+                'tax_id' => $input->TaxId,
                 'loyverse_token' => $input->LoyverseToken,
             ));
             $input->Id = intval($this->getDbConnection()->lastInsertId());
@@ -342,7 +347,39 @@ class IntegrationGateway extends DbObject
         $statment = "SELECT * FROM tbl_posted_type 
         Where `gf_menu_id` = $menu_id AND
         `integration_id` = $integration_id AND
-        `type` = $type;
+        `type` = '$type';
+        ";
+
+        try {
+            $statement = $this->getDbConnection()->query($statment);
+            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $statement->closeCursor();
+            if (count($result) < 1) {
+                return null;
+            }
+            $retval = array();
+            foreach ($result as $key => $value) {
+                # code...
+                $retval[$value["gf_id"]] = (object)$value;
+            }
+            return $retval;
+        } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
+            exit($e->getMessage());
+        }
+    }
+    /**
+     * get 2D array of posted type by menuid and integration id
+     */
+    public function GetBatchTypeByIntegrationAndType(
+        int $integration_id,
+        string $type,
+    ) {
+
+        $statment = "SELECT * FROM tbl_posted_type 
+        Where 
+        `integration_id` = $integration_id AND
+        `type` = '$type';
         ";
 
         try {

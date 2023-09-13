@@ -2,6 +2,7 @@
 
 namespace Src\Controller;
 
+use Src\Classes\Integration;
 use Src\TableGateways\RequestsGateway;
 use Src\TableGateways\OrdersGateway;
 use Src\Classes\Request;
@@ -89,7 +90,11 @@ class RequestController
             $order_id  = $order["id"];
             $body = json_encode($order);
             $result =$this->ordersGateway->InsertOrUpdate($body,$order_id,$restaurant_refId);
-            array_push($results, $result);
+            $results[$order["id"]] = $result;
+            $order = $this->ordersGateway->FindById($order_id);
+            //post order to LPos
+            IntegrationController::PostOrder($order);
+            //save posted order to posted type
         }
 
         return GeneralController::CreateResponser($results);

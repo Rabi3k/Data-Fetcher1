@@ -1,11 +1,12 @@
 <?php
 
 use Src\Classes\Integration;
+use Src\Controller\IntegrationController;
 use Src\TableGateways\IntegrationGateway;
 
 $restaurants = ($userGateway->GetUser())->restaurants;
 if ($_POST['submit']) {
-    $id_uid = explode("¤",$_POST['GloriaFoodUID']);
+    $id_uid = explode("¤", $_POST['GloriaFoodUID']);
     $integrationGateway = new IntegrationGateway($dbConnection);
     $integration = new Integration();
     $integration->Id = 0;
@@ -13,7 +14,9 @@ if ($_POST['submit']) {
     $integration->gfUid = $id_uid[1];
     $integration->LoyverseToken = $_POST['LoyverseToken'];
     $integration->StoreId = $_POST['StoreId'];
-    $integration= $integrationGateway->InsertOrupdate($integration);
+    $integration->TaxId = $_POST['TaxId'];
+    $integration = $integrationGateway->InsertOrupdate($integration);
+   
     //echo "restaurant id: " . $id_uid[0] . ", GloriaFoodUID: " . $id_uid[1] . ", LoyverseToken: " . $_POST['LoyverseToken'];
     echo " <script> location.href = '/dash/integrations/$integration->Id' </script> ";
 }
@@ -28,7 +31,7 @@ if ($_POST['submit']) {
     <div class="row">
         <div class="container">
             <form action="" method="post" class="needs-validation">
-                
+
                 <div class="mb-3 row">
                     <label for="" class="col-4 col-form-label">GloriaFood UID</label>
                     <div class="col-6">
@@ -37,7 +40,7 @@ if ($_POST['submit']) {
                             <?php
                             foreach ($restaurants as $value) {
                                 # code...
-                                echo "<option value='" .$value['id']."¤". $value['gf_urid'] . "'>" . $value['name'] . "</option>";
+                                echo "<option value='" . $value['id'] . "¤" . $value['gf_urid'] . "'>" . $value['name'] . "</option>";
                             }
                             ?>
                         </select>
@@ -48,16 +51,17 @@ if ($_POST['submit']) {
                     <div class="col-6">
                         <input type="text" class="form-control required" name="LoyverseToken" id="txtLoyverseToken" placeholder="Loyverse Token" />
                         <input type="hidden" name="StoreId" id="hdfLoyverseStoreId" placeholder="Loyverse Store Id" />
+                        <input type="hidden" name="TaxId" id="hdfLoyverseTaxId" placeholder="Loyverse Store Id" />
                         <div class="invalid-feedback">Token Not Valid</div>
                     </div>
                     <div class="col-2">
                         <span class="btn btn-sm btn-info" id="btnCheckL"> <i class="bi bi-question-circle-fill fs-6"></i> check </span>
                     </div>
                 </div>
-               
+
                 <div class="mb-3 row">
                     <div class="offset-sm-4 col-sm-8">
-                        <input type="submit" name="submit" class="btn btn-success float-end mx-1" value="Save"/>
+                        <input type="submit" name="submit" class="btn btn-success float-end mx-1" value="Save" />
                         <a href="/dash/integrations" class="btn btn-secondary float-end mx-1">Cancel</a>
                     </div>
                 </div>
@@ -69,7 +73,7 @@ if ($_POST['submit']) {
     // Example starter JavaScript for disabling form submissions if there are invalid fields
     (function() {
         'use strict'
-        $("#selectRestaurants").on("change",function(){
+        $("#selectRestaurants").on("change", function() {
             let id_Urid = $("#selectRestaurants").val();
             let Urid = (id_Urid.split("¤"))[1];
             var settings = {
@@ -90,7 +94,7 @@ if ($_POST['submit']) {
                 }
             });
         });
-        
+
         $("#btnCheckL").on("click", function() {
             let token = $("#txtLoyverseToken").val();
             var settings = {
@@ -105,10 +109,12 @@ if ($_POST['submit']) {
                     $("#txtLoyverseToken").addClass("is-valid");
                     $("#txtLoyverseToken").removeClass("is-invalid");
                     $("#hdfLoyverseStoreId").val(response.data.Result.StoreId);
+                    $("#hdfLoyverseTaxId").val(response.data.Result.TaxId);
                 } else {
                     $("#txtLoyverseToken").addClass("is-invalid");
                     $("#txtLoyverseToken").removeClass("is-valid");
                     $("#hdfLoyverseStoreId").val("");
+                    $("#hdfLoyverseTaxId").val("");
                 }
 
 

@@ -19,7 +19,7 @@ class OrdersGateway extends DbObject
     }
     protected function SetTableName()
     {
-        $this->tblName = "order_head";
+        $this->tblName = "tbl_order_head";
     }
     #endregion
      #region public functions
@@ -67,7 +67,7 @@ class OrdersGateway extends DbObject
     {
         $tblname = $this->getTableName();
         $statment = "SELECT * FROM `$tblname` 
-        where restaurant_id = $id";
+        where restaurant_id = $id order by fulfill_at desc limit 1000";
         //echo "ID: $id <br/>statment: $statment<br/>";
         try {
             $statement = $this->getDbConnection()->query($statment);

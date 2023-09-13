@@ -187,8 +187,7 @@ function PostItem($item)
         "sold_by_weight" => false,
         "track_stock" => false,
         "use_production" => false,
-        "tax_ids" => array("4be403d7-741f-40f8-b9ef-8adb03fcbc0a"),
-        //"stores"=> array("$integration->StoreId"),
+        "tax_ids" => array("$integration->TaxId"),
         "variants" => count($si) > 0 ? $si : array((object)array(
             "default_pricing_type" => "FIXED",
             "default_price" => $item->price,

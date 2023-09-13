@@ -19,6 +19,7 @@ created_date timestamp
     public string $gfUid;
     public string $LoyverseToken;
     public string $StoreId;
+    public string $TaxId;
     public DateTime $CreatedDate;
     
     public function __construct()
@@ -34,6 +35,7 @@ created_date timestamp
         $retval->gfUid = ($integrationArr["gf_urid"]);
         $retval->LoyverseToken = ($integrationArr["loyverse_token"]);
         $retval->StoreId = ($integrationArr["store_id"]);
+        $retval->TaxId = ($integrationArr["tax_id"]);
         $retval->CreatedDate = DateTime::createFromFormat("Y-m-d H:i:s",$integrationArr["created_date"]);
         return $retval;
     }

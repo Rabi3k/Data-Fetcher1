@@ -1,5 +1,6 @@
 <?php
 
+use Src\Classes\Integration;
 use Src\Controller\GeneralController;
 
 $validator = true;
@@ -27,7 +28,7 @@ function checkLoyverseToken(string $token): array
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
-        CURLOPT_URL => 'https://api.loyverse.com/v1.0/stores',
+        CURLOPT_URL => 'https://api.loyverse.com/v1.0/stores?show_deleted=false',
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_MAXREDIRS => 10,
@@ -43,13 +44,38 @@ function checkLoyverseToken(string $token): array
     $response = curl_exec($curl);
     $responseObj = json_decode($response);
     curl_close($curl);
-    if (isset($responseObj->errors)) {
+
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => 'https://api.loyverse.com/v1.0/taxes?show_deleted=false',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_HTTPHEADER => array(
+            "Authorization: Bearer $token"
+        ),
+    ));
+
+    $response = curl_exec($curl);
+    $responseTObj = json_decode($response);
+    curl_close($curl);
+    if (isset($responseTObj->errors)) {
         //echo $response;
-        $errorMsg = $responseObj->errors;
+        $errorMsg = $responseTObj->errors;
         return array("valid" => false, "errorMsg" => $errorMsg);
     }
-    return array("valid" => true, "StoreId" => $responseObj->stores[0]->id);
+    return array("valid" => true, "StoreId" => $responseObj->stores[0]->id,"TaxId" => $responseTObj->taxes[0]->id);
 }
+function checkfeesItem(Integration $integration)
+{
+    
+}
+
 function checkGfUid(string $UID): bool
 {
     global $errorMsg;
