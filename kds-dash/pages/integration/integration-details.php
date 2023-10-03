@@ -24,6 +24,7 @@ if (isset($_GET['id'])) {
         $gfMenu->restaurant_id = $restaurant->id;
     }
     $Orders = (new OrdersGateway($dbConnection))->FindByRestaurantRefId($restaurant->gf_refid);
+    $promotions = IntegrationController::GetPromotion($integration->gfUid, $integration->Id);
 } else {
     echo " <script> location.href = '/dash/integrations' </script> ";
 }
@@ -79,9 +80,11 @@ if (isset($_POST["postDeliveryItem"])) {
     $noDItemChecked = true;
 }
 if (isset($Orders) && count($Orders) > 0) {
-    $postedOrders = $integrationGateway->GetBatchTypeByIntegrationAndType($integration->Id, 'order');
+    $pOrders = $integrationGateway->GetBatchTypeByIntegrationAndType($integration->Id, 'order');
 
-    foreach ($Orders as $key => $value) {
+    foreach ($Orders as $key => $o) {
+        $o->loyverse_id = isset($pOrders[$o->id]) ? $pOrders[$o->id]->loyverse_id : null;
+
         # code...
     }
 }
@@ -320,7 +323,7 @@ function filterArrayByKeys(array $input, array $column_keys)
             <button class="btn btn-outline-dark active" id="menu-tab" data-bs-toggle="tab" data-bs-target="#menu" type="button" role="tab" aria-controls="menu" aria-selected="true">Menu</button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="btn btn-outline-dark" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile" type="button" role="tab" aria-controls="profile" aria-selected="false">Promotions</button>
+            <button class="btn btn-outline-dark" id="promotions-tab" data-bs-toggle="tab" data-bs-target="#promotions" type="button" role="tab" aria-controls="promotions" aria-selected="false">Promotions</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="btn btn-outline-dark" id="delivery-tab" data-bs-toggle="tab" data-bs-target="#delivery" type="button" role="tab" aria-controls="delivery" aria-selected="false">Delivery</button>
@@ -487,7 +490,8 @@ function filterArrayByKeys(array $input, array $column_keys)
             </div>
         </div>
         <!-- END  Gloria Food Menu -->
-        <div class="tab-pane" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+        <!-- Promotions -->
+        <div class="tab-pane" id="promotions" role="tabpanel" aria-labelledby="promotions-tab">
             <div class="row justify-content-center g-2 ">
                 <div class="col-12">
                     <!-- <form method="post"> -->
@@ -515,14 +519,15 @@ function filterArrayByKeys(array $input, array $column_keys)
                                     <th>Loyverse Id</th>
                                     <th></th>
                                 </tr>
-                                <tbody class="promotions">
-                                </tbody>
+                            <tbody class="promotion">
+                            </tbody>
                             </thead>
                         </table>
                     </div>
                 </div>
             </div>
         </div>
+        <!-- END Promotions -->
         <!-- Delivery Fee Item -->
         <div class="tab-pane" id="delivery" role="tabpanel" aria-labelledby="delivery-tab">
             <div class="container">
@@ -583,6 +588,9 @@ function filterArrayByKeys(array $input, array $column_keys)
                                     <th scope="col">ID</th>
                                     <th scope="col">Name</th>
                                     <th scope="col">Total</th>
+                                    <th scope="col">Delivery Fee</th>
+                                    <th scope="col">Total Promo Cart Values</th>
+                                    <th scope="col">Total Promo Item Values</th>
                                     <th scope="col">loyverse Id</th>
                                     <th scope="col">Validaty</th>
                                     <th scope="col"></th>
@@ -592,12 +600,18 @@ function filterArrayByKeys(array $input, array $column_keys)
                                 <?php foreach ($Orders as $key => $order) {
                                     $fmt = numfmt_create('da_DK', NumberFormatter::CURRENCY);
                                     $amount = numfmt_format_currency($fmt, $order->total_price, $order->currency);
+                                    $deliveryFee = numfmt_format_currency($fmt, $order->deliveryFee, $order->currency);
+                                    $promoItemValues = numfmt_format_currency($fmt, $order->promoItemValues, $order->currency);
+                                    $promoCartValues = numfmt_format_currency($fmt, $order->promoCartValues, $order->currency);
                                     $validationClass =  isset($order->hasIssue) && $order->hasIssue != false ? "has-issue" : (isset($order->loyverse_id) && $order->loyverse_id != null ? 'is-valid'  : "is-invalid")
                                 ?>
                                     <tr class='menu order <?php echo $validationClass ?>' id="o-<?php echo $order->id ?>" lid="<?php echo $order->loyverse_id  ?>" o-type="<?php echo $order->type ?>">
                                         <td class="fs-5"><?php echo "$order->id" ?></td>
                                         <td class="fs-5"><?php echo "$order->client_first_name $order->client_last_name " ?></td>
                                         <td class="fs-5"><?php echo "$amount" ?></td>
+                                        <td class="fs-5"><?php echo "$deliveryFee" ?></td>
+                                        <td class="fs-5"><?php echo "$promoCartValues" ?></td>
+                                        <td class="fs-5"><?php echo "$promoItemValues" ?></td>
                                         <td class="fs-5"><?php echo $order->loyverse_id ?? null ?></td>
 
                                         <td><?php echo $validationClass ?></td>
@@ -622,7 +636,7 @@ function filterArrayByKeys(array $input, array $column_keys)
 <script type="text/javascript">
     var items = JSON.parse('<?php echo json_encode($fItems) ?>');
     var orders = JSON.parse('<?php echo json_encode($Orders) ?>');
-    $( document ).ready(function() {
+
     // DataTables initialisation
     var tblPromotions = $('#tblPromotions').DataTable({
 
@@ -658,15 +672,15 @@ function filterArrayByKeys(array $input, array $column_keys)
             targets: 6,
             visible: true,
             data: function(row, type, val, meta) {
-                console.log(type); 
+                console.log(type);
 
                 let retval = ' <span class="spinner spinner-border spinner-border-sm float-end visually-hidden" role="status" aria-hidden="true"></span>';
                 if (row.loyverseId === null) {
-                    retval =retval+ "<span class='is-invalid'></span>";
+                    retval = retval + "<span class='is-invalid'></span>";
                 } else {
-                    retval= retval+"<span class='is-valid'></span>";
+                    retval = retval + "<span class='is-valid'></span>";
                 }
-                return retval ;
+                return retval;
 
             }
         }],
@@ -695,17 +709,30 @@ function filterArrayByKeys(array $input, array $column_keys)
             },
             {
                 target: 3,
-                visible: false
+                visible: true
+            },
+            {
+                target: 4,
+                visible: true
             },
             {
                 target: 5,
                 visible: true,
-                searchable: false
+
             },
             {
-                target: 4,
+                target: 6,
+                visible: false
+            },
+            {
+                target: 7,
                 visible: false,
 
+            },
+            {
+                target: 8,
+                visible: true,
+                searchable: false
             }
         ]
     });
@@ -777,8 +804,8 @@ function filterArrayByKeys(array $input, array $column_keys)
 
         $(this).toggleClass("select-all unselect-all")
     });
-    
-        $("li.menu, tr.menu").on("click", function() {
+
+    $("li.menu, tr.menu").on("click", function() {
         if (!$(this).hasClass("is-invalid") && !$(this).hasClass("has-issue")) {
             selectMenuItem(this);
         } else {
@@ -786,7 +813,6 @@ function filterArrayByKeys(array $input, array $column_keys)
         }
     })
 
-});
 
     function selectMenuItem(element) {
         if ($(element).hasClass("is-valid")) {

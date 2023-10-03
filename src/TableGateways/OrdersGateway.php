@@ -22,7 +22,7 @@ class OrdersGateway extends DbObject
         $this->tblName = "tbl_order_head";
     }
     #endregion
-     #region public functions
+    #region public functions
     public function findSoldItems(array $restauntRefId = array())
     {
         $tblname = $this->getTableName();
@@ -66,8 +66,24 @@ class OrdersGateway extends DbObject
     public function FindByRestaurantRefId($id)
     {
         $tblname = $this->getTableName();
-        $statment = "SELECT * FROM `$tblname` 
-        where restaurant_id = $id order by fulfill_at desc limit 1000";
+        $statment = "SELECT 
+        SUM(oi_pi.item_discount) AS 'promoItemValues',
+        SUM(oi_pc.cart_discount)* -1 AS 'promoCartValues' ,
+        SUM(oi_df.total_item_price) AS 'deliveryFee' ,
+        oh.*
+            FROM
+        `tbl_order_head` oh
+            LEFT JOIN
+        `tbl_order_items` oi_pi ON (oh.id = oi_pi.order_head_id
+            AND oi_pi.type = 'promo_item')
+            LEFT JOIN
+        `tbl_order_items` oi_pc ON (oh.id = oi_pc.order_head_id
+            AND oi_pc.type = 'promo_cart')
+            LEFT JOIN
+        `tbl_order_items` oi_df ON (oh.id = oi_df.order_head_id
+            AND oi_df.type = 'DELIVERY_FEE')
+     
+        where oh.restaurant_id = $id GROUP BY oh.id order by oh.fulfill_at desc limit 1000";
         //echo "ID: $id <br/>statment: $statment<br/>";
         try {
             $statement = $this->getDbConnection()->query($statment);
@@ -121,8 +137,7 @@ class OrdersGateway extends DbObject
             $statement = $this->getDbConnection()->query($statment);
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
             $statement->closeCursor();
-            if(count($result)<1)
-            {
+            if (count($result) < 1) {
                 return null;
             }
             $o = new Order($result[0]);
@@ -239,7 +254,7 @@ class OrdersGateway extends DbObject
             $query = $this->getDbConnection()->query($statment);
 
             $result = $query->fetchAll(\PDO::FETCH_ASSOC);
-            
+
             $query->closeCursor();
             $results = array();
             foreach ($result as $row) {
@@ -249,7 +264,6 @@ class OrdersGateway extends DbObject
         } catch (\PDOException $e) {
             (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
-            
         }
     }
     public function FindActiveByDate($startDate, $endDate, array $secrets)
@@ -330,7 +344,7 @@ class OrdersGateway extends DbObject
                             And oh.`restaurant_id` IN ($secretsJ)
                             AND oh.`type` in ('pickup','table_reservation','order_ahead','dine_in')
                         ORDER BY oh.`fulfill_at`";
-                        //echo $statment;
+        //echo $statment;
         //echo "secretsJ: $secretsJ \nstatment: $statment\n";
         //'pickup' , 'delivery' , 'table_reservation' , 'order_ahead' , 'dine_in'
         try {
@@ -857,7 +871,7 @@ class OrdersGateway extends DbObject
         oh.`id`= :orderId;
         ";
 
-         $orderItemStatus = $status == true ? ItemStatus::Complete->name : ItemStatus::ToDo->name;
+        $orderItemStatus = $status == true ? ItemStatus::Complete->name : ItemStatus::ToDo->name;
         try {
             $statment = $this->getDbConnection()->prepare($statment);
             $this->getDbConnection()->beginTransaction();
