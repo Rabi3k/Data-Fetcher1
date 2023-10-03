@@ -515,6 +515,8 @@ function filterArrayByKeys(array $input, array $column_keys)
                                     <th>Name</th>
                                     <th>Description</th>
                                     <th>Outcomes</th>
+                                    <th>Outcomes function</th>
+                                    <th>Outcomes discount</th>
                                     <th>Udated at</th>
                                     <th>Loyverse Id</th>
                                     <th></th>
@@ -659,6 +661,12 @@ function filterArrayByKeys(array $input, array $column_keys)
                 data: 'outcomes[0]'
             },
             {
+                data: 'outcome_config[0].function'
+            },
+            {
+                data: 'outcome_config[0].discounts[0]'
+            },
+            {
                 data: 'updatedAt'
 
             },
@@ -669,7 +677,7 @@ function filterArrayByKeys(array $input, array $column_keys)
             },
         ],
         columnDefs: [{
-            targets: 6,
+            targets: 8,
             visible: true,
             data: function(row, type, val, meta) {
                 console.log(type);
