@@ -9,22 +9,22 @@ $(document).ready(function () {
       selectedSlide = $(this).attr('tag');
     }
     if (selectedSlide === null) {
-      closeBottomBar();
+      //closeBottomBar();
     } else {
-      openBottomBar();
+      CompleteOrder();//openBottomBar();
     }
   }).on('click', ".btn-branch", function () {
-    var tag = $(this).attr("tag"); 
+    var tag = $(this).attr("tag");
     if ($(this).hasClass("active")) {
       //show cards
       $("div[tag='" + tag + "']").hide();
       $(this).removeClass("active");
-      var i=1;
+      var i = 1;
     } else {
       //hide cards
       $("div[tag='" + tag + "']").show();
       $(this).addClass("active");
-      
+
     }
   }).on('click', ".btn-type", function () {
     var tag = $(this).attr("title");
@@ -37,7 +37,7 @@ $(document).ready(function () {
       //hide cards
       $("div[order-type='" + tag + "']").show()
       $(this).addClass("active");
-      
+
     }
   }).on("click", ".order-item", function (event) //Replace 4000 with your desired milliseconds
   {
@@ -92,6 +92,9 @@ $('#print-btn').on("click", function (e) {
   PrintElem(selectedSlide, e);
 });
 $('#complete-btn').on("click", function (e) {
+  CompleteOrder();
+});
+function CompleteOrder() {
   var settings = {
     "url": "/api/order/" + selectedSlide,
     "method": "PUT",
@@ -103,8 +106,7 @@ $('#complete-btn').on("click", function (e) {
   };
 
   $.ajax(settings);
-});
-
+}
 function openBottomBar() {
   $('.bottom-bar').css("bottom", $("footer").height());
   $('.bottom-bar').collapse('show')
@@ -230,16 +232,14 @@ var swiperCar = new Swiper('.swiper', {
     }
   }
   $("#btn-fullscreen").on("click", function () {
-    
-    if(($(this).attr('isFull')) == "true")
-    {
+
+    if (($(this).attr('isFull')) == "true") {
       closeFullscreen();
-      $(this).attr('isFull',false);
+      $(this).attr('isFull', false);
       $(this).html('<i class="bi bi-fullscreen"></i> Full Screen');
-    } else
-    {
+    } else {
       openFullscreen();
-      $(this).attr('isFull',true);
+      $(this).attr('isFull', true);
       $(this).html('<i class="bi bi-fullscreen-exit"></i> Exit Full Screen');
     }
   });

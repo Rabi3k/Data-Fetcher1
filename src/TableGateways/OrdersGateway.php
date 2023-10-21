@@ -2,6 +2,8 @@
 
 namespace Src\TableGateways;
 
+use DateTime;
+use DateTimeZone;
 use Pinq\Traversable;
 use Src\Classes\Loggy;
 use Src\Classes\Order;
@@ -261,6 +263,32 @@ class OrdersGateway extends DbObject
                 $results[] = $row['id'];
             }
             return $results;
+        } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
+            exit($e->getMessage());
+        }
+    }
+    public function FindCompletedByRestaurantRefId(array $refIds)
+    {
+        $tblname = $this->getTableName();
+        $StrRefIds = implode(",", $refIds);
+        $sDate = (new DateTime('now', new \DateTimeZone("UTC")))->sub(new \DateInterval('PT2H'))->format('Y-m-d H:i:s');
+        $statment = "SELECT oh.* FROM `tbl_order_head` oh 
+                        WHERE
+                            oh.`ready` = 0
+                            AND oh.`is_done` = 1
+                            AND oh.`status` = 'accepted'
+                            AND oh.`fulfill_at` > CAST('$sDate' as DateTime) 
+                            And oh.`restaurant_id` IN ($StrRefIds)
+                        ORDER BY oh.`fulfill_at`";
+        try {
+            $query = $this->getDbConnection()->query($statment);
+
+            $result = $query->fetchAll(\PDO::FETCH_ASSOC);
+
+            $query->closeCursor();
+            
+            return $result;
         } catch (\PDOException $e) {
             (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());

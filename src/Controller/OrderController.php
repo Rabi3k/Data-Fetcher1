@@ -56,6 +56,13 @@ class OrderController {
         $response['body'] = json_encode(array('id'=>$orderId,'status'=>'complete','result'=>$result));
         return $response;
     }
+    private function UnCompleteOrder(int $orderId)
+    {
+        $result = $this->orderGateway->UpdateOrderStatus($orderId,false);
+        $response['status_code_header'] = 'HTTP/1.1 200 OK';
+        $response['body'] = json_encode(array('id'=>$orderId,'status'=>'complete','result'=>$result));
+        return $response;
+    }
     private function getAllOrders(array $restaurantIds)
     {
         $result = $this->orderGateway->FindByRestaurantsRefId($restaurantIds);

@@ -27,7 +27,7 @@ $integrations = (new IntegrationGateway($dbConnection))->findAllByRestaurantIds(
                     <div class="card-body">
                         <h4 class="card-title"><?php echo $value->RestaurantName?></h4>
                         <p class="card-text">integreation between Pos and delivery system</p>
-                        <a href="/dash/integrations/<?php echo $value->Id?>" class="btn btn-primary stretched-link"></a>
+                        <a href="/admin/integrations/<?php echo $value->Id?>" class="btn btn-primary stretched-link"></a>
                     </div>
                 </div>
             </div>

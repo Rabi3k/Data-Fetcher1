@@ -18,7 +18,7 @@ if ($_POST['submit']) {
     $integration = $integrationGateway->InsertOrupdate($integration);
    
     //echo "restaurant id: " . $id_uid[0] . ", GloriaFoodUID: " . $id_uid[1] . ", LoyverseToken: " . $_POST['LoyverseToken'];
-    echo " <script> location.href = '/dash/integrations/$integration->Id' </script> ";
+    echo " <script> location.href = '/admin/integrations/$integration->Id' </script> ";
 }
 ?>
 <div class="container-fluid">
@@ -62,7 +62,7 @@ if ($_POST['submit']) {
                 <div class="mb-3 row">
                     <div class="offset-sm-4 col-sm-8">
                         <input type="submit" name="submit" class="btn btn-success float-end mx-1" value="Save" />
-                        <a href="/dash/integrations" class="btn btn-secondary float-end mx-1">Cancel</a>
+                        <a href="/admin/integrations" class="btn btn-secondary float-end mx-1">Cancel</a>
                     </div>
                 </div>
             </form>

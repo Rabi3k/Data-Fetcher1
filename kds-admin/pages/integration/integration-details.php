@@ -14,7 +14,7 @@ if (isset($_GET['id'])) {
     $integrationGateway = new IntegrationGateway($dbConnection);
     $integration = $integrationGateway->findById($id);
     if ($integration == null) {
-        echo " <script> location.href = '/dash/integrations' </script> ";
+        echo " <script> location.href = '/admin/integrations' </script> ";
         exit;
     }
     $restaurant = (new RestaurantsGateway($dbConnection))->FindById($integration->RestaurantId);
@@ -26,7 +26,7 @@ if (isset($_GET['id'])) {
     $Orders = (new OrdersGateway($dbConnection))->FindByRestaurantRefId($restaurant->gf_refid);
     $promotions = IntegrationController::GetPromotion($integration->gfUid, $integration->Id);
 } else {
-    echo " <script> location.href = '/dash/integrations' </script> ";
+    echo " <script> location.href = '/admin/integrations' </script> ";
 }
 
 if (isset($_POST["fetchMenu"])) {

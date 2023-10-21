@@ -26,6 +26,7 @@ $startDate = $_GET["s"] ?? NULL;
 $endDate = $_GET["e"] ?? null;
 $username = $_GET["u"] ?? NULL;
 $password = $_GET["p"] ?? null;
+$history = $_GET["history"] ?? null;
 $secrets = $_GET["secrets"] ?? null;
 $userRefIds = $_GET["userRefIds"] ?? null;
 $categories = $_GET["categories"] ?? null;
@@ -72,6 +73,7 @@ switch ($oper) {
             'id'        =>  $id,
             'startDate' =>  $startDate,
             'endDate'   =>  $endDate,
+            'history'   =>  $history,
         ]);
         $controller = new ActiveOrderController($dbConnection, $requestMethod, $params, $secrets,$userRefIds);
         $controller->processRequest();
