@@ -29,6 +29,7 @@ $password = $_GET["p"] ?? null;
 $history = $_GET["history"] ?? null;
 $secrets = $_GET["secrets"] ?? null;
 $userRefIds = $_GET["userRefIds"] ?? null;
+$all = $_GET["all"] ?? null;
 $categories = $_GET["categories"] ?? null;
 $secrets = isset($secrets) ? json_decode($secrets) : array();
 $userRefIds = isset($userRefIds) ? explode(",",$userRefIds) : array();
@@ -74,6 +75,7 @@ switch ($oper) {
             'startDate' =>  $startDate,
             'endDate'   =>  $endDate,
             'history'   =>  $history,
+            'all'   =>  $all,
         ]);
         $controller = new ActiveOrderController($dbConnection, $requestMethod, $params, $secrets,$userRefIds);
         $controller->processRequest();

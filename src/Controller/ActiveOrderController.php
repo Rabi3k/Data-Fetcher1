@@ -51,7 +51,7 @@ class ActiveOrderController
                         $response = $this->getOrderById($this->params['id']);
                         break;
                     case FuncType::All:
-                        $response = GeneralController::CreateResponser(array());
+                        $response =  $this->getDoneOrderByDate($this->params['startDate'], $this->params['endDate'], $this->userRefIds);
                         break;
                     case FuncType::History:
                         $response = $this->getCompletedOrder($this->userRefIds);
@@ -91,13 +91,16 @@ class ActiveOrderController
         if (isset($this->params["id"])) {
             return FuncType::ById;
         }
+        if (isset($this->params['startDate']) && isset($this->params['endDate']) && isset($this->params['all'])) {
+            return FuncType::All;
+        }
         if (isset($this->params['startDate']) && isset($this->params['endDate'])) {
             return FuncType::ByDate;
         }
         if (isset($this->params['history'])) {
             return FuncType::History;
         }
-        return FuncType::All;
+        return FuncType::None;
     }
 
     private function getActiveOrderIdsByDate(string $startDate, string $endDate, array $secrets)
@@ -110,6 +113,18 @@ class ActiveOrderController
         }
         //$data = $this->orderGateway->FindActiveIdsByDate($sDate,$eDate,$secrets);
         $data = $this->orderGateway->FindActiveIdsByDateRestaurantRefId($sDate, $eDate, $secrets);
+        return GeneralController::CreateResponser($data);
+    }
+    private function getDoneOrderByDate(string $startDate, string $endDate, array $secrets)
+    {
+        if ($sDate = \DateTime::createFromFormat('dmY', strval($startDate), new \DateTimeZone('Europe/Copenhagen'))) {
+            $sDate->setTime(0, 0);
+        }
+        if ($eDate = \DateTime::createFromFormat('dmY', strval($endDate), new \DateTimeZone('Europe/Copenhagen'))) {
+            $eDate->setTime(23, 59, 59, 999999);
+        }
+        //$data = $this->orderGateway->FindActiveIdsByDate($sDate,$eDate,$secrets);
+        $data = $this->orderGateway->FindDoneByRestaurantRefIdAndDate($sDate, $eDate, $secrets);
         return GeneralController::CreateResponser($data);
     }
     private function getCompletedOrder(array $secrets)
