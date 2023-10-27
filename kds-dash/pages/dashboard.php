@@ -23,7 +23,7 @@ var labels = jsonfile.map(function(e) {
 });
 var data = jsonfile.map(function(e) {
    return e.qty;
-});;
+});
 
 var coloR1 = [];
 var coloR2 = [];

@@ -14,19 +14,23 @@ use Src\TableGateways\UserGateway;
       <div class="col d-flex  justify-content-start">
         <div class="form-group">
           <label for="min">Minimum date:</label>
-          <input type="text" id="min" name="min">
+          <input type="text" id="min" name="min" class="selector">
         </div>
 
       </div>
       <div class="col d-flex  justify-content-center">
         <div class="form-group">
           <label for="max">Maximum date:</label>
-          <input type="text" id="max" name="min">
+          <input type="text" id="max" name="max" class="selector">
         </div>
       </div>
       <div class="col d-flex justify-content-end">
         <button name="reload-btn" id="reload-btn" class="btn btn-primary" role="button"><i class="fa fa-refresh" aria-hidden="true"></i></button>
       </div>
+    </div>
+    <hr />
+    <div class="row">
+      <canvas id="orderChartBars"></canvas>
     </div>
     <hr />
     <div class="row">
@@ -40,6 +44,7 @@ use Src\TableGateways\UserGateway;
             <th scope="col">moms</th>
             <th scope="col">Total</th>
             <th scope="col">Date</th>
+            <th scope="col">Time</th>
           </tr>
         </thead>
         <tbody class=" table-light">
@@ -62,35 +67,69 @@ use Src\TableGateways\UserGateway;
   var userRefIds = JSON.parse('<?php echo isset(UserGateway::$user) ? json_encode(UserGateway::$user->Restaurants_Id) : "[]" ?>');
   var minDate, maxDate;
 
-  // Custom filtering function which will search data in column four between two values
-  $.fn.dataTable.ext.search.push(
-    function(settings, data, dataIndex) {
-      var min = minDate.val();
-      var max = maxDate.val();
-      var date = new Date(data[5]);
+  $.datepicker.setDefaults($.datepicker.regional["da"]);
+  $(".selector").datepicker({
+    dateFormat: 'yy-mm-dd',
+  });
+  $(".selector").datepicker("setDate", new Date());
+  let config = {};
 
-      if (
-        (min === null && max === null) ||
-        (min === null && date <= max) ||
-        (min <= date && max === null) ||
-        (min <= date && date <= max)
-      ) {
-        return true;
-      }
-      return false;
-    }
-  );
-  
-//$("#min").datepicker();
-  
+  function refreshChart() {
+    var jsonfile = [];
+    $.getJSON("/api/orders/" + moment.utc(minDate).local().format("DDMMYYYY") + "-" + moment.utc(maxDate).local().format("DDMMYYYY") + "?all&userRefIds=" + userRefIds, function(json) {
+      jsonfile = json.data;
+      console.log(jsonfile);
+    }).then(x => {
+      var labels = jsonfile.map(
+        function(e) {
+          console.log(e);
+          return e.id;
+        });
+      console.log(labels);
+      var chartdata = jsonfile.map(function(e) {
+        return e.total_price;
+      });
+      let data = {
+        labels: labels,
+        datasets: [{
+          label: 'Orders',
+          data: chartdata,
+          backgroundColor: [
+            'rgba(0, 0, 255, 0.45)'
+          ],
+          borderColor: [
+            'rgb(0, 0, 200)'
+          ],
+          borderWidth: 1
+        }]
+      };
+      config = {
+        type: 'bar',
+        data: data,
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        },
+      };
+      orderChartBars.destroy();
+      orderChartBars = new Chart(ctxBars, config)
+    });
+
+  }
+  let ctxBars = document.getElementById('orderChartBars').getContext('2d');
+  let orderChartBars = new Chart(ctxBars, config);
+  refreshChart();
+  //[{"id":11052316,"qty":1,s"name":"Pizza Prosciutto"},{"id":11052319,"qty":3,"name":"Coffee"},{"id":11052321,"qty":9,"name":"Lemonade"},{"id":11052318,"qty":3,"name":"Spaghetti Carbonara"}];
+
+
+
   $(document).ready(function() {
     // Create date inputs
-    minDate = new DateTime($('#min'), {
-      format: 'MMMM DD YYYY'
-    });
-    maxDate = new DateTime($('#max'), {
-      format: 'MMMM DD YYYY'
-    });
+    minDate = new Date($('#min').val());
+    maxDate = new Date($('#max').val());
 
     // DataTables initialisation
     let table = $("#order-tbl").DataTable({
@@ -111,7 +150,7 @@ use Src\TableGateways\UserGateway;
             <th scope="col">Date</th>
        */
       ajax: {
-        url: "/api/orders/"+moment.utc(new Date()).local().format("DDMMYYYY")+"-"+moment.utc(new Date()).local().format("DDMMYYYY")+"?all&userRefIds=" + userRefIds,
+        url: "/api/orders/" + moment.utc(minDate).local().format("DDMMYYYY") + "-" + moment.utc(maxDate).local().format("DDMMYYYY") + "?all&userRefIds=" + userRefIds,
         dataType: 'json',
         type: 'GET',
       },
@@ -122,7 +161,7 @@ use Src\TableGateways\UserGateway;
         {
           data: null,
           render: function(data, type, row) {
-            return  data["client_first_name"] + " "+ data["client_last_name"] ;
+            return data["client_first_name"] + " " + data["client_last_name"];
           }
 
         },
@@ -133,16 +172,40 @@ use Src\TableGateways\UserGateway;
           data: 'payment'
         },
         {
-          data: 'tax_value'
+          data: 'tax_value',
+          render: function(data, type, row, meta) {
+            let formatting_options = {
+              style: 'currency',
+              currency: row["currency"],
+              minimumFractionDigits: 2,
+            }
+            let currencyString = new Intl.NumberFormat("da-DK", formatting_options);
+            return currencyString.format(data);
+          }
         },
         {
-          data: 'total_price'
+          data: 'total_price',
+          render: function(data, type, row, meta) {
+            let formatting_options = {
+              style: 'currency',
+              currency: row["currency"],
+              minimumFractionDigits: 2,
+            }
+            let currencyString = new Intl.NumberFormat("da-DK", formatting_options);
+            return currencyString.format(data);
+          }
         },
         {
           data: 'fulfill_at',
           render: function(data, type, row, meta) {
-                  return moment.utc(data).local().format('YYYY-MM-DD h:mm:ss a');
-                }
+            return moment.utc(data).local().format('YYYY-MM-DD');
+          }
+        },
+        {
+          data: 'fulfill_at',
+          render: function(data, type, row, meta) {
+            return moment.utc(data).local().format('h:mm:ss a');
+          }
         },
       ],
       // columnDefs: [{
@@ -160,7 +223,14 @@ use Src\TableGateways\UserGateway;
 
     // Refilter the table
     $('#min, #max').on('change', function() {
-      table.draw();
+
+      minDate = new Date($('#min').val());
+      maxDate = new Date($('#max').val());
+      refreshChart();
+      //chart.update();
+
+      table.ajax.url("/api/orders/" + moment.utc(minDate).local().format("DDMMYYYY") + "-" + moment.utc(maxDate).local().format("DDMMYYYY") + "?all&userRefIds=" + userRefIds).load();
+      // table.ajax.reload();
     });
     $('#tblLogs tbody').on('click', 'tr.clickable-row', function() {
       //$(this).toggleClass('selected');
