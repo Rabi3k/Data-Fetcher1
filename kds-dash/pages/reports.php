@@ -153,7 +153,7 @@ use Src\TableGateways\UserGateway;
             <th scope="col">Total</th>
             <th scope="col">Date</th>
        */
-      dom: 'Bfrtip',
+      dom: '<"container-fluid"<"row"<"col"l><"col align-middle"B><"col"f>>>rtip',//'Bfrtip',
         buttons: [
             'copy', 'csv', 'excel', 'pdf', 'print'
         ],
