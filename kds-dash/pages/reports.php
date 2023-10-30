@@ -3,6 +3,8 @@
 use Src\TableGateways\UserGateway;
 
 ?>
+
+<script src=""></script>
 <div class="main">
   <center>
     <h3><b>Online Orders</b></h3>
@@ -104,6 +106,8 @@ use Src\TableGateways\UserGateway;
         }]
       };
       config = {
+        responsive: true,
+        maintainAspectRatio: false,
         type: 'bar',
         data: data,
         options: {
@@ -149,6 +153,10 @@ use Src\TableGateways\UserGateway;
             <th scope="col">Total</th>
             <th scope="col">Date</th>
        */
+      dom: 'Bfrtip',
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ],
       ajax: {
         url: "/api/orders/" + moment.utc(minDate).local().format("DDMMYYYY") + "-" + moment.utc(maxDate).local().format("DDMMYYYY") + "?all&userRefIds=" + userRefIds,
         dataType: 'json',
