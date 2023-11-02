@@ -212,7 +212,7 @@ use Src\TableGateways\UserGateway;
         {
           data: 'fulfill_at',
           render: function(data, type, row, meta) {
-            return moment.utc(data).local().format('h:mm:ss a');
+            return moment.utc(data).local().format('HH:mm:ss');
           }
         },
       ],
