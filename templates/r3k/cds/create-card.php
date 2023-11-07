@@ -71,7 +71,6 @@ foreach ($data as $order) {
 // if they are set and refresh them as well
 if (isset($_SESSION['UserId'])) { 
   $_SESSION['UserId'] = $_SESSION['UserId'];
-
 }
 
 echo '{"draw": 1,
