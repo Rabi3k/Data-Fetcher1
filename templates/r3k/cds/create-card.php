@@ -1,4 +1,5 @@
 <?php
+session_start();
 
 use Src\TableGateways\OrdersGateway;
 use Src\Classes\Order;
@@ -64,6 +65,13 @@ foreach ($data as $order) {
         "type" => $orderTypeText,
         "timeToEnd" => $timeToEndTxt,
     );
+}
+
+// if you have more session-vars that are needed for login, also check 
+// if they are set and refresh them as well
+if (isset($_SESSION['UserId'])) { 
+  $_SESSION['UserId'] = $_SESSION['UserId'];
+
 }
 
 echo '{"draw": 1,

@@ -26,7 +26,11 @@ if (isset($_GET["page"]) && !empty($_GET["page"]) && file_exists("pages/" . $_GE
 $pattern = "/-/i";
 $pag= preg_replace($pattern, " ", $page);
 $pageTitle = ucfirst($pag);
-
+if($page =="sessionservices")
+{
+        include "pages/$page.php";
+        exit();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
