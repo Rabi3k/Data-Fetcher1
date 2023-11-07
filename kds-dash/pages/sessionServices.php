@@ -24,3 +24,4 @@ if (strtolower($_GET["q"]) == "receipts") {
     );
     echo json_encode($retval);
 }
+ 

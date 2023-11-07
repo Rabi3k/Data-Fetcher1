@@ -221,7 +221,7 @@ if (isset($_GET['id'])) {
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
             ajax: {
-                url: "/dash/sessionServices/Receipts?s=" + moment.utc(minDate).local().format("YYYYMMDD") + "&e=" + moment.utc(maxDate).local().format("YYYYMMDD") + "&i=" + integrationId,
+                url: "/dash/sessionservices/Receipts?s=" + moment.utc(minDate).local().format("YYYYMMDD") + "&e=" + moment.utc(maxDate).local().format("YYYYMMDD") + "&i=" + integrationId,
                 dataType: 'json',
                 type: 'GET',
             },
@@ -290,7 +290,7 @@ if (isset($_GET['id'])) {
             minDate = new Date($('#min').val());
             maxDate = new Date($('#max').val());
 
-            table.ajax.url("/dash/sessionServices/Receipts?s=" + moment.utc(minDate).local().format("YYYYMMDD") + "&e=" + moment.utc(maxDate).local().format("YYYYMMDD") + "&i=" + integrationId).load();
+            table.ajax.url("/dash/sessionservices/Receipts?s=" + moment.utc(minDate).local().format("YYYYMMDD") + "&e=" + moment.utc(maxDate).local().format("YYYYMMDD") + "&i=" + integrationId).load();
         });
         $('#tblLogs tbody').on('click', 'tr.clickable-row', function() {
             //$(this).toggleClass('selected');
