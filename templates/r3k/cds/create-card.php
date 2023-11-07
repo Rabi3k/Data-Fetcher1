@@ -1,5 +1,5 @@
 <?php
-session_start();
+
 
 use Src\TableGateways\OrdersGateway;
 use Src\Classes\Order;
