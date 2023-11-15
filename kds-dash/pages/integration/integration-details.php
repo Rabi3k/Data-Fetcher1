@@ -240,7 +240,13 @@ if (isset($_GET['id'])) {
                     data: 'receipt_type'
                 },
                 {
-                    data: 'payments'
+                    data: 'payments',
+                    render: function(data, type, row, meta) {
+                       let retval = data.map((x)=> x.name);
+                       console.log(retval);
+
+                        return retval;
+                    }
                 },
                 {
                     data: 'total_tax',
