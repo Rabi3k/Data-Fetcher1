@@ -134,7 +134,35 @@ if (isset($gfMenu->menu) && $gfMenu->menu != null) {
     }
     $fItems = array();
     $modifiers = array();
+    foreach ($gfMenuObj->categories as $key => $c) {
+        foreach ($c->groups as $g) {
+            $g->optionsa = array_column($g->options, 'name');
+            $g->optionsNames = implode(" / ", $g->optionsa);
+            $g->loyverse_id = isset($pModifier[$g->id]) ? $pModifier[$g->id]->loyverse_id : null;
+            if (!in_array($g, $modifiers)) {
+                $modifiers[] = $g;
+            }
+        }
+        foreach ($c->items as $key => $i) {
+            # code...
+                foreach ($c->groups as $g) {
+                   if(isset($i->groups))
+                    {
+                        if (!in_array($g, $value2->groups)) {
+                            $i->groups[]= $g;
+                            //echo json_encode($i->groups);
+
+                        }
+                    }
+                }
+               
+                $cItems[] = $value2;
+
+        }
+    }
     foreach ($cItems as $key => $value) {
+//echo json_encode($value->groups);
+
         # code...
         $i = new stdClass();
         $i->id = $value->id;
@@ -144,7 +172,7 @@ if (isset($gfMenu->menu) && $gfMenu->menu != null) {
         $i->sizes = $value->sizes;
         $i->groups = $value->groups;
         $i->price = $value->price;
-        $i->sizese = array_column($value->sizes, 'name');
+        $i->sizese = isset($value->sizes)? array_column($value->sizes, 'name'):array();
         $i->sizesNames = implode(" / ", $i->sizese);
         $i->loyverse_id = isset($pItems[$value->id]) ? $pItems[$value->id]->loyverse_id : null;
         $i->picture_hi_res = $value->picture_hi_res;
