@@ -92,8 +92,9 @@ if (isset($gfMenu->menu) && $gfMenu->menu != null) {
     $gfMenuObj = json_decode($gfMenu->menu);
 
     $postedElements = $integrationGateway->GetBatchTypeByIntegrationAndMenu($gfMenu->menu_id, $integration->Id,);
+
     $CatsIds = array_column($gfMenuObj->categories, 'id');
-    $aCats = $postedElements['category'];
+    $aCats = ($postedElements!=null && $postedElements['category']!=null )?$postedElements['category']:array();
     $aCatse = filterArrayByKeys($gfMenuObj->categories, ['id', 'name']);
     foreach ($aCatse as  $value) {
         if (array_key_exists($value['id'], $aCats)) {
@@ -117,10 +118,10 @@ if (isset($gfMenu->menu) && $gfMenu->menu != null) {
     }
     /*,'modifier','option','item','variant'
      */
-    $pItems = $postedElements['item'];
-    $pModifier = $postedElements['modifier'];
-    $pOption = $postedElements['option'];
-    $pVariant = $postedElements['variant'];
+    $pItems = ($postedElements!=null && $postedElements['item']!=null )?$postedElements['item']:array();
+    $pModifier = ($postedElements!=null && $postedElements['modifier']!=null )?$postedElements['modifier']:array();
+    $pOption = ($postedElements!=null && $postedElements['option']!=null )?$postedElements['option']:array();
+    $pVariant = ($postedElements!=null && $postedElements['variant']!=null )?$postedElements['variant']:array();
     $items = array_column($gfMenuObj->categories, 'items');
 
     $cItems = array();
