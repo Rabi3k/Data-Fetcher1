@@ -49,6 +49,12 @@ switch ($oper) {
         $controller->processRequest();
 
         break;
+        case 'lorder':
+            // pass the request method and user ID to the PersonController and process the HTTP request:
+            $controller = new OrderController($dbConnection, $requestMethod, $id);
+            $controller->processRequestLOrder();
+    
+            break;
     case 'profile':
         break;
     case 'item':

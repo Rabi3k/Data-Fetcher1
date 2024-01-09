@@ -10,7 +10,7 @@ use Src\Classes\Order;
 use Src\Enums\ItemStatus;
 use Src\System\DbObject;
 
-class OrdersGateway extends DbObject
+class LOrdersGateway extends DbObject
 {
 
     #region protected functions

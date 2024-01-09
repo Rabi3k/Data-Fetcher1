@@ -55,6 +55,25 @@ class RestaurantsGateway extends DbObject
             exit($e->getMessage());
         }
     }
+    public function FindByGfRefId($gfRefId): Restaurant|null
+    {
+        $tblname = $this->getTableName();
+        $statment = "SELECT * FROM $tblname 
+        where gf_refid = $gfRefId";
+        //echo "ID: $id <br/>statment: $statment<br/>";
+        try {
+            $statement = $this->getDbConnection()->query($statment);
+            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $statement->closeCursor();
+            if (count($result) < 1) {
+                return null;
+            }
+            return Restaurant::GetRestaurantList($result)[0];
+        } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
+            exit($e->getMessage());
+        }
+    }
     public function GetAll(): array|null
     {
         try {

@@ -48,7 +48,30 @@ class OrderController {
             echo $response['body'];
         }
     }
-
+    public function processRequestLOrder()
+    {
+        switch ($this->requestMethod) {
+            case 'GET':
+                if ($this->orderId) {
+                    $response = $this->getLOrder($this->orderId);
+                } else {
+                    $response = $this->notFoundResponse();
+                };
+                break;
+            case 'POST':
+            case 'PUT':
+                $response = $this->notFoundResponse();
+                break;
+            case 'DELETE':
+            default:
+                $response = $this->notFoundResponse();
+                break;
+        }
+        header($response['status_code_header']);
+        if ($response['body']) {
+            echo $response['body'];
+        }
+    }
     private function CompleteOrder(int $orderId)
     {
         $result = $this->orderGateway->UpdateOrderStatus($orderId,true);
@@ -118,7 +141,19 @@ class OrderController {
         $response['body'] = $results->getJsonStr();
         return $response;
     }
-
+    private function getLOrder($id)
+    {
+        $results = $this->orderGateway->FindById($id);
+       /* $result = array_filter($results,function($e) use (&$id){
+            return $e["id"] === $id;
+        });*/
+        if (! $results) {
+            return $this->notFoundResponse();
+        }
+        $response['status_code_header'] = 'HTTP/1.1 200 OK';
+        $response['body'] = json_encode($results->ToLoyverseOrder());
+        return $response;
+    }
     private function createRequestFromRequest()
     {
         

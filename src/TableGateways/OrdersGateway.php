@@ -439,6 +439,10 @@ class OrdersGateway extends DbObject
                 }
             }
         }
+        if($order->ready == true)
+        {
+            // add to queue Posts 
+        }
         return "Order {$order->id} Created / Updated Successfully";
     }
 
