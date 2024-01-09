@@ -105,7 +105,7 @@ class Order extends ClassObj
         }
         $order = new LOrder(
             $integration->StoreId,
-            $this->id,
+            "$this->client_first_name $this->client_last_name |# $this->id",
             "",
             "Relax",
             $this->fulfill_at,
