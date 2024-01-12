@@ -47,10 +47,10 @@
         border-color: var(--bs-green);
     }
 
-    span.toogle-items.select-all:after {
+    span.toogle-items.select-all:after,button.toogle-items.select-all:after {
         content: "Select all";
     }
 
-    span.toogle-items.unselect-all:after {
+    span.toogle-items.unselect-all:after,button.toogle-items.unselect-all:after {
         content: "Unselect all";
     }

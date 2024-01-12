@@ -4,7 +4,7 @@ var tblModifiers = new DataTable('#tblModifiers', {
     buttons: [
         {
             className: 'toogle-items select-all btn btn-sm btn-info',
-            text: 'Select All',
+            text: '',
             attr: {
                 "for-ul": "modifiers"
             },

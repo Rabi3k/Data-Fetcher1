@@ -26,15 +26,28 @@
     <div class="col-2">
         <form method="post">
             <input type="hidden" name="fetchMenu" value="submit" />
-            <input type="submit" class="btn btn-primary float-end fs-4" name="fetchMenu" value="Fetch Menu" />
+            <input type="submit" class="btn btn-info text-light float-end fs-4" name="fetchMenu" value="Fetch Menu" />
         </form>
     </div>
     <div class="col-12">
-        <div class="mb-3">
-            <label for="txtMenu" class="form-label">Menu Details</label>
-            <textarea class="form-control" name="" id="txtMenu" rows="3"><?php echo $gfMenu->menu ?></textarea>
+        <div class="accordion" id="accordion-menu-text">
+            <div class="accordion-item ">
+                <h2 class="accordion-header text-center bg-info" id="menu-text-tab">
+                    <button class="accordion-button collapsed d-block text-center fs-4 text-light bg-info" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-menu-text" aria-expanded="true" aria-controls="collapse-menu-text">
+                    Menu Text
+                    </button>
+                </h2>
+                <div id="collapse-menu-text" class="accordion-collapse collapse" aria-labelledby="categories-tab" data-bs-parent="#accordion-menu-text">
+                    <div class="accordion-body">
+                        <label for="txtMenu" class="form-label">Menu Details</label>
+                        <textarea class="form-control"  id="txtMenu" rows="6"><?php echo $gfMenu->menu ?></textarea>
+                    </div>
+                </div>
+            </div>
+            
         </div>
     </div>
+    
 </div>
 
 <!-- Menu Info -->
@@ -103,5 +116,3 @@
         </div>
     </div>
 </div>
-
-

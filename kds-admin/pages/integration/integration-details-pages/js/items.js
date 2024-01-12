@@ -3,7 +3,7 @@ var tblItems = new DataTable('#tblItems', {
     buttons: [
         {
             className: 'toogle-items select-all btn btn-sm btn-info',
-            text: 'Select All',
+            text: '',
             attr: {
                 "for-ul": "items"
             },

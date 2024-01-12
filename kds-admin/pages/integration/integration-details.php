@@ -329,8 +329,7 @@ function filterArrayByKeys(array $input, array $column_keys)
     <div class="tab-content">
         <!-- Gloria food Menu -->
         <div class="tab-pane active" id="menu" role="tabpanel" aria-labelledby="menu-tab">
-            <?php
-            include "integration-details-pages/integration-details-menu.php"; ?>
+            <?php include "integration-details-pages/integration-details-menu.php"; ?>
         </div>
         <!-- END  Gloria Food Menu -->
         <!-- Promotions -->
@@ -616,36 +615,4 @@ function filterArrayByKeys(array $input, array $column_keys)
             $($(this).find("td.is-none")).addClass("is-valid");
         });
     });
-
-    // function PostModifier(data, elem) {
-    //     /*
-    //     integration_id =>hdfIntegrationId
-    //     gf_id
-    //     l_id
-    //     name
-    //     gf_menu_id =>txtGfMenuId
-    //      */
-    //     var settings = {
-    //         "url": "/sessionservices/integration.php?q=postmodifier",
-    //         "method": "POST",
-    //         "timeout": 0,
-    //         //"async": true,
-    //         "headers": {
-    //             "Content-Type": "application/json",
-    //         },
-    //         "data": data,
-    //         "success": function(response) {
-    //             console.log(response);
-    //             $(elem).find(".spinner").toggleClass("visually-hidden");
-    //             $(elem).addClass("is-valid");
-    //             $(elem).find("li.option").addClass("is-valid");
-    //         }
-    //     };
-    //     $.ajax(settings).fail(function(response) {
-    //         console.log(response);
-    //         $(elem).find(".spinner").toggleClass("visually-hidden");
-    //         $(elem).addClass("is-invalid");
-    //         $(elem).find("li.option").addClass("is-invalid");
-    //     });
-    // }
 </script>
