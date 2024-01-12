@@ -17,6 +17,9 @@
 <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/kds-admin/src/css/style.min.css">
 
+    <link rel="stylesheet" type="text/css" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css"/>
+
     
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <!-- <script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.5.1.js"></script> -->
