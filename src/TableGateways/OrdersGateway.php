@@ -71,7 +71,7 @@ class OrdersGateway extends DbObject
         $statment = "SELECT 
         SUM(oi_pi.item_discount) AS 'promoItemValues',
         SUM(oi_pc.cart_discount)* -1 AS 'promoCartValues' ,
-        SUM(oi_df.total_item_price) AS 'deliveryFee' ,
+        (oi_df.total_item_price) AS 'deliveryFee' ,
         oh.*
             FROM
         `tbl_order_head` oh

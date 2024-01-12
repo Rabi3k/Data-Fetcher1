@@ -431,6 +431,8 @@ function filterArrayByKeys(array $input, array $column_keys)
                                 <tr>
                                     <th scope="col">ID</th>
                                     <th scope="col">Name</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Time</th>
                                     <th scope="col">Total</th>
                                     <th scope="col">Delivery Fee</th>
                                     <th scope="col">Total Promo Cart Values</th>
@@ -452,6 +454,8 @@ function filterArrayByKeys(array $input, array $column_keys)
                                     <tr class='menu order <?php echo $validationClass ?>' id="o-<?php echo $order->id ?>" lid="<?php echo $order->loyverse_id  ?>" o-type="<?php echo $order->type ?>">
                                         <td class="fs-5"><?php echo "$order->id" ?></td>
                                         <td class="fs-5"><?php echo "$order->client_first_name $order->client_last_name " ?></td>
+                                        <td class="fs-5"><?php echo "$order->fulfill_at" ?></td>
+                                        <td class="fs-5"><?php echo "$order->fulfill_at" ?></td>
                                         <td class="fs-5"><?php echo "$amount" ?></td>
                                         <td class="fs-5"><?php echo "$deliveryFee" ?></td>
                                         <td class="fs-5"><?php echo "$promoCartValues" ?></td>
@@ -480,6 +484,30 @@ function filterArrayByKeys(array $input, array $column_keys)
 <script type="text/javascript">
     var items = JSON.parse('<?php echo json_encode($fItems) ?>');
     var orders = JSON.parse('<?php echo json_encode($Orders) ?>');
+
+    function getDateTimeByTimezone(date, timezone, culture) {
+        return date.toLocaleString(culture, {
+            timeZone: timezone,
+            dateStyle: "full",
+            timeStyle: "long"
+        });
+    }
+
+    function getDateByTimezone(date, timezone, culture) {
+        return date.toLocaleString(culture, {
+            timeZone: timezone,
+            dateStyle: "full"
+        });
+    }
+
+    function getTimeByTimezone(date, timezone, culture) {
+        return date.toLocaleString(culture, {
+            timeZone: timezone,
+            timeStyle: "long"
+        });
+    }
+
+
     <?php include "integration-details-pages/js/script.min.js"; ?>
     // DataTables initialisation
     var tblPromotions = $('#tblPromotions').DataTable({
@@ -555,11 +583,21 @@ function filterArrayByKeys(array $input, array $column_keys)
             },
             {
                 target: 2,
-                visible: true
+                visible: true,
+                data:"date",
+                render: function(data, type, row) {
+                    const CopenhagenDate = getDateByTimezone(new Date(data), 'Europe/Copenhagen', 'da-DK');
+                    return CopenhagenDate;
+                }
             },
             {
                 target: 3,
-                visible: true
+                visible: true,
+                data:"date",
+                render: function(data, type, row) {
+                    const CopenhagenDate = getTimeByTimezone(new Date(data), 'Europe/Copenhagen', 'da-DK');
+                    return CopenhagenDate;
+                }
             },
             {
                 target: 4,
@@ -567,20 +605,28 @@ function filterArrayByKeys(array $input, array $column_keys)
             },
             {
                 target: 5,
+                visible: true
+            },
+            {
+                target: 6,
+                visible: true
+            },
+            {
+                target: 7,
                 visible: true,
 
             },
             {
-                target: 6,
+                target: 8,
                 visible: false
             },
             {
-                target: 7,
+                target: 9,
                 visible: false,
 
             },
             {
-                target: 8,
+                target: 10,
                 visible: true,
                 searchable: false
             }
