@@ -159,16 +159,24 @@ function filterArrayByKeys(array $input, array $column_keys)
     <!-- Nav tabs -->
     <ul class="nav nav-pills nav-fill navbar-light justify-content-center align-items-center g-2" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="btn btn-outline-dark active" id="menu-tab" data-bs-toggle="tab" data-bs-target="#menu" type="button" role="tab" aria-controls="menu" aria-selected="true">Menu</button>
+            <button class="btn btn-outline-dark active" id="menu-tab" data-bs-toggle="tab" data-bs-target="#menu" type="button" role="tab" aria-controls="menu" aria-selected="true">
+                Menu
+            </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="btn btn-outline-dark" id="promotions-tab" data-bs-toggle="tab" data-bs-target="#promotions" type="button" role="tab" aria-controls="promotions" aria-selected="false">Promotions</button>
+            <button class="btn btn-outline-dark" id="extras-tab" data-bs-toggle="tab" data-bs-target="#extras" type="button" role="tab" aria-controls="extras" aria-selected="false">
+                Extras
+            </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="btn btn-outline-dark" id="delivery-tab" data-bs-toggle="tab" data-bs-target="#delivery" type="button" role="tab" aria-controls="delivery" aria-selected="false">Delivery</button>
+            <button class="btn btn-outline-dark" id="delivery-tab" data-bs-toggle="tab" data-bs-target="#delivery" type="button" role="tab" aria-controls="delivery" aria-selected="false">
+                Delivery
+            </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="btn btn-outline-dark" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab" aria-controls="orders" aria-selected="false">Orders</button>
+            <button class="btn btn-outline-dark" id="orders-tab" data-bs-toggle="tab" data-bs-target="#orders" type="button" role="tab" aria-controls="orders" aria-selected="false">
+                Orders
+            </button>
         </li>
     </ul>
     <hr />
@@ -180,7 +188,7 @@ function filterArrayByKeys(array $input, array $column_keys)
         </div>
         <!-- END  Gloria Food Menu -->
         <!-- Promotions -->
-        <div class="tab-pane" id="promotions" role="tabpanel" aria-labelledby="promotions-tab">
+        <div class="tab-pane" id="extras" role="tabpanel" aria-labelledby="extras-tab">
             <div class="row justify-content-center g-2 ">
                 <div class="col-12">
                     <!-- <form method="post"> -->
@@ -292,16 +300,16 @@ function filterArrayByKeys(array $input, array $column_keys)
                             <tbody class="orders">
                                 <?php foreach ($Orders as $key => $order) {
                                     //$fmt = numfmt_create('da_DK', NumberFormatter::CURRENCY);
-                                    $fmt = new NumberFormatter( 'de_DE', NumberFormatter::CURRENCY );
+                                    $fmt = new NumberFormatter('de_DE', NumberFormatter::CURRENCY);
 
                                     // $amount = numfmt_format_currency($fmt, $order->total_price, $order->currency);
                                     // $deliveryFee = numfmt_format_currency($fmt, $order->deliveryFee, $order->currency);
                                     // $promoItemValues = numfmt_format_currency($fmt, $order->promoItemValues, $order->currency);
                                     // $promoCartValues = numfmt_format_currency($fmt, $order->promoCartValues, $order->currency);
-                                    $amount = $fmt->formatCurrency( $order->total_price??0, $order->currency);
-                                    $deliveryFee = $fmt->formatCurrency( $order->deliveryFee??0, $order->currency);
-                                    $promoItemValues = $fmt->formatCurrency( $order->promoItemValues??0, $order->currency);
-                                    $promoCartValues = $fmt->formatCurrency( $order->promoCartValues??0, $order->currency);
+                                    $amount = $fmt->formatCurrency($order->total_price ?? 0, $order->currency);
+                                    $deliveryFee = $fmt->formatCurrency($order->deliveryFee ?? 0, $order->currency);
+                                    $promoItemValues = $fmt->formatCurrency($order->promoItemValues ?? 0, $order->currency);
+                                    $promoCartValues = $fmt->formatCurrency($order->promoCartValues ?? 0, $order->currency);
 
                                     $validationClass =  isset($order->hasIssue) && $order->hasIssue != false ? "has-issue" : (isset($order->loyverse_id) && $order->loyverse_id != null ? 'is-valid'  : "is-invalid")
                                 ?>
@@ -339,10 +347,10 @@ function filterArrayByKeys(array $input, array $column_keys)
     var items = JSON.parse('<?php echo json_encode($fItems) ?>');
     var orders = JSON.parse('<?php echo json_encode($Orders) ?>');
 
-   
+
     <?php include "integration-details-pages/js/script.min.js"; ?>
 
-    
+
     // DataTables initialisation
     var tblPromotions = $('#tblPromotions').DataTable({
 
@@ -418,7 +426,7 @@ function filterArrayByKeys(array $input, array $column_keys)
             {
                 target: 2,
                 visible: true,
-                data:"date",
+                data: "date",
                 render: function(data, type, row) {
                     const CopenhagenDate = getDateByTimezone(new Date(data), 'Europe/Copenhagen', 'da-DK');
                     return CopenhagenDate;
@@ -427,7 +435,7 @@ function filterArrayByKeys(array $input, array $column_keys)
             {
                 target: 3,
                 visible: true,
-                data:"date",
+                data: "date",
                 render: function(data, type, row) {
                     const CopenhagenDate = getTimeByTimezone(new Date(data), 'Europe/Copenhagen', 'da-DK');
                     return CopenhagenDate;
@@ -495,5 +503,4 @@ function filterArrayByKeys(array $input, array $column_keys)
             $($(this).find("td.is-none")).addClass("is-valid");
         });
     });
-    
 </script>
