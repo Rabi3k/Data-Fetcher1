@@ -61,5 +61,5 @@
 
 </ul>
 <script type="text/javascript">
-    <?php include "js/items.js" ?>
+    <?php include "js/items.min.js" ?>
 </script>

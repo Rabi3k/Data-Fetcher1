@@ -44,7 +44,7 @@
 
 </ul>
 <script type="text/javascript">
-    <?php include "js/modifiers.js" ?>
+    <?php include "js/modifiers.min.js" ?>
 
    
 </script>

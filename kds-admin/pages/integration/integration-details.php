@@ -29,28 +29,6 @@ if (isset($_GET['id'])) {
     echo " <script> location.href = '/admin/integrations' </script> ";
 }
 
-if (isset($_POST["fetchMenu"])) {
-    $curl = curl_init();
-
-    curl_setopt_array($curl, array(
-        CURLOPT_URL => "https://www.restaurantlogin.com/api/restaurant/$integration->gfUid/menu?active=true&pictures=true",
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_ENCODING => '',
-        CURLOPT_MAXREDIRS => 10,
-        CURLOPT_TIMEOUT => 0,
-        CURLOPT_FOLLOWLOCATION => true,
-        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-        CURLOPT_CUSTOMREQUEST => 'GET',
-    ));
-
-    $retval = curl_exec($curl);
-
-    curl_close($curl);
-    $gfMenu->menu = $retval;
-
-
-    $gfMenu = $integrationGateway->InsertOrupdateGfMenu($gfMenu->menu, $gfMenu->restaurant_id);
-}
 $postedDItem = $integrationGateway->GetBatchTypeByIntegrationAndType($integration->Id, 'delivery_fee');
 $noDItemChecked = false;
 if (isset($_POST["fetchDeliveryItem"])) {
@@ -88,138 +66,7 @@ if (isset($Orders) && count($Orders) > 0) {
         # code...
     }
 }
-if (isset($gfMenu->menu) && $gfMenu->menu != null) {
-    $gfMenuObj = json_decode($gfMenu->menu);
 
-    $postedElements = $integrationGateway->GetBatchTypeByIntegrationAndMenu($gfMenu->menu_id, $integration->Id,);
-
-    $CatsIds = array_column($gfMenuObj->categories, 'id');
-    $aCats = ($postedElements != null && $postedElements['category'] != null) ? $postedElements['category'] : array();
-    $aCatse = filterArrayByKeys($gfMenuObj->categories, ['id', 'name']);
-    foreach ($aCatse as  $value) {
-        if (array_key_exists($value['id'], $aCats)) {
-            $aCats[$value['id']]->hasIssue = false;
-
-            if ($aCats[$value['id']]->name != $value['name']) {
-                $aCats[$value['id']]->name = $value['name'];
-                $aCats[$value['id']]->hasIssue = true;
-            }
-        } else {
-            $aCats[$value['id']] = (object)array(
-                "gf_id" => $value['id'],
-                "integration_id" => $integration->Id,
-                "type" => "category",
-                "gf_menu_id" => $gfMenu->restaurant_id,
-                "loyverse_id" => null,
-                "name" => $value['name'],
-                "hasIssue" => false
-            );
-        }
-    }
-    /*,'modifier','option','item','variant'
-     */
-    $pItems = ($postedElements != null && $postedElements['item'] != null) ? $postedElements['item'] : array();
-    $pModifier = ($postedElements != null && $postedElements['modifier'] != null) ? $postedElements['modifier'] : array();
-    $pOption = ($postedElements != null && $postedElements['option'] != null) ? $postedElements['option'] : array();
-    $pVariant = ($postedElements != null && $postedElements['variant'] != null) ? $postedElements['variant'] : array();
-    $items = array_column($gfMenuObj->categories, 'items');
-
-    $cItems = array();
-    // foreach ($items as $key => $value) {
-    //     # code...
-    //     foreach ($value as $key2 => $value2) {
-    //         # code...
-    //         $cItems[] = $value2;
-    //     }
-    // }
-    $fItems = array();
-    $modifiers = array();
-    foreach ($gfMenuObj->categories as $key => $c) {
-        AddModifiers($c->groups);
-        // foreach ($c->groups as $g) {
-        //     $g->optionsa = array_column($g->options, 'name');
-        //     $g->optionsNames = implode(" / ", $g->optionsa);
-        //     $g->loyverse_id = isset($pModifier[$g->id]) ? $pModifier[$g->id]->loyverse_id : null;
-        //     if (!in_array($g, $modifiers)) {
-        //         $modifiers[] = $g;
-        //     }
-        // }
-        foreach ($c->items as $key => $i) {
-            # code...
-            foreach ($c->groups as $g) {
-                if (isset($i->groups)) {
-                    if (!in_array($g, $i->groups)) {
-                        $i->groups[] = $g;
-                        //echo json_encode($i->groups);
-
-                    }
-                }
-            }
-            $i->menu_category_name = $c->name;
-            $cItems[] = $i;
-        }
-    }
-    foreach ($cItems as $key => $value) {
-        //echo json_encode($value->groups);
-
-        # code...
-        $i = new stdClass();
-        $i->id = $value->id;
-        $i->name = $value->name;
-        $i->description = $value->description;
-        $i->gf_category_id = $value->menu_category_id;
-        $i->gf_category_name = $value->menu_category_name;
-        $i->sizes = $value->sizes;
-        $i->groups = $value->groups;
-        $i->price = $value->price;
-        $i->sizese = isset($value->sizes) ? array_column($value->sizes, 'name') : array();
-        $i->sizesNames = implode(" / ", $i->sizese);
-        $i->loyverse_id = isset($pItems[$value->id]) ? $pItems[$value->id]->loyverse_id : null;
-        $i->picture_hi_res = $value->picture_hi_res;
-        $fItems[$value->id] = $i;
-
-        foreach ($value->sizes as $s) {
-            $s->loyverse_id = isset($pVariant[$s->id]) ? $pVariant[$s->id]->loyverse_id : null;
-            AddModifiers($s->groups);
-            // foreach ($s->groups as $g) {
-            //     $g->optionsa = array_column($g->options, 'name');
-            //     $g->optionsNames = implode(" / ", $g->optionsa);
-            //     $g->loyverse_id = isset($pModifier[$g->id]) ? $pModifier[$g->id]->loyverse_id : null;
-            //     if (!in_array($g, $modifiers)) {
-            //         $modifiers[] = $g;
-            //     }
-            // }
-        }
-        AddModifiers($value->groups);
-        // foreach ($value->groups as $g) {
-        //     $g->optionsa = array_column($g->options, 'name');
-        //     $g->optionsNames = implode(" / ", $g->optionsa);
-        //     $g->loyverse_id = isset($pModifier[$g->id]) ? $pModifier[$g->id]->loyverse_id : null;
-        //     if (!in_array($g, $modifiers)) {
-        //         $modifiers[] = $g;
-        //     }
-        // }
-    }
-
-    //echo json_encode($cItems);
-    $itemsNames = array_column($cItems, 'name');
-}
-function AddModifiers($groups)
-{
-    global $modifiers, $pOption, $pModifier;
-    foreach ($groups as $g) {
-        $g->optionsa = array_column($g->options, 'name');
-        $g->optionsNames = implode(" / ", $g->optionsa);
-        $g->loyverse_id = isset($pModifier[$g->id]) ? $pModifier[$g->id]->loyverse_id : null;
-        foreach ($g->options as $o) {
-            $o->loyverse_id = isset($pOption[$o->id]) ? $pOption[$o->id]->loyverse_id : null;
-        }
-        if (!in_array($g, $modifiers)) {
-            // echo json_encode($g);
-            $modifiers[] = $g;
-        }
-    }
-}
 function fetchDeliveryItem()
 {
 
@@ -444,11 +291,18 @@ function filterArrayByKeys(array $input, array $column_keys)
                             </thead>
                             <tbody class="orders">
                                 <?php foreach ($Orders as $key => $order) {
-                                    $fmt = numfmt_create('da_DK', NumberFormatter::CURRENCY);
-                                    $amount = numfmt_format_currency($fmt, $order->total_price, $order->currency);
-                                    $deliveryFee = numfmt_format_currency($fmt, $order->deliveryFee, $order->currency);
-                                    $promoItemValues = numfmt_format_currency($fmt, $order->promoItemValues, $order->currency);
-                                    $promoCartValues = numfmt_format_currency($fmt, $order->promoCartValues, $order->currency);
+                                    //$fmt = numfmt_create('da_DK', NumberFormatter::CURRENCY);
+                                    $fmt = new NumberFormatter( 'de_DE', NumberFormatter::CURRENCY );
+
+                                    // $amount = numfmt_format_currency($fmt, $order->total_price, $order->currency);
+                                    // $deliveryFee = numfmt_format_currency($fmt, $order->deliveryFee, $order->currency);
+                                    // $promoItemValues = numfmt_format_currency($fmt, $order->promoItemValues, $order->currency);
+                                    // $promoCartValues = numfmt_format_currency($fmt, $order->promoCartValues, $order->currency);
+                                    $amount = $fmt->formatCurrency( $order->total_price??0, $order->currency);
+                                    $deliveryFee = $fmt->formatCurrency( $order->deliveryFee??0, $order->currency);
+                                    $promoItemValues = $fmt->formatCurrency( $order->promoItemValues??0, $order->currency);
+                                    $promoCartValues = $fmt->formatCurrency( $order->promoCartValues??0, $order->currency);
+
                                     $validationClass =  isset($order->hasIssue) && $order->hasIssue != false ? "has-issue" : (isset($order->loyverse_id) && $order->loyverse_id != null ? 'is-valid'  : "is-invalid")
                                 ?>
                                     <tr class='menu order <?php echo $validationClass ?>' id="o-<?php echo $order->id ?>" lid="<?php echo $order->loyverse_id  ?>" o-type="<?php echo $order->type ?>">
@@ -485,30 +339,10 @@ function filterArrayByKeys(array $input, array $column_keys)
     var items = JSON.parse('<?php echo json_encode($fItems) ?>');
     var orders = JSON.parse('<?php echo json_encode($Orders) ?>');
 
-    function getDateTimeByTimezone(date, timezone, culture) {
-        return date.toLocaleString(culture, {
-            timeZone: timezone,
-            dateStyle: "full",
-            timeStyle: "long"
-        });
-    }
-
-    function getDateByTimezone(date, timezone, culture) {
-        return date.toLocaleString(culture, {
-            timeZone: timezone,
-            dateStyle: "full"
-        });
-    }
-
-    function getTimeByTimezone(date, timezone, culture) {
-        return date.toLocaleString(culture, {
-            timeZone: timezone,
-            timeStyle: "long"
-        });
-    }
-
-
+   
     <?php include "integration-details-pages/js/script.min.js"; ?>
+
+    
     // DataTables initialisation
     var tblPromotions = $('#tblPromotions').DataTable({
 
@@ -661,4 +495,5 @@ function filterArrayByKeys(array $input, array $column_keys)
             $($(this).find("td.is-none")).addClass("is-valid");
         });
     });
+    
 </script>

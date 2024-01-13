@@ -1,31 +1,25 @@
-$(document).ready(function() {
-
-
-    $("button.toogle-items, span.toogle-items").on("click", function() {
-        var ulElm = $(this).attr("for-ul");
-
-        var selct = $(this).hasClass("select-all");
-
-        $("." + ulElm + ">.menu").each(function() {
-            if (selct) {
-                selectMenuItem(this);
-            } else {
-                unselectMenuItem(this);
-            }
-        });
-
-        $(this).toggleClass("select-all unselect-all")
+function getDateTimeByTimezone(date, timezone, culture) {
+    return date.toLocaleString(culture, {
+        timeZone: timezone,
+        dateStyle: "full",
+        timeStyle: "long"
     });
+}
 
-    $("table").on("click", "li.menu, tr.menu", function() {
-        if (!$(this).hasClass("is-invalid") && !$(this).hasClass("has-issue")) {
-            selectMenuItem(this);
-        } else {
-            unselectMenuItem(this);
-        }
-    })
+function getDateByTimezone(date, timezone, culture) {
+    return date.toLocaleString(culture, {
+        timeZone: timezone,
+        dateStyle: "full"
+    });
+}
 
-});
+function getTimeByTimezone(date, timezone, culture) {
+    return date.toLocaleString(culture, {
+        timeZone: timezone,
+        timeStyle: "long"
+    });
+}
+
 
 function selectMenuItem(element) {
     if ($(element).hasClass("is-valid")) {
@@ -51,3 +45,32 @@ function unselectMenuItem(element) {
         $($(element).find("td.is-invalid")).removeClass("is-invalid").addClass("is-none");
     }
 }
+
+// Page Loaded Functions executed 
+$(document).ready(function () {
+
+    $("button.toogle-items, span.toogle-items").on("click", function () {
+        var ulElm = $(this).attr("for-ul");
+
+        var selct = $(this).hasClass("select-all");
+
+        $("." + ulElm + ">.menu").each(function () {
+            if (selct) {
+                selectMenuItem(this);
+            } else {
+                unselectMenuItem(this);
+            }
+        });
+
+        $(this).toggleClass("select-all unselect-all")
+    });
+
+    $("table").on("click", "tr.menu", function () {
+        if (!$(this).hasClass("is-invalid") && !$(this).hasClass("has-issue")) {
+            selectMenuItem(this);
+        } else {
+            unselectMenuItem(this);
+        }
+    })
+
+});
