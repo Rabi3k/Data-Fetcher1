@@ -1,4 +1,9 @@
 <?php
+ $gfMenu = $integrationGateway->GetGfMenuByRestaurantId($integration->RestaurantId);
+ if ($gfMenu == null) {
+     $gfMenu = new stdClass();
+     $gfMenu->restaurant_id = $restaurant->id;
+ }
 if (isset($_POST["fetchMenu"])) {
     $curl = curl_init();
 

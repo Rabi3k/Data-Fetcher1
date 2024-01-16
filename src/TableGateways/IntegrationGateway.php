@@ -76,7 +76,7 @@ class IntegrationGateway extends DbObject
         if ($input->Id == 0) {
             return $this->Insert($input);
         } else {
-            return $this->Insert($input);
+            return $this->Update($input);
         }
     }
 
@@ -134,8 +134,10 @@ class IntegrationGateway extends DbObject
                 'store_id' => $input->StoreId,
                 'tax_id' => $input->TaxId,
                 'loyverse_token' => $input->LoyverseToken,
+                'id' => $input->Id,
+
             ));
-            $input->Id = intval($this->getDbConnection()->lastInsertId());
+            
             $this->getDbConnection()->commit();
             return $input;
         } catch (\PDOException $e) {

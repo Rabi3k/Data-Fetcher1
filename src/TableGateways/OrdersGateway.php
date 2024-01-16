@@ -69,9 +69,9 @@ class OrdersGateway extends DbObject
     {
         $tblname = $this->getTableName();
         $statment = "SELECT 
-        SUM(oi_pi.item_discount) AS 'promoItemValues',
-        SUM(oi_pc.cart_discount)* -1 AS 'promoCartValues' ,
-        (oi_df.total_item_price) AS 'deliveryFee' ,
+        SUM(oi_pi.item_discount) * COUNT(DISTINCT oi_pi.order_head_id) / COUNT(*)  AS 'promoItemValues',
+        SUM(oi_pc.cart_discount)* COUNT(DISTINCT oi_pc.order_head_id) / COUNT(*) * -1 AS 'promoCartValues' ,
+        SUM(oi_df.total_item_price) * COUNT(DISTINCT oi_df.order_head_id) / COUNT(*)         AS 'deliveryFee' ,
         oh.*
             FROM
         `tbl_order_head` oh
@@ -287,19 +287,19 @@ class OrdersGateway extends DbObject
             $result = $query->fetchAll(\PDO::FETCH_ASSOC);
 
             $query->closeCursor();
-            
+
             return $result;
         } catch (\PDOException $e) {
             (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
         }
     }
-    public function FindDoneByRestaurantRefIdAndDate($startDate, $endDate,array $refIds)
+    public function FindDoneByRestaurantRefIdAndDate($startDate, $endDate, array $refIds)
     {
         $tblname = $this->getTableName();
         $StrRefIds = implode(",", $refIds);
-        
-        
+
+
         $sDate = $startDate->format('Y-m-d H:i:s');
         $eDate = $endDate->format('Y-m-d H:i:s');
         $statment = "SELECT oh.* FROM `tbl_order_head` oh 
@@ -315,7 +315,7 @@ class OrdersGateway extends DbObject
             $result = $query->fetchAll(\PDO::FETCH_ASSOC);
 
             $query->closeCursor();
-            
+
             return $result;
         } catch (\PDOException $e) {
             (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
@@ -439,8 +439,7 @@ class OrdersGateway extends DbObject
                 }
             }
         }
-        if($order->ready == true)
-        {
+        if ($order->ready == true) {
             // add to queue Posts 
         }
         return "Order {$order->id} Created / Updated Successfully";

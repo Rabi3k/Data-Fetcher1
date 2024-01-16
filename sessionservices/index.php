@@ -2,7 +2,7 @@
 
 use Src\Controller\GeneralController;
 
-require "../bootstrap.php";
+require_once "../bootstrap.php";
 
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");

@@ -1,3 +1,4 @@
+<!-- Integration Menu Category Section-->
 <div class="row">
     <div class="col d-grid gap-2 mx-auto">
         <span class="btn btn-success fs-4" name="postCategories" id="btnPostCategoriesT">Post Categories</span>
@@ -40,3 +41,4 @@
 <script type="text/javascript">
     <?php include "js/categories.min.js" ?>
 </script>
+<!--END Integration Menu Category Section-->

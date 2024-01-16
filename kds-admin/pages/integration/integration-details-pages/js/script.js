@@ -9,14 +9,18 @@ function getDateTimeByTimezone(date, timezone, culture) {
 function getDateByTimezone(date, timezone, culture) {
     return date.toLocaleString(culture, {
         timeZone: timezone,
-        dateStyle: "full"
+       //dateStyle: "short",
+        //weekday: "long",
+        year: "numeric",
+        month: "short",
+        day: "numeric",
     });
 }
 
 function getTimeByTimezone(date, timezone, culture) {
     return date.toLocaleString(culture, {
         timeZone: timezone,
-        timeStyle: "long"
+        timeStyle: "short"
     });
 }
 

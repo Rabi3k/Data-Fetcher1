@@ -1,3 +1,4 @@
+<!-- Integration Menu Items Section-->
 <div class="row">
     <div class="col d-grid gap-2 mx-auto">
         <span class="btn btn-success fs-4" name="postItems" id="btnPostItemsT">Post Items</span>
@@ -57,9 +58,8 @@
     </div>
 </div>
 
-<ul class="modifiers card list-group  overflow-auto max-list-5">
-
-</ul>
 <script type="text/javascript">
+    items = JSON.parse(`<?php echo json_encode($fItems)?>`);
     <?php include "js/items.min.js" ?>
 </script>
+<!--END Integration Menu Items Section-->

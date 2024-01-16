@@ -1,3 +1,4 @@
+<!-- Integration Menu Modifier Section-->
 <div class="row">
     <div class="col d-grid gap-2 mx-auto">
         <span class="btn btn-success fs-4" name="postModifiers" id="btnPostModifiersT">Post Modifiers</span>
@@ -45,6 +46,5 @@
 </ul>
 <script type="text/javascript">
     <?php include "js/modifiers.min.js" ?>
-
-   
 </script>
+<!--END Integration Menu Modifier Section-->

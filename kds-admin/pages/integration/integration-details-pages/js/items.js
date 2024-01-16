@@ -1,3 +1,4 @@
+
 var tblItems = new DataTable('#tblItems', {
     dom: '<"container-fluid pt-2"<"row"<"col"l><"col d-flex justify-content-center"f><"col d-flex justify-content-end"B>>>rtip',//'rfBltip',
     buttons: [
