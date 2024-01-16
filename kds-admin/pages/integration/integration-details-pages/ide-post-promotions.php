@@ -4,7 +4,30 @@
 use Src\Controller\IntegrationController;
 
 $promotions = IntegrationController::GetPromotion($integration->gfUid, $integration->Id);
+function fetchDiscounts()
+{
+    global $integration;
+    $curl = curl_init();
 
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => "https://api.loyverse.com/v1.0/discounts?show_deleted=false",
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'GET',
+        CURLOPT_HTTPHEADER => array(
+            "Authorization: Bearer $integration->LoyverseToken"
+        ),
+    ));
+
+    $response = curl_exec($curl);
+
+    curl_close($curl);
+    return json_decode($response)->discounts;
+}
 ?>
 <div class="row">
     <div class="col d-grid gap-2 mx-auto">
@@ -24,6 +47,7 @@ $promotions = IntegrationController::GetPromotion($integration->gfUid, $integrat
                     <th>Outcomes discount</th>
                     <th>Udated at</th>
                     <th>Loyverse Id</th>
+                    <th>Select Discount</th>
                     <th></th>
                 </tr>
             <tbody class="promotion">
@@ -33,6 +57,7 @@ $promotions = IntegrationController::GetPromotion($integration->gfUid, $integrat
     </div>
 </div>
 <script type="text/javascript">
+    let LDiscounts = JSON.parse(`<?php echo json_encode(fetchDiscounts()) ?>`);
     <?php include "js/promotions.min.js" ?>
 </script>
 <!--END Integration Extras Promotions Section-->
