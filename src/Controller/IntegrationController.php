@@ -41,6 +41,54 @@ class IntegrationController
             echo $response['body'];
         }
     }
+    static function PostDiscount(Integration $integration,int $gf_menu_id)
+    {
+        global $dbConnection;
+        $integrationGateway = new IntegrationGateway($dbConnection);
+        //echo json_encode($cat);
+
+        $curl = curl_init();
+
+        $datas = (object)array(
+            
+            "type" => "VARIABLE_AMOUNT",
+            "name" => "Online Rabat",
+            "stores" => array("$integration->StoreId"),
+            "restricted_access" => true,
+        );
+
+        $data = json_encode($datas);
+        //echo $data;
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.loyverse.com/v1.0/discounts',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => $data,
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                "Authorization: Bearer $integration->LoyverseToken"
+            ),
+        ));
+
+        $response = curl_exec($curl);
+
+        curl_close($curl);
+        //echo $response;
+        $resp = json_decode($response);
+        if (!isset($resp->id)) {
+            unprocessableEntityResponse($resp);
+            exit;
+        }
+        $l_id = $resp->id;
+       
+        $respItem = $integrationGateway->InsertOrUpdatePostedType("Online Rabat", "10", "discount", $integration->Id, $gf_menu_id, $l_id, null, null);
+        return $respItem;
+    }
     static function PostFeeItem(Integration $integration,int $gf_menu_id)
     {
         global $dbConnection;

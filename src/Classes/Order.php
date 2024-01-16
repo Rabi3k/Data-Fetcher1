@@ -63,6 +63,7 @@ class Order extends ClassObj
         //get customer from $this->client_email if not exist Create new in Loyverse
         //
         $lineItems = array();
+        $totalDiscounts = array();
         foreach ($this->items as $item) {
             # code...
             if ($item->type == "item") {
@@ -86,6 +87,7 @@ class Order extends ClassObj
                 //var_dump($itemsLIds);
             } else if ($item->type == "delivery_fee") {
                 $itemsLIds = $integrationGateway->GetTypeByIntegrationAndGfId(1, $integration->Id, "delivery_fee")->parent_lid;
+                
                 $optionsLIds = array();
                 foreach ($item->options as $option) {
                     # code...
@@ -97,11 +99,16 @@ class Order extends ClassObj
                 }
                 $lineItems[] = (object)array("variantId" => $itemsLIds, "quantity" => $item->quantity, "price" => $item->total_item_price);
 
-                //new LineItems($itemsLIds->loyverse_id,$item->quantity,null,null,"");
-                //$itemsLIds->options = array();
-                //$itemsLIds->options =$optionsLIds;
-                //var_dump($itemsLIds);
             }
+            else if ($item->type == "promo_item") {
+                $PromotionsIds = $integrationGateway->GetTypeByIntegrationAndGfId(10, $integration->Id, "discount")->loyverse_id;
+                $totalDiscounts[] = (object)array("id" => $PromotionsIds,"scope"=>"RECEIPT", "money_amount" => $item->item_discount);
+            }
+            else if ($item->type == "promo_cart") {
+                $PromotionsIds = $integrationGateway->GetTypeByIntegrationAndGfId(10, $integration->Id, "discount")->loyverse_id;
+                $totalDiscounts[] = (object)array("id" => $PromotionsIds,"scope"=>"RECEIPT", "money_amount" => $item->item_discount);
+            }
+                
         }
         $order = new LOrder(
             $integration->StoreId,
@@ -109,7 +116,7 @@ class Order extends ClassObj
             "",
             "Relax",
             $this->fulfill_at,
-            array(),
+            $totalDiscounts,
             $lineItems,
             "",
             array()
