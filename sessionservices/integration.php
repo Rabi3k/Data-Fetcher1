@@ -1,8 +1,5 @@
 <?php
 
-use PhpParser\Node\Expr\Cast\Object_;
-use Pinq\Queries\Requests\IsEmpty;
-use React\Http\Message\Response;
 use Src\Controller\GeneralController;
 use Src\TableGateways\IntegrationGateway;
 

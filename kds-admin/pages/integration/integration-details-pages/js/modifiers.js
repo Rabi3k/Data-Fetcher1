@@ -144,7 +144,7 @@ $("#btnPostModifiersT").on("click", function() {
 
         });
 
-        console.log(data);
+        //console.log(data);
         PostModifier(data, this);
     })
 });

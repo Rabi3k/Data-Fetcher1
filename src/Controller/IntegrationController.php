@@ -41,7 +41,7 @@ class IntegrationController
             echo $response['body'];
         }
     }
-    static function PostDiscount(Integration $integration,int $gf_menu_id)
+    static function PostDiscount(Integration $integration,int $gf_menu_id )
     {
         global $dbConnection;
         $integrationGateway = new IntegrationGateway($dbConnection);

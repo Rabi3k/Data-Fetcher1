@@ -60,7 +60,7 @@ $("#btnPostCategoriesT").on("click", function () {
             "name": name,
         });
 
-        console.log(data);
+        //console.log(data);
         PostCategory(data, rowParent);
     });
 

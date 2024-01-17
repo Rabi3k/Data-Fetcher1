@@ -1,7 +1,85 @@
+function loadLDisounts()
+{           
+    $("#dp-spinner").removeClass('visually-hidden');
+    $($('#slDiscounts').find(".variable-amount")).empty();
+
+    $.ajax({            
+        url: '/sessionservices/promotions.php?q=lpromotions&iid=<?php echo $integration->Id ?>',
+        dataType: 'json',
+        type: 'GET',
+        success: function(response) 
+        {      
+            //console.log(response);
+            let discounts =response.data.VARIABLE_AMOUNT;        
+            
+            //console.log(discounts);
+            if(discounts && discounts.length>0)
+            {
+                discounts.forEach(d => {
+                    $($('#slDiscounts').find(".variable-amount")).append(`<option value="${d.id}">${d.name}</option>`)
+                    if(d.name ==="Online Rabat")
+                    {
+                        $("#osc-new").attr("disabled",'true');
+                    }
+                });
+                if(discountLoyveresId!==""){
+                    $('#slDiscounts').val(discountLoyveresId);
+                }
+            }
+            $("#dp-spinner").addClass('visually-hidden');
+        },
+        error: function(x, e) {
+            $("#dp-spinner").addClass('visually-hidden');
+        }
+    });
+}
+function saveLDisounts()
+{           
+    $("#dp-spinner").removeClass('visually-hidden');
+    let seletedVal =  $('#slDiscounts').val();
+    let seletedTxt =  $('#slDiscounts option:selected').text();
+    if(seletedVal === '0')
+    {
+        seletedVal=null;
+    }
+    var settings = {
+        "url": "/sessionservices/promotions.php?q=lpromotions",
+        "method": "POST",
+        "data": JSON.stringify({
+                'integrationId':parseInt('<?php echo $integration->Id ?>'),
+                'gfMenuId':parseInt('<?php echo $gfMenu->menu_id ?>'),
+                'discountId':seletedVal,
+                'discountName':seletedTxt,
+        }),
+        success: function(response) 
+        { 
+            console.log(response);
+            $("#dp-spinner").addClass('visually-hidden');
+            discountLoyveresId = response.loyverse_id;
+            loadLDisounts();
+        },
+        error: function(x, e) {
+            console.log(e);
+            console.log(x);
+            //$("#dp-spinner").addClass('visually-hidden');
+        }
+      };
+      
+      $.ajax(settings);
+}
+$(document).on('change','#slDiscounts',function(){
+    //console.log($(this).val());
+});
+$(document).ready(function () {
+    
+    loadLDisounts();
+    
+                    
+});
 // var tblPromotions = $('#tblPromotions').DataTable({
 
 //     ajax: {
-//         url: "/sessionservices/promotions.php?uid=<?php echo $integration->gfUid ?>&iid=<?php echo $integration->Id ?>",
+//         url: "/sessionservices/promotions.php?q=gfpromotions&uid=<?php echo $integration->gfUid ?>&iid=<?php echo $integration->Id ?>",
 //         dataType: 'json',
 //         type: 'GET',
 //     },
