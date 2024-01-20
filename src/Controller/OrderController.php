@@ -1,6 +1,7 @@
 <?php
 namespace Src\Controller;
 
+use Src\Classes\Order;
 use Src\TableGateways\RequestsGateway;
 use Src\TableGateways\OrdersGateway;
 
@@ -143,7 +144,7 @@ class OrderController {
     }
     private function getLOrder($id)
     {
-        $results = $this->orderGateway->FindById($id);
+        $results = Order::_ToLoyverseOrder(intval($id));
        /* $result = array_filter($results,function($e) use (&$id){
             return $e["id"] === $id;
         });*/
@@ -151,7 +152,7 @@ class OrderController {
             return $this->notFoundResponse();
         }
         $response['status_code_header'] = 'HTTP/1.1 200 OK';
-        $response['body'] = json_encode($results->ToLoyverseOrder());
+        $response['body'] = json_encode($results);
         return $response;
     }
     private function createRequestFromRequest()

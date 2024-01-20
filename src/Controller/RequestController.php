@@ -96,8 +96,8 @@ class RequestController
             $order = $this->ordersGateway->FindById($order_id);
             if ($order->ready == true) {
                 // add to queue Posts 
-                $lorder = $order->PostOrderToLoyverse();
-                (new Loggy())->info("Order {$lorder->receipt_number} Posted/ {$order->id}  Updated Successfully");
+                $order->PostOrderToLoyverse();
+                //(new Loggy())->info("Order {$lorder->receipt_number} Posted/ {$order->id}  Updated Successfully");
             }
            
         }

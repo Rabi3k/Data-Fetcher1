@@ -261,50 +261,30 @@ class Order extends ClassObj
             ),
         ));
         $response = curl_exec($curl);
+        curl_close($curl);
         $responseObj = json_decode("$response");
         (new Loggy())->info("Posting order response :=> $response ");
-        $integrationGateway->InsertOrUpdatePostedType($responseObj->order, $this->id, "order", $integration[0]->Id, 0, $responseObj->receipt_number);
-        curl_close($curl);
+        $integrationGateway->InsertOrUpdatePostedType($responseObj->order, $this->id, "order", $integration[0]->Id, 0, $responseObj->receipt_number); 
         //echo $response;
         return $responseObj;
     }
     static public function _PostOrderToLoyverse(int $orderId)
     {
         global $dbConnection;
-        $integrationGateway = (new IntegrationGateway($dbConnection));
         $ordersGateway = new OrdersGateway($dbConnection);
         $order = $ordersGateway->FindById($orderId);
-
-        $integration = $integrationGateway->findAllByRestaurantIds(array(intval($order->restaurant_id)));
-        if (!isset($integration) || count($integration) < 1) {
-            return array();
-        }
-        $integrationToken = $integration[0]->LoyverseToken;
-        $lOrder = json_encode($order->ToLoyverseOrder());
-        $curl = curl_init();
-
-        curl_setopt_array($curl, array(
-            CURLOPT_URL => 'https://api.loyverse.com/v1.0/receipts',
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_ENCODING => '',
-            CURLOPT_MAXREDIRS => 10,
-            CURLOPT_TIMEOUT => 0,
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_POSTFIELDS => $lOrder,
-            CURLOPT_HTTPHEADER => array(
-                'Content-Type: application/json',
-                "Authorization: Bearer $integrationToken"
-            ),
-        ));
-
-        $response = (curl_exec($curl));
-        $responseObj = json_decode(curl_exec($curl));
-        (new Loggy())->info("Posting order response: {$response}");
-        curl_close($curl);
+        $lorder = $order->PostOrderToLoyverse();
         //echo $response;
-        return $responseObj;
+        return $lorder;
+    }
+    static public function _ToLoyverseOrder(int $orderId): LOrder|NULL
+    {
+        global $dbConnection;
+        $ordersGateway = new OrdersGateway($dbConnection);
+        $order = $ordersGateway->FindById($orderId);
+        $lorder = $order->ToLoyverseOrder();
+        //echo $response;
+        return $lorder;
     }
     #endregion
 }
