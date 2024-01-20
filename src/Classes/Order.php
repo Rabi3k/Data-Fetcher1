@@ -231,7 +231,7 @@ class Order extends ClassObj
         {
             return array();
         }
-        $postedOrder = $integrationGateway->GetBatchTypeByIntegrationAndGfId($this->id,$integration[0]->Id,"order");
+        $postedOrder = $integrationGateway->GetTypeByIntegrationAndGfId($this->id,$integration[0]->Id,"order");
         if(isset($postedOrder) && $postedOrder!=null)
         {
             return array();
