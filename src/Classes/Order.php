@@ -231,7 +231,7 @@ class Order extends ClassObj
         {
             return array();
         }
-        $postedOrder = $integrationGateway->GetBatchTypeByIntegrationAndGfId($this->id,$integration[0]->integrationId,"order");
+        $postedOrder = $integrationGateway->GetBatchTypeByIntegrationAndGfId($this->id,$integration[0]->Id,"order");
         if(isset($postedOrder) && $postedOrder!=null)
         {
             return array();
@@ -258,7 +258,7 @@ class Order extends ClassObj
         ));
         $response = (curl_exec($curl));
         $responseObj = json_decode(curl_exec($curl));
-        $integrationGateway->InsertOrUpdatePostedType($responseObj->order,$this->id,"order",$integration[0]->integrationId,0,$responseObj->receipt_number);
+        $integrationGateway->InsertOrUpdatePostedType($responseObj->order,$this->id,"order",$integration[0]->Id,0,$responseObj->receipt_number);
         (new Loggy())->info("Posting order response: {$response}");
         curl_close($curl);
         //echo $response;
