@@ -442,6 +442,7 @@ class OrdersGateway extends DbObject
         if ($order->ready == true) {
             // add to queue Posts 
             $lorder = $order->PostOrderToLoyverse();
+            (new Loggy())->info("Order {$lorder->id} Posted/ {$order->id}  Updated Successfully");
             return "Order {$lorder->id} Posted/ {$order->id}  Updated Successfully";
         }
         return "Order {$order->id} Created / Updated Successfully";
