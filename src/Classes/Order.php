@@ -221,7 +221,50 @@ class Order extends ClassObj
         );
         return $order;
     }
-    static public function PostOrderToLoyverse(int $orderId)
+    public function PostOrderToLoyverse()
+    {
+        global $dbConnection;
+        $integrationGateway = (new IntegrationGateway($dbConnection));
+        
+        $integration = $integrationGateway->findAllByRestaurantIds(array(intval($this->restaurant_id)));
+        if(!isset($integration) || count($integration)<1)
+        {
+            return array();
+        }
+        $postedOrder = $integrationGateway->GetBatchTypeByIntegrationAndGfId($this->id,$integration[0]->integrationId,"order");
+        if(isset($postedOrder) && $postedOrder!=null)
+        {
+            return array();
+        }
+
+        $integrationToken = $integration[0]->LoyverseToken;
+        $lOrder= json_encode($this->ToLoyverseOrder());
+        $curl = curl_init();
+
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.loyverse.com/v1.0/receipts',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => $lOrder,
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                "Authorization: Bearer $integrationToken"
+            ),
+        ));
+        $response = (curl_exec($curl));
+        $responseObj = json_decode(curl_exec($curl));
+        $integrationGateway->InsertOrUpdatePostedType($responseObj->order,$this->id,"order",$integration[0]->integrationId,0,$responseObj->receipt_number);
+        (new Loggy())->info("Posting order response: {$response}");
+        curl_close($curl);
+        //echo $response;
+        return $responseObj;
+    }
+    static public function _PostOrderToLoyverse(int $orderId)
     {
         global $dbConnection;
         $integrationGateway = (new IntegrationGateway($dbConnection));

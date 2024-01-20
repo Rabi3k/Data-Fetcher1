@@ -3,6 +3,7 @@
 namespace Src\Controller;
 
 use Src\Classes\Integration;
+use Src\Classes\Loggy;
 use Src\TableGateways\RequestsGateway;
 use Src\TableGateways\OrdersGateway;
 use Src\Classes\Request;
@@ -82,7 +83,7 @@ class RequestController
             strval($body),
             ""
         );
-        $result = $this->requestsGateway->insertFromClass($req);
+        $result["request"] = $this->requestsGateway->insertFromClass($req);
         //array_push($results, $result);
         foreach ($input["orders"] as $order) {
 
@@ -93,6 +94,11 @@ class RequestController
             $result =$this->ordersGateway->InsertOrUpdate($body,$order_id,$restaurant_refId);
             $results[$order["id"]] = $result;
             $order = $this->ordersGateway->FindById($order_id);
+            if ($order->ready == true) {
+                // add to queue Posts 
+                $lorder = $order->PostOrderToLoyverse();
+                (new Loggy())->info("Order {$lorder->receipt_number} Posted/ {$order->id}  Updated Successfully");
+            }
            
         }
 

@@ -440,13 +440,7 @@ class OrdersGateway extends DbObject
                 }
             }
         }
-        if ($order->ready == true) {
-            // add to queue Posts 
-            $gf_order = new Order($order);
-            $lorder = Order::PostOrderToLoyverse($order->id);
-            (new Loggy())->info("Order {$lorder->receipt_number} Posted/ {$order->id}  Updated Successfully");
-            return "Order {$lorder->receipt_number} Posted/ {$order->id}  Updated Successfully";
-        }
+       
         return "Order {$order->id} Created / Updated Successfully";
     }
 
