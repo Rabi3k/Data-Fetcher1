@@ -253,11 +253,12 @@ class Order extends ClassObj
             ),
         ));
 
-        $response = json_decode(curl_exec($curl));
-
+        $response = (curl_exec($curl));
+        $responseObj = json_decode(curl_exec($curl));
+        (new Loggy())->info("Posting order response: {$response}");
         curl_close($curl);
         //echo $response;
-        return $response;
+        return $responseObj;
     }
     #endregion
 }
