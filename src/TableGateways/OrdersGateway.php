@@ -691,7 +691,7 @@ class OrdersGateway extends DbObject
             $statement->closeCursor();
 
             $this->getDbConnection()->commit();
-            (new Loggy())->info("new `tbl_order_head` Created / Updated: order_id => $order->id, restaurant_id => $order->restaurant_id");
+            (new Loggy())->info("new `Order head` Created / Updated: order_id => $order->id, restaurant_id => $order->restaurant_id");
             return $statement->rowCount();
         } catch (\PDOException $e) {
             (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);

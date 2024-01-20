@@ -256,8 +256,8 @@ class Order extends ClassObj
                 "Authorization: Bearer $integrationToken"
             ),
         ));
-        $response = (curl_exec($curl));
-        $responseObj = json_decode(curl_exec($curl));
+        $response = curl_exec($curl);
+        $responseObj = json_decode($response);
         $integrationGateway->InsertOrUpdatePostedType($responseObj->order,$this->id,"order",$integration[0]->Id,0,$responseObj->receipt_number);
         (new Loggy())->info("Posting order response: {$response}");
         curl_close($curl);
