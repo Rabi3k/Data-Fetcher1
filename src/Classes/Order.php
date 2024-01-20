@@ -5,6 +5,7 @@ namespace Src\Classes;
 use DateTime;
 use Src\Classes\ClassObj;
 use Src\TableGateways\IntegrationGateway;
+use Src\TableGateways\OrdersGateway;
 use Src\TableGateways\PaymentRelationGateway;
 use stdClass;
 
@@ -220,17 +221,20 @@ class Order extends ClassObj
         );
         return $order;
     }
-    public function PostOrderToLoyverse()
+    static public function PostOrderToLoyverse(int $orderId)
     {
         global $dbConnection;
         $integrationGateway = (new IntegrationGateway($dbConnection));
-        $integration = $integrationGateway->findAllByRestaurantIds(array(intval($this->restaurant_id)));
+        $ordersGateway = new OrdersGateway($dbConnection);
+        $order = $ordersGateway->FindById($orderId);
+        
+        $integration = $integrationGateway->findAllByRestaurantIds(array(intval($order->restaurant_id)));
         if(!isset($integration) || count($integration)<1)
         {
-            return;
+            return array();
         }
-
-        $lOrder= json_encode($this->ToLoyverseOrder());
+        $integrationToken = $integration[0]->LoyverseToken;
+        $lOrder= json_encode($order->ToLoyverseOrder());
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -245,14 +249,15 @@ class Order extends ClassObj
             CURLOPT_POSTFIELDS => $lOrder,
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
-                "Authorization: Bearer $integration[0]->LoyverseToken"
+                "Authorization: Bearer $integrationToken"
             ),
         ));
 
-        $response = curl_exec($curl);
+        $response = json_decode(curl_exec($curl));
 
         curl_close($curl);
-        echo $response;
+        //echo $response;
+        return $response;
     }
     #endregion
 }

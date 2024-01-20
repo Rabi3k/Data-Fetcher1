@@ -6,6 +6,7 @@ use DateTime;
 use DateTimeZone;
 use Pinq\Traversable;
 use Src\Classes\Loggy;
+use Src\Classes\LOrder;
 use Src\Classes\Order;
 use Src\Enums\ItemStatus;
 use Src\System\DbObject;
@@ -441,7 +442,8 @@ class OrdersGateway extends DbObject
         }
         if ($order->ready == true) {
             // add to queue Posts 
-            $lorder = $order->PostOrderToLoyverse();
+            $gf_order = new Order($order);
+            $lorder = Order::PostOrderToLoyverse($order->id);
             (new Loggy())->info("Order {$lorder->id} Posted/ {$order->id}  Updated Successfully");
             return "Order {$lorder->id} Posted/ {$order->id}  Updated Successfully";
         }
