@@ -174,7 +174,7 @@ class Order extends ClassObj
                         $modifier_options[] = (object)array("modifier_option_id" => $optionsLIds, "price" => $option->price);
                     }
                 }
-                $lineItems[] = (object)array("variant_id" => $itemsLIds, "quantity" => intval($item->quantity), "price" => $item->price, "line_modifiers" => $modifier_options, "line_note" => $item->instructions);
+                $lineItems[] = (object)array("variant_id" => $itemsLIds, "quantity" => intval($item->quantity), "price" => intval($item->price), "line_modifiers" => $modifier_options, "line_note" => $item->instructions);
 
                 //new LineItems($itemsLIds->loyverse_id,intval($item->quantity),null,null,"");
                 //$itemsLIds->options = array();
@@ -192,13 +192,13 @@ class Order extends ClassObj
                         $optionsLIds[] = $integrationGateway->GetTypeByIntegrationAndGfId(intval($option->type_id), $integration->Id, "option")->loyverse_id;
                     }
                 }
-                $lineItems[] = (object)array("variant_id" => $itemsLIds, "quantity" => intval($item->quantity), "price" => $item->price);
+                $lineItems[] = (object)array("variant_id" => $itemsLIds, "quantity" => intval($item->quantity), "price" => intval($item->price));
             } else if ($item->type == "promo_item" || $item->type == "promo_cart") {
                 $PromotionsIds = $integrationGateway->GetTypeByIntegrationAndGfId(10, $integration->Id, "discount")->loyverse_id;
                 if (count($totalDiscounts) > 0) {
                     $totalDiscounts[0]->money_amount += $item->item_discount;
                 } else {
-                    $totalDiscounts[0] = (object)array("id" => $PromotionsIds, "scope" => "RECEIPT", "money_amount" => $item->item_discount);
+                    $totalDiscounts[0] = (object)array("id" => $PromotionsIds, "scope" => "RECEIPT", "money_amount" => intval($item->item_discount));
                 }
             }
         }
