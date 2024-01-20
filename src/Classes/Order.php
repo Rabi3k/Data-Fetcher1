@@ -143,7 +143,7 @@ class Order extends ClassObj
         global $dbConnection;
         $integrationGateway = (new IntegrationGateway($dbConnection));
         $integration = $integrationGateway->findAllByRestaurantIds(array(intval($this->restaurant_id)))[0];
-        
+
         $paymentRelationGateway = (new PaymentRelationGateway($dbConnection));
         $defaultPayment = $paymentRelationGateway->findByKey($integration->Id, "default");
         $payment = $paymentRelationGateway->findByKey($integration->Id, $this->payment);
@@ -174,7 +174,13 @@ class Order extends ClassObj
                         $modifier_options[] = (object)array("modifier_option_id" => $optionsLIds, "price" => $option->price);
                     }
                 }
-                $lineItems[] = (object)array("variant_id" => $itemsLIds, "quantity" => intval($item->quantity), "price" => floatval($item->price), "line_modifiers" => $modifier_options, "line_note" => $item->instructions);
+                $lineItems[] = (object)array(
+                    "variant_id" => $itemsLIds,
+                    "quantity" => intval($item->quantity),
+                    "price" => floatval($item->price),
+                    "line_modifiers" => $modifier_options,
+                    "line_note" => $item->instructions
+                );
 
                 //new LineItems($itemsLIds->loyverse_id,intval($item->quantity),null,null,"");
                 //$itemsLIds->options = array();
@@ -216,7 +222,7 @@ class Order extends ClassObj
             $date->format('Y-m-d\TH:i:s\Z'),
             $totalDiscounts,
             $lineItems,
-            "",
+            $this->instructions,
             $payments
         );
         return $order;
@@ -225,20 +231,18 @@ class Order extends ClassObj
     {
         global $dbConnection;
         $integrationGateway = (new IntegrationGateway($dbConnection));
-        
+
         $integration = $integrationGateway->findAllByRestaurantIds(array(intval($this->restaurant_id)));
-        if(!isset($integration) || count($integration)<1)
-        {
+        if (!isset($integration) || count($integration) < 1) {
             return array();
         }
-        $postedOrder = $integrationGateway->GetTypeByIntegrationAndGfId($this->id,$integration[0]->Id,"order");
-        if(isset($postedOrder) && $postedOrder!=null)
-        {
+        $postedOrder = $integrationGateway->GetTypeByIntegrationAndGfId($this->id, $integration[0]->Id, "order");
+        if (isset($postedOrder) && $postedOrder != null) {
             return array();
         }
 
         $integrationToken = $integration[0]->LoyverseToken;
-        $lOrder= json_encode($this->ToLoyverseOrder());
+        $lOrder = json_encode($this->ToLoyverseOrder());
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
@@ -258,7 +262,7 @@ class Order extends ClassObj
         ));
         $response = curl_exec($curl);
         $responseObj = json_decode($response);
-        $integrationGateway->InsertOrUpdatePostedType($responseObj->order,$this->id,"order",$integration[0]->Id,0,$responseObj->receipt_number);
+        $integrationGateway->InsertOrUpdatePostedType($responseObj->order, $this->id, "order", $integration[0]->Id, 0, $responseObj->receipt_number);
         (new Loggy())->info("Posting order response: {$response}");
         curl_close($curl);
         //echo $response;
@@ -270,14 +274,13 @@ class Order extends ClassObj
         $integrationGateway = (new IntegrationGateway($dbConnection));
         $ordersGateway = new OrdersGateway($dbConnection);
         $order = $ordersGateway->FindById($orderId);
-        
+
         $integration = $integrationGateway->findAllByRestaurantIds(array(intval($order->restaurant_id)));
-        if(!isset($integration) || count($integration)<1)
-        {
+        if (!isset($integration) || count($integration) < 1) {
             return array();
         }
         $integrationToken = $integration[0]->LoyverseToken;
-        $lOrder= json_encode($order->ToLoyverseOrder());
+        $lOrder = json_encode($order->ToLoyverseOrder());
         $curl = curl_init();
 
         curl_setopt_array($curl, array(
