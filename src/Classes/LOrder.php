@@ -3,15 +3,15 @@ namespace Src\Classes;
 
 class LOrder
 {
-	public string $storeId;
+	public string $store_id;
 	public string $order;
-	public string $customerId;
+	public string $customer_id;
 	public string $source;
-	public string $receiptDate;
+	public string $receipt_date;
 	/** @var TotalDiscounts[] */
-	public array $totalDiscounts;
+	public array $total_discounts;
 	/** @var LineItems[] */
-	public array $lineItems;
+	public array $line_items;
 	public string $note;
 	/** @var Payments[] */
 	public array $payments;
@@ -32,13 +32,13 @@ class LOrder
 		string $note,
 		array $payments
 	) {
-		$this->storeId = $storeId;
+		$this->store_id = $storeId;
 		$this->order = $order;
-		$this->customerId = $customerId;
+		$this->customer_id = $customerId;
 		$this->source = $source;
-		$this->receiptDate = $receiptDate;
-		$this->totalDiscounts = $totalDiscounts;
-		$this->lineItems = $lineItems;
+		$this->receipt_date = $receiptDate;
+		$this->total_discounts = $totalDiscounts;
+		$this->line_items = $lineItems;
 		$this->note = $note;
 		$this->payments = $payments;
 	}
@@ -66,7 +66,7 @@ class TotalDiscounts
 
 class LineItems
 {
-	public string $variantId;
+	public string $variant_id;
 	public int $quantity;
 	public ?int $price;
 	public ?int $cost;
@@ -93,7 +93,7 @@ class LineItems
 		?array $lineTaxes,
 		?array $lineModifiers
 	) {
-		$this->variantId = $variantId;
+		$this->variant_id = $variantId;
 		$this->quantity = $quantity;
 		$this->price = $price;
 		$this->cost = $cost;

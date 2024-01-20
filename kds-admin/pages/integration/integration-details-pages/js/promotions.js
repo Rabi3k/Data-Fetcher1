@@ -61,7 +61,7 @@ function saveLDisounts()
         error: function(x, e) {
             console.log(e);
             console.log(x);
-            //$("#dp-spinner").addClass('visually-hidden');
+            $("#dp-spinner").addClass('visually-hidden');
         }
       };
       

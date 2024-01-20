@@ -5,6 +5,7 @@ use Src\Controller\GeneralController;
 use Src\Controller\IntegrationController;
 use Src\TableGateways\IntegrationGateway;
 use Src\TableGateways\OrdersGateway;
+use Src\TableGateways\PaymentRelationGateway;
 use Src\TableGateways\RestaurantsGateway;
 
 
@@ -14,6 +15,8 @@ if (isset($_GET['id'])) {
     $ids = array_column(($userGateway->GetUser())->restaurants, "id");
 
     $integrationGateway = new IntegrationGateway($dbConnection);
+    $paymentRelationGateway = new PaymentRelationGateway($dbConnection);
+    
     $integration = $integrationGateway->findById($id);
     if ($integration == null || !in_array($integration->RestaurantId, $ids)) {
         echo " <script> location.href = '/admin/integrations' </script> ";
@@ -126,7 +129,8 @@ function filterArrayByKeys(array $input, array $column_keys)
         <!-- END Extras -->
         <!-- Payments -->
         <div class="tab-pane" id="payments" role="tabpanel" aria-labelledby="payments-tab">
-
+        <?php include "integration-details-pages/integration-details-Payments.php"; ?>
+        
         </div>
         <!-- END Payments -->
         <!-- Orders -->
@@ -155,6 +159,8 @@ function filterArrayByKeys(array $input, array $column_keys)
                                     <th scope="col">Name</th>
                                     <th scope="col">Date</th>
                                     <th scope="col">Time</th>
+                                    <th scope="col">Type</th>
+                                    <th scope="col">Payment</th>
                                     <th scope="col">Total</th>
                                     <th scope="col">Delivery Fee</th>
                                     <th scope="col">Total Promo Cart Values</th>
@@ -185,6 +191,8 @@ function filterArrayByKeys(array $input, array $column_keys)
                                         <td class="fs-5"><?php echo "$order->client_first_name $order->client_last_name " ?></td>
                                         <td class="fs-5"><?php echo "$order->fulfill_at" ?></td>
                                         <td class="fs-5"><?php echo "$order->fulfill_at" ?></td>
+                                        <td class="fs-5"><?php echo "$order->type" ?></td>
+                                        <td class="fs-5"><?php echo "$order->payment" ?></td>
                                         <td class="fs-5"><?php echo "$amount" ?></td>
                                         <td class="fs-5"><?php echo "$deliveryFee" ?></td>
                                         <td class="fs-5"><?php echo "$promoCartValues" ?></td>
@@ -262,20 +270,28 @@ function filterArrayByKeys(array $input, array $column_keys)
             },
             {
                 target: 7,
+                visible: true
+            },
+            {
+                target: 8,
+                visible: true
+            },
+            {
+                target: 9,
                 visible: true,
 
             },
             {
-                target: 8,
+                target: 10,
                 visible: false
             },
             {
-                target: 9,
+                target: 11,
                 visible: false,
 
             },
             {
-                target: 10,
+                target: 12,
                 visible: true,
                 searchable: false
             }

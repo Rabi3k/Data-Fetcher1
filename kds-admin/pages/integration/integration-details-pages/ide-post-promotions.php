@@ -9,8 +9,8 @@ $postedDiscount = $integrationGateway->GetBatchTypeByIntegrationAndType($integra
     </div>
     <div class="col-5">
         <select name="discounts" id="slDiscounts" class="form-select form-select-lg mb-1" aria-label=".form-select-lg slDiscounts">
-            <optgroup label="New Discount">
-                <option id="osc-new" value="0">Create New</option>
+            <optgroup label="New Discount" id="osc-new">
+                <option value="0">Create New</option>
             </optgroup>
             <optgroup label="-= Variable Amount Discounts =-" class="variable-amount">
             </optgroup>

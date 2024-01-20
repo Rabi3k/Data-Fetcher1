@@ -89,12 +89,11 @@ class RequestController
             $restaurant_refId  = $order["restaurant_id"];
             $order_id  = $order["id"];
             $body = json_encode($order);
+            // Post to loyverse inside insert or update if ready = true
             $result =$this->ordersGateway->InsertOrUpdate($body,$order_id,$restaurant_refId);
             $results[$order["id"]] = $result;
             $order = $this->ordersGateway->FindById($order_id);
-            //post order to LPos
-            IntegrationController::PostOrder($order);
-            //save posted order to posted type
+           
         }
 
         return GeneralController::CreateResponser($results);
