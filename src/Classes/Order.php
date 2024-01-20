@@ -171,7 +171,7 @@ class Order extends ClassObj
                     } else if ($option->type == "option") {
 
                         $optionsLIds = $integrationGateway->GetTypeByIntegrationAndGfId(intval($option->type_id), $integration->Id, "option")->loyverse_id;
-                        $modifier_options[] = (object)array("modifier_option_id" => $optionsLIds, "price" => $option->price);
+                        $modifier_options[] = (object)array("modifier_option_id" => $optionsLIds, "price" => floatval($option->price));
                     }
                 }
                 $lineItems[] = (object)array(
@@ -218,7 +218,7 @@ class Order extends ClassObj
             $integration->StoreId,
             "$this->type #$this->id",
             $customer_id,
-            "Relax",
+            "point of sale",
             $date->format('Y-m-d\TH:i:s\Z'),
             $totalDiscounts,
             $lineItems,
@@ -261,9 +261,9 @@ class Order extends ClassObj
             ),
         ));
         $response = curl_exec($curl);
-        $responseObj = json_decode($response);
+        $responseObj = json_decode("$response");
+        (new Loggy())->info("Posting order response :=> $response ");
         $integrationGateway->InsertOrUpdatePostedType($responseObj->order, $this->id, "order", $integration[0]->Id, 0, $responseObj->receipt_number);
-        (new Loggy())->info("Posting order response: {$response}");
         curl_close($curl);
         //echo $response;
         return $responseObj;
