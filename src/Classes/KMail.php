@@ -12,7 +12,7 @@ class KMail
     {
         
         $secretKey =  bin2hex($secretKey);
-        $getWholeUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] && $_SERVER['HTTPS'] != "off") ? "https" : "http:" . "//" . $_SERVER['HTTP_HOST'];
+        $getWholeUrl = $_SERVER['REQUEST_SCHEME']."://" . $_SERVER['HTTP_HOST'];
         $mail = new PHPMailer(true);
         try {
             $smtp = $GLOBALS['smtp'];
