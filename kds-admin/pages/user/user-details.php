@@ -193,6 +193,20 @@ foreach ($companiesTree as $c) {
     }
 </script>
 <hr />
+<div class="alert alert-success visually-hidden" role="alert" id="div-alert-success">
+    <center>
+        <h5 class="alert-heading fw-bold">Well done!</h5>
+        <hr />
+        <span id="alert-msg" class="fs-6">Some Word</span>
+    </center>
+</div>
+<div class="alert alert-danger visually-hidden" role="alert" id="div-alert-error">
+    <center>
+        <h5 class="alert-heading">Error!</h5>
+        <hr />
+        <span id="alert-msg h6">Some Word</span>
+    </center>
+</div>
 <ul class="nav nav-tabs">
     <li class="nav-item">
         <a class="nav-link" data-toggle="tab" href="#home">User Details</a>
@@ -564,10 +578,18 @@ foreach ($companiesTree as $c) {
             "data": JSON.stringify({
                 "userId": <?php echo $lUser->id ?>
             }),
+            "success": function(data) {
+                $("#div-alert-success").removeClass("visually-hidden");
+                $("#alert-msg").val("Email sent successfully");
+                setTimeout(function() {
+                    $("#div-alert-success").addClass("visually-hidden");
+                }, 5000);
+            }
         };
 
         $.ajax(settings).done(function(response) {
             console.log(response);
+
         });
     });
     $("#btn-change-1").click(function(e) {
@@ -590,6 +612,13 @@ foreach ($companiesTree as $c) {
             $.ajax(settings).done(function(response) {
                 $("#btn-change-1").removeAttr("disabled")
                 $("#btn-change-1").find(".spinner").addClass("visually-hidden");
+                $("#div-alert-success").removeClass("visually-hidden");
+                $("#alert-msg").val("Password changed successfully");
+                $("#password1").val('');
+                $("#password2").val('');
+                setTimeout(function() {
+                    $("#div-alert-success").addClass("visually-hidden");
+                }, 5000);
                 console.log(response);
             });
         }

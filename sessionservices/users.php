@@ -60,6 +60,7 @@ function UsersProcessRequest()
             $userGateway = new UserGateway($dbConnection);
             $userPostBody = json_decode($body);
             $userId = $userPostBody->userId;
+            $retval = json_decode("{}");
             if (isset($userId)) {
                 $lUser = UserGateway::GetUserClass($userId, false);
             }
@@ -72,6 +73,7 @@ function UsersProcessRequest()
                     }
                     */
                     $userGateway->UpdateUserPassword($lUser, $userPostBody->password);
+                    $retval = json_decode("{'message':password changed}");
                     break;
                 case 'send-rest-pasword':
                     /*
@@ -81,7 +83,7 @@ function UsersProcessRequest()
                     */
                     $userSecret = $userGateway->GetEncryptedKey($lUser->email);
                     KMail::sendResetPasswordMail($lUser, $userSecret);
-                    echo "{'message':reset password sent}";
+                    $retval = json_decode("{'message':reset password sent}");
                     break;
                 case 'edit-details':
                     if (!isset($userId)) {
@@ -141,7 +143,7 @@ function UsersProcessRequest()
                     # code...
                     break;
             }
-            $retval = json_decode("{}");
+            
             echo json_encode($retval);
             break;
         case 'DELETE':
