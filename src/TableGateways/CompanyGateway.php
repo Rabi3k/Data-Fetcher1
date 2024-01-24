@@ -71,8 +71,7 @@ class CompanyGateway extends DbObject
     {
         $tblname = $this->getTableName();
         $statment = "SELECT c.*,
-                        CONCAT('[',
-                                GROUP_CONCAT(DISTINCT JSON_OBJECT(
+                        JSON_ARRAYAGG(DISTINCT JSON_OBJECT(
                                     'id', r.`id`,
                                     'company_id', r.`company_id`,
                                     'name', r.`name`,
@@ -84,13 +83,12 @@ class CompanyGateway extends DbObject
                                     'country', r.`country`,
                                     'email', r.`email`,
                                     'phone', r.`phone`,
-                                    'is_gf', r.`is_gf`,
-                                    'is_managed', r.`is_managed`,
+                                    'is_gf', convert(r.`is_gf`,int), 
+                                    'is_managed', convert(r.`is_managed`,int), 
                                     'gf_refid', r.`gf_refid`,
                                     'gf_urid', r.`gf_urid`,
                                     'gf_cdn_base_path', r.`gf_cdn_base_path`)
-                                SEPARATOR ','),
-                                ']') AS 'restaurants',
+                                ) AS 'restaurants',
                                 count(r.id) as 'restaurants_count'
 
                         FROM $tblname c

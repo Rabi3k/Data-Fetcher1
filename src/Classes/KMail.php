@@ -8,7 +8,7 @@ use PHPMailer\PHPMailer\Exception;
 
 class KMail
 {
-    static function sendResetPasswordMail(User $to, $secretKey)
+    static function sendResetPasswordMail(LoginUser $to, $secretKey)
     {
         
         $secretKey =  bin2hex($secretKey);
@@ -36,9 +36,9 @@ class KMail
             $mail->Port       = $SMTP_Port;                         //TCP port to connect to; use 587 if you have set `SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS`
 
             //Recipients
-            $mail->setFrom('Rabih.kobaissy@outlook.com', 'Relax Kds System');
+            $mail->setFrom("$Username", 'Relax Kds System');
             $mail->addAddress($to->email, $to->full_name);     //Add a recipient
-            $mail->addReplyTo('admin@kbs-leb.com', 'Information');
+            $mail->addReplyTo("$Username", 'Information');
             //$mail->addCC('cc@example.com');
             //$mail->addBCC('bcc@example.com');
 
@@ -63,10 +63,9 @@ class KMail
             $mail->send();
             //echo 'Message has been sent';
         } catch (Exception $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             $message =  "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
             echo $message;
-            $logger = $GLOBALS['logger'];
-            $logger->error($message);
         }
     }
 }

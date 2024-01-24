@@ -71,10 +71,15 @@ class LoginUser extends ClassObj
         if (isset($this->companies)) {
             foreach ($this->companies as $c) {
 
-                $cRest =  (Traversable::from($restaurants))->where(function ($r) use ($c) {
+                $cRestarr =  (Traversable::from($restaurants))->where(function ($r) use ($c) {
                     return $r["company_id"] === $c["id"];
                 })->asArray();
-                $c["restaurants"] = new Restaurant($cRest);
+                $cRest = array();
+foreach ($cRestarr as $key => $value) {
+    # code...
+    $cRest[] = new Restaurant($value);
+}
+                $c["restaurants"] = ($cRest);
                 $retval[] = new Company($c);
             }
         }

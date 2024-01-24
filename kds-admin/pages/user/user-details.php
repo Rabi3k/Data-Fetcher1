@@ -1,8 +1,10 @@
 <?php
 
 use Src\Classes\Company;
+use Src\Classes\GlobalFunctions;
 use Src\Classes\User;
 use Src\Classes\KMail;
+use Src\TableGateways\CompanyGateway;
 use Src\TableGateways\UserLoginGateway;
 use Src\TableGateways\UserGateway;
 use Src\TableGateways\RestaurantsGateway;
@@ -29,13 +31,14 @@ $secretKey =  bin2hex($userSecret);
 
 $compTree = $lUser->GetUserComanyRelationTree();
 if (isset($_GET['action'])) {
-    if ($_GET['action'] == 'change-password') {
-        if (isset($_POST['password1'])) {
-            $userGateway->UpdateUserPassword($lUser, $_POST['password1']);
-        } else if (array_key_exists('SendRestPaswordEmail', $_POST)) {
-            KMail::sendResetPasswordMail($lUser, $userSecret);
-        }
-    } else if ($_GET['action'] == 'edit-details') {
+    // if ($_GET['action'] == 'change-password') {
+    //     if (isset($_POST['password1'])) {
+    //         $userGateway->UpdateUserPassword($lUser, $_POST['password1']);
+    //     } else if (array_key_exists('SendRestPaswordEmail', $_POST)) {
+    //         KMail::sendResetPasswordMail($lUser, $userSecret);
+    //     }
+    // } else
+    if ($_GET['action'] == 'edit-details') {
 
         if (isset($_POST['inputName']) && !empty($_POST['inputName'])) {
             $lUser->full_name = $_POST['inputName'];
@@ -128,18 +131,67 @@ foreach ($companiesTree as $c) {
 ?>
 
 <div class="row">
-    <div class="col-4">
+    <div class="col">
         <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
-            <a class="btn btn-primary" role="button" href="/admin/users"><i class="fa-solid fa-circle-chevron-left"></i> Back</a>
+            <a class="btn btn-danger" role="button" href="/admin/users"><i class="fa-solid fa-circle-chevron-left"></i> Back</a>
         </div>
     </div>
-    <div class="col-4"></div>
-    <div class="col-4 pull-right">
-        <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
-            <a class="btn btn-primary" role="button" target="_blank" href="/login.php?secret=0x<?php echo $secretKey ?>"><i class="fa fa-solid fa-sign-in"></i>Login with this user</a>
+    <div class="col"></div>
+
+    <div class="col-5 pull-right">
+        <div class="row">
+            <div class="col btn-group-vertical pull-right" role="group" aria-label="Vertical button group">
+                <a class="btn btn-info pull-right" role="button" id="btnCopyUserLogin" onclick="CopyToClipboard();"><i class="fa fa-solid fa-sign-in"></i> Copy url</a>
+            </div>
+            <div class="col btn-group-vertical" role="group" aria-label="Vertical button group">
+                <a class="btn btn-warning" role="button" target="_blank" href="/login.php?secret=0x<?php echo $secretKey ?>" id="btnUserLogin"><i class="fa fa-solid fa-sign-in"></i> Login with user</a>
+            </div>
+
         </div>
+
     </div>
 </div>
+<script>
+    function CopyToClipboard() {
+        // Get the text field
+        var copyText = document.getElementById("btnUserLogin");
+
+        let $userUrlSecret = $(copyText).attr("href");
+
+        // Copy the text inside the text field
+        try {
+            copyToClipboard(`${window.location.protocol}//${window.location.host}${$userUrlSecret}`).then(() =>
+                console.log('Text copied to the clipboard!'));
+        } catch (error) {
+            console.error(error);
+        }
+    }
+    async function copyToClipboard(textToCopy) {
+        // Navigator clipboard api needs a secure context (https)
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(textToCopy);
+        } else {
+            // Use the 'out of viewport hidden text area' trick
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+
+            // Move textarea out of the viewport so it's not visible
+            textArea.style.position = "absolute";
+            textArea.style.left = "-999999px";
+
+            document.body.prepend(textArea);
+            textArea.select();
+
+            try {
+                document.execCommand('copy');
+            } catch (error) {
+                console.error(error);
+            } finally {
+                textArea.remove();
+            }
+        }
+    }
+</script>
 <hr />
 <ul class="nav nav-tabs">
     <li class="nav-item">
@@ -244,23 +296,174 @@ foreach ($companiesTree as $c) {
     <!-- set Profifle Tab -->
     <div class="tab-pane fade" id="access" role="tabpanel" aria-labelledby="profile-tab">
         <form method="post" name="setAccess" action="?<?php echo $idUrl ?>&action=set-access&tab=access">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Alias </th>
-                        <th>City</th>
-                        <th>Phone</th>
-                    </tr>
-                </thead>
-                <tbody>
+            <?php
+            $allComapnies = (new CompanyGateway($dbConnection))->GetAllAdvanced();
+            $UserComanyRelation = $lUser->GetUserComanyRelationTree();
+            $UserComaniesRelationObj = array();
+            $UserRestaurantsIds = array();
+            foreach ($UserComanyRelation as $key => $value) {
+                # code...
+                $UserComanyRelationObj = $value->getJson();
+                $UserComanyRelationObj->restaurants = json_decode(GlobalFunctions::ClassObjArrToJsonStr($value->restaurants));
+                $UserComaniesRelationObj[] = $UserComanyRelationObj;
+                $UserRestaurantsIds =
+                    array_unique(array_merge($UserRestaurantsIds, array_column($value->restaurants, "id")), SORT_REGULAR);
+            }
+            // echo(GlobalFunctions::ClassObjArrToJsonStr($UserComanyRelation->restaurants));
+            //echo json_encode($UserComanyRelationObj);
+            ?>
 
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-info w-100" id="tblComanies">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">Id</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Restaurants</th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($allComapnies as $key => $c) {
+
+                        ?>
+                            <tr>
+                                <td></td>
+                                <td><?php echo $c->id ?></td>
+                                <td><?php echo $c->name ?></td>
+                                <td><?php echo $c->restaurants ?></td>
+                                <td></td>
+                            </tr>
+                        <?php } ?>
+                    </tbody>
+                </table>
+            </div>
 
             <button type="submit" name="set-access" class="btn btn-primary">Save</button>
         </form>
 
+
+
+        <script>
+            let $UserComanyRelationObj = JSON.parse('<?php echo json_encode($UserComaniesRelationObj) ?>');
+            let $UserComanyIds = JSON.parse('<?php echo json_encode(array_column($UserComaniesRelationObj, "id")) ?>');
+            let $UserRestaurantsIds = JSON.parse('<?php echo json_encode($UserRestaurantsIds) ?>');
+            const tblComanies = new DataTable('#tblComanies', {
+                columns: [{
+                        className: 'dt-control',
+                        orderable: false,
+                        data: null,
+                        defaultContent: ''
+                    },
+                    {
+                        data: 'id'
+                    },
+                    {
+                        data: 'name'
+                    },
+                    {
+                        data: 'restaurants',
+                        visible: false
+                    },
+                    {
+                        orderable: false,
+                        data: null,
+                        render: function(data, type, row, meta) {
+                            return `<input class="form-check-input cb-cSelect" type="checkbox" value="${data.id}"/>`;
+                        }
+                    },
+                ],
+                "createdRow": function(row, data, dataIndex) {
+                    const exists = $UserComanyIds.includes(parseInt(data.id))
+                    if (exists) {
+                        $(row).addClass('selected');
+                        $(row).find(".cb-cSelect").prop("checked", true);
+                    }
+                }
+            });
+
+            tblComanies.on('change', '.cb-cSelect', function(e) {
+                $(this).parents('tr').toggleClass('selected');
+                $UserComanyIds = addOrRemove($UserComanyIds, parseInt($(this).val()));
+            });
+            restaurantsSeleted = [];
+            const addOrRemove = (array, item) => {
+                const exists = array.includes(item)
+                if (exists) {
+                    return array.filter((c) => {
+                        return c !== item
+                    })
+                } else {
+                    const result = array
+                    result.push(item)
+                    return result
+                }
+            }
+            tblComanies.on('change', '.cb-rSelect', function(e) {
+                $(this).parents('li').toggleClass('active');
+                $UserRestaurantsIds = addOrRemove($UserRestaurantsIds, parseInt($(this).val()));
+            });
+            tblComanies.on('click', 'td.dt-control', function(e) {
+                e.preventDefault();
+                let tr = e.target.closest('tr');
+                let row = tblComanies.row(tr);
+
+                if (row.child.isShown()) {
+                    // This row is already open - close it
+                    row.child.hide();
+                } else {
+                    // Open this row
+                    row.child(format(row.data().restaurants)).show();
+                }
+            });
+
+            function format(d) {
+                // `d` is the original data object for the row
+                /*`<dl>
+                        <dt>Full name:</dt>
+                        <dd> ${d.name} </dd>
+                        <dt>Extension number:</dt>
+                        <dd>${d.extn} </dd>
+                        <dt>Extra info:</dt>
+                        <dd>And any further details here (images etc)...</dd>
+                    </dl>` 
+                    <ul class="list-group list-group-numbered">
+                        <li class="list-group-item active">Active item</li>
+                        <li class="list-group-item">Item</li>
+                        <li class="list-group-item disabled">Disabled item</li>
+                    </ul>
+                    
+                    */
+                rests = JSON.parse(d);
+                let liRests = [];
+
+                rests.forEach((v) => {
+                    const exists = $UserRestaurantsIds.includes(parseInt(v.id))
+
+                    let lirest =
+                        `<li class="list-group-item ${exists?"active":""} ">
+                        <div class="row">
+                            <div class="col"></div>
+                            <div class="col">
+                                ${v.alias}
+                            </div>
+                            <div class="col">
+                                ${v.city}
+                            </div>
+                            <div class="col">
+                            <input class="form-check-input cb-rSelect" type="checkbox" value="${v.id}" ${exists?"checked":""} />
+                            </div>
+                        </div>
+                    </li>`;
+                    liRests.push(lirest);
+                });
+                return (`<ul class="list-group bg-light text-dark">${liRests.join("")}</ul>`);
+            }
+            //  document.querySelector('#button').addEventListener('click', function () {
+            //      alert(tblComanies.rows('.selected').data().length + ' row(s) selected');
+            //  });
+        </script>
 
     </div>
     <!-- End of Profifle Tab -->
@@ -272,11 +475,10 @@ foreach ($companiesTree as $c) {
                     <p class="text-center h5">Use the form below to change your password.</p>
                 </div>
             </div>
-            <form method="post" id="SendResetpasswordForm" action="?<?php echo $idUrl ?>&action=change-password&tab=password">
-                <div class="row text-center">
-                    <input type="submit" class="btn btn-primary btn-load btn-lg" name="SendRestPaswordEmail" data-loading-text="Sending Email..." value="Send Reset Password Email">
-                </div>
-            </form>
+            <div class="row text-center">
+                <input type="submit" class="btn btn-primary btn-load btn-lg" id="btn-resetPass" name="SendRestPaswordEmail" data-loading-text="Sending Email..." value="Send Reset Password Email">
+            </div>
+
             <hr />
             <div class="row text-center">
                 <div class="col-12 p-2">
@@ -284,16 +486,115 @@ foreach ($companiesTree as $c) {
                 </div>
             </div>
             <hr />
-            <form method="post" id="passwordForm" action="?<?php echo $idUrl ?>&action=change-password&tab=password">
-                <?php include "user-password.php"
-                ?>
+            <form method="post" id="passwordForm" action="?<?php echo $idUrl ?>&action=change-password&tab=password" class="row g-3 needs-validation" novalidate>
+                <?php include "user-password.php" ?>
             </form>
 
         </div>
     </div>
 </div>
 
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("#passwordForm").validate({
+            rules: {
+                password1: {
+                    required: true,
+                    pwcheck: true,
+                    minlength: 8
+                },
+                password2: {
+                    required: true,
+                    equalTo: "#password1"
+                },
+            },
+            messages: {
+                password1: {
+                    required: "Please provide a password",
+                    minlength: "Your password must be at least 8 characters long"
+                },
+                email: "Please enter a valid email address"
+            },
 
+        });
+        $.validator.addMethod("pwcheck", function(value, element) {
+            let password = value;
+            if (!(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W)(.{8,20}$)/.test(password))) {
+                return false;
+            }
+            return true;
+        }, function(value, element) {
+            let password = $(element).val();
+            if (!(/^(.{8,20}$)/.test(password))) {
+                return 'Password must be between 8 to 20 characters long.';
+            } else if (!(/^(?=.*[A-Z])/.test(password))) {
+                return 'Password must contain at least one uppercase.';
+            } else if (!(/^(?=.*[a-z])/.test(password))) {
+                return 'Password must contain at least one lowercase.';
+            } else if (!(/^(?=.*[0-9])/.test(password))) {
+                return 'Password must contain at least one digit.';
+            } else if (!(/^(?=.*\W)/.test(password))) {
+                return "Password must contain special characters.";
+            }
+            return false;
+        });
+
+        const forms = document.querySelectorAll('.needs-validation')
+
+        // Loop over them and prevent submission
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+
+                form.classList.add('was-validated')
+            }, false)
+        });
+    });
+    $("#btn-reserPass").click(function() {
+        var settings = {
+            "url": "/sessionservices/users.php?q=send-rest-pasword",
+            "method": "PUT",
+            "timeout": 0,
+            "headers": {
+                "Content-Type": "application/json"
+            },
+            "data": JSON.stringify({
+                "userId": <?php echo $lUser->id ?>
+            }),
+        };
+
+        $.ajax(settings).done(function(response) {
+            console.log(response);
+        });
+    });
+    $("#btn-change-1").click(function(e) {
+        if ($("#passwordForm").valid()) {
+            $("#btn-change-1").find(".spinner").removeClass("visually-hidden");
+            $(this).attr("disabled", "true");
+            var settings = {
+                "url": "/sessionservices/users.php?q=change-password",
+                "method": "PUT",
+                "timeout": 0,
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "data": JSON.stringify({
+                    "userId": <?php echo $lUser->id ?>,
+                    "password": $("#password1").val()
+                }),
+            };
+
+            $.ajax(settings).done(function(response) {
+                $("#btn-change-1").removeAttr("disabled")
+                $("#btn-change-1").find(".spinner").addClass("visually-hidden");
+                console.log(response);
+            });
+        }
+    });
+</script>
 
 
 <?php

@@ -17,7 +17,7 @@ function checkPassword()
 	var lcase = new RegExp("[a-z]+");
 	var num = new RegExp("[0-9]+");
 	
-	if($("#password1").val().length >= 8){
+	if($("#password1").val().length >= 8 && $("#password1").val().length <= 20){
         $("#8char")
         .replaceWith(feather.icons['check']
         .toSvg({'id':'8char',"stroke": "green"}));

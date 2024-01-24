@@ -13,4 +13,14 @@ class GlobalFunctions{
             header($protocol.' '.$httpStatusCode.' '.$httpStatusMsg);
         }
     }
+    public static function ClassObjArrToJsonStr(array $classObjArr)
+    {
+        $strs = array();
+        foreach ($classObjArr as $key => $value) {
+            $strs[]=$value->getJsonStr();
+            # code...
+        }
+        $str = implode(",",$strs);
+        return "[$str]";
+    }
 }

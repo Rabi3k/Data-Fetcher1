@@ -98,7 +98,8 @@ class UserGateway extends DbObject
             "super-admin", ifnull( p.`super-admin`,0) 
             ) 
             ),
-         "companies",JSON_ARRAYAGG(DISTINCT JSON_OBJECT
+            "companies", case when c.`id` is not null then JSON_ARRAYAGG(DISTINCT 
+         JSON_OBJECT
          ( "id", c.`id`, 
             "name", c.`name`, 
             "cvr_nr", c.`cvr_nr`, 
@@ -108,8 +109,11 @@ class UserGateway extends DbObject
             "email", c.`email`, 
             "phone", c.`phone`, 
             "gf_refid", c.`gf_refid`
-            ) ),
-         "restaurants",JSON_ARRAYAGG(DISTINCT 
+            )  
+            )else JSON_ARRAY() End,
+         "restaurants",
+         case when r.`id` is not null then
+         JSON_ARRAYAGG(DISTINCT 
          JSON_OBJECT( "id", r.`id`, 
          "company_id", r.`company_id`, 
          "name", r.`name`, 
@@ -124,10 +128,7 @@ class UserGateway extends DbObject
          "is_gf",  convert(r.`is_gf`,int), 
          "is_managed", convert(r.`is_managed`,int), 
          "gf_refid", r.`gf_refid`,
-         "gf_urid", convert(r.`gf_urid`,varchar(64))
-         
-         ) )
-        
+         "gf_urid", convert(r.`gf_urid`,varchar(64))) )else JSON_ARRAY() End        
          )as "user"
         
             FROM `tbl_users` u
@@ -451,6 +452,7 @@ VALUES
             exit($e->getMessage());
         }
     }
+   
     function UpdateUserPassword(LoginUser $user, string $password)
     {
         //Password(:password), sha(:secret_key)
