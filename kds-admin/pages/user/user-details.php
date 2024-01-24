@@ -553,7 +553,7 @@ foreach ($companiesTree as $c) {
             }, false)
         });
     });
-    $("#btn-reserPass").click(function() {
+    $("#btn-resetPass").click(function() {
         var settings = {
             "url": "/sessionservices/users.php?q=send-rest-pasword",
             "method": "PUT",
