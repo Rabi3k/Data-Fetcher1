@@ -12,14 +12,10 @@
             <div class="invalid-feedback"></div>
         </div>
         <div class="row float-end">
-
-            <div class="col p-2">
-                <input type="submit" class="btn btn-primary btn-load btn-lg" id="btn-change-password" data-loading-text="Changing Password..." value="Change Password">
-            </div>
             <div class="col  p-2">
-                <button class="btn btn-primary" type="button" id="btn-change-1">
+                <button class="btn btn-info" type="button" id="btn-change-1">
                     <span class="spinner spinner-border spinner-border-sm visually-hidden" role="status" aria-hidden="true"></span>
-                    change
+                    Save
                 </button>
             </div>
         </div>

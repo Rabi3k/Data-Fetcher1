@@ -31,13 +31,6 @@ $secretKey =  bin2hex($userSecret);
 
 $compTree = $lUser->GetUserComanyRelationTree();
 if (isset($_GET['action'])) {
-    // if ($_GET['action'] == 'change-password') {
-    //     if (isset($_POST['password1'])) {
-    //         $userGateway->UpdateUserPassword($lUser, $_POST['password1']);
-    //     } else if (array_key_exists('SendRestPaswordEmail', $_POST)) {
-    //         KMail::sendResetPasswordMail($lUser, $userSecret);
-    //     }
-    // } else
     if ($_GET['action'] == 'edit-details') {
 
         if (isset($_POST['inputName']) && !empty($_POST['inputName'])) {
@@ -202,9 +195,9 @@ foreach ($companiesTree as $c) {
 </div>
 <div class="alert alert-danger visually-hidden" role="alert" id="div-alert-error">
     <center>
-        <h5 class="alert-heading">Error!</h5>
+        <h5 class="alert-heading fw-bold">Error!</h5>
         <hr />
-        <span id="alert-msg h6">Some Word</span>
+        <span id="alert-msg" class="fs-6">Some Word</span>
     </center>
 </div>
 <ul class="nav nav-tabs">
@@ -490,7 +483,7 @@ foreach ($companiesTree as $c) {
                 </div>
             </div>
             <div class="row text-center">
-                <input type="submit" class="btn btn-primary btn-load btn-lg" id="btn-resetPass" name="SendRestPaswordEmail" data-loading-text="Sending Email..." value="Send Reset Password Email">
+                <input type="submit" class="btn btn-info btn-load btn-lg" id="btn-resetPass" name="SendRestPaswordEmail" data-loading-text="Sending Email..." value="Send Reset Password Email">
             </div>
 
             <hr />
@@ -580,7 +573,7 @@ foreach ($companiesTree as $c) {
             }),
             "success": function(data) {
                 $("#div-alert-success").removeClass("visually-hidden");
-                $("#alert-msg").val("Email sent successfully");
+                $("#alert-msg").text("Email sent successfully");
                 setTimeout(function() {
                     $("#div-alert-success").addClass("visually-hidden");
                 }, 5000);
@@ -613,7 +606,7 @@ foreach ($companiesTree as $c) {
                 $("#btn-change-1").removeAttr("disabled")
                 $("#btn-change-1").find(".spinner").addClass("visually-hidden");
                 $("#div-alert-success").removeClass("visually-hidden");
-                $("#alert-msg").val("Password changed successfully");
+                $("#alert-msg").text("Password changed successfully");
                 $("#password1").val('');
                 $("#password2").val('');
                 setTimeout(function() {
