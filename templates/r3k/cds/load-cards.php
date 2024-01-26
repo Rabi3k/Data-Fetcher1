@@ -134,7 +134,7 @@
 </table>
 <script>
     var refreshSn = function() {
-        var time = 600; // 10 mins
+        var time = 600000; // 10 mins
         setTimeout(
             function() {
                 $.ajax({
@@ -216,7 +216,7 @@
         setInterval(function() {
             table.ajax.reload();
             //table.draw();
-        }, 2000);
+        }, 10000);
 
     });
 </script>
