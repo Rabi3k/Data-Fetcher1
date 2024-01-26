@@ -126,7 +126,7 @@ foreach ($cRestarr as $key => $value) {
         $c = new LoginUser();
         $c->setFromJsonStr('
         {
-            "id": 1,
+            "id": 0,
             "email": "",
             "full_name": "",
             "user_name": "",

@@ -34,11 +34,21 @@ if (isset($_POST['submit'])) {
 }
 ?>
 <div class="container-fluid">
-    <center>
-        <div class="row">
-            <h3>Integration with POS Systems</h3>
+    <div class="row">
+        <div class="col-2">
+            <a class="btn btn-danger" role="button" href="/admin/integrations/<?php echo $id ?>">
+                <i class="fa-solid fa-circle-chevron-left"></i> Back
+            </a>
         </div>
-    </center>
+        <div class="col-8">
+            <center>
+                <input type="hidden" id="hdfIntegrationId" value="<?php echo $id ?>" />
+                <h3>Integration with POS Systems</h3>
+
+            </center>
+        </div>
+    </div>
+
     <hr />
     <div class="row">
         <div class="container">

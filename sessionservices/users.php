@@ -2,6 +2,7 @@
 
 use Pinq\Analysis\Functions\Func;
 use Src\Classes\KMail;
+use Src\Classes\LoginUser;
 use Src\Classes\User;
 use Src\TableGateways\UserGateway;
 
@@ -61,7 +62,7 @@ function UsersProcessRequest()
             $userPostBody = json_decode($body);
             $userId = $userPostBody->userId;
             $retval = json_decode("{}");
-            if (isset($userId)) {
+            if (isset($userId) && $userId > 0) {
                 $lUser = UserGateway::GetUserClass($userId, false);
             }
             switch ($q) {
@@ -72,6 +73,9 @@ function UsersProcessRequest()
                         password:
                     }
                     */
+                    if (!isset($lUser) ||  empty($userPostBody->password)) {
+                        break;
+                    }
                     $userGateway->UpdateUserPassword($lUser, $userPostBody->password);
                     $retval = json_decode("{'message':password changed}");
                     break;
@@ -81,14 +85,19 @@ function UsersProcessRequest()
                         userId:
                     }
                     */
+                    if (!isset($lUser) ||  empty($userPostBody->password)) {
+                        break;
+                    }
                     $userSecret = $userGateway->GetEncryptedKey($lUser->email);
                     KMail::sendResetPasswordMail($lUser, $userSecret);
                     $retval = json_decode("{'message':reset password sent}");
                     break;
                 case 'edit-details':
-                    if (!isset($userId)) {
-                        $lUser = new User();
-                    }
+                    $newUser= false;
+                    if (!isset($userId) ||  $userId == 0) {
+                        $lUser = LoginUser::NewUser();
+                        $newUser= true;
+                    } 
                     /*
                         {
                             userId:
@@ -99,7 +108,23 @@ function UsersProcessRequest()
                         screenType:
                         profileId:
                         password:
-                    }
+                    } =>
+                    {
+            "id": 0,
+            "email": "",
+            "full_name": "",
+            "user_name": "",
+            "password": "",
+            "secret_key": "",
+            "screen_type": 1,
+            "isSuperAdmin": 0,
+            "IsAdmin": 0,
+            "profile_id": 0,
+            "Profile": null,
+            "companies": [],
+            "restaurants": [],
+            "Restaurants_Id": []
+        }
                      */
                     if (isset($userPostBody->full_name) && !empty($userPostBody->full_name)) {
                         $lUser->full_name = $userPostBody->full_name;
@@ -116,34 +141,30 @@ function UsersProcessRequest()
                     }
                     if (isset($userPostBody->screenType) && !empty($userPostBody->screenType)) {
                         //$lUser->SetUsertype(strval($_POST['userType']));
-                        switch ($userPostBody->screenType) {
-                            case "OrderDisplay":
-                                $lUser->screen_type = 1;
-                                break;
-
-                            case "ItemDisplay":
-                                $lUser->screen_type = 2;
-                                break;
-
-                            case "CustomerDisplay":
-                                $lUser->screen_type = 3;
-                                break;
-
-                            default:
-                                $lUser->screen_type = 1;
-                                break;
-                        }
+                        $lUser->screen_type = intval($userPostBody->screenType);
                     }
                     if (isset($userPostBody->profileId) && !empty($userPostBody->profileId)) {
                         $lUser->profile_id = intval($userPostBody->profileId);
                     }
+                    
+                    if($newUser)
+                    {
+                        $lUser->password = random_str(10);
+                    }
+                   
                     $lUser = $userGateway->InsertOrUpdate($lUser);
+                    if($newUser)
+                    {
+                        $userSecret = $userGateway->GetEncryptedKey($lUser->email);
+                        KMail::sendResetPasswordMail($lUser, $userSecret);
+                    }
+                    $retval = $lUser->getJson();
                     break;
                 default:
                     # code...
                     break;
             }
-            
+
             echo json_encode($retval);
             break;
         case 'DELETE':

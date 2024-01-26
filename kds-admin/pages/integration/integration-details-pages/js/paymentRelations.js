@@ -12,12 +12,13 @@ function saveLPaymentRelations(gfPayment, loyverseId, spinerId) {
         success: function (response) {
             console.log(response);
             $spinner.addClass('visually-hidden');
-
+            showAlert(`${response.GfPayment} Saved Successfully`);
             //loadLDisounts();
         },
         error: function (x, e) {
             console.log(e);
             console.log(x);
+            showAlert(`${response.GfPayment} Not Saved!`,true);
             $spinner.addClass('visually-hidden');
         }
     };
@@ -61,6 +62,7 @@ var tblpaymentRelations = $('#tblpaymentRelations').DataTable({
     {
         data: "LoyveresId",
         searchable: false,
+        orderable:false,
         render: function (data, type, row, meta) {
             if (lpaymentsLoaded === false) {
                 lpaymentsLoaded = true;
@@ -128,5 +130,5 @@ $(document).ready(function () {
         saveLPaymentRelations($gfPayment, $loyverseId, $spinnerId);
         //console.log(`${$gfPayment} =>${$loyverseId} =>${$spinnerId}`);
     });
-    
+
 });

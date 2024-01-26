@@ -16,20 +16,22 @@ if (isset($_GET['id'])) {
     $lUser = UserGateway::GetUserClass($_GET['id'], false);
     $SaveType = "update";
     $idUrl = "id=$lUser->id";
+    $compTree = $lUser->GetUserComanyRelationTree();
 } else if (isset($_GET['new'])) {
     $lUser = new User();
     $SaveType = "add";
     $idUrl = "new";
+    $compTree = null;
 }
 $profiles = (new UserProfilesGateway($dbConnection))->GetAllProfiles();
 $restaurants = (new RestaurantsGateway($dbConnection))->GetAll();
 $companiesTree = Company::getAllCompaniesJsonTree();
 
-
 $userSecret = $userGateway->GetEncryptedKey($lUser->email);
 $secretKey =  bin2hex($userSecret);
 
-$compTree = $lUser->GetUserComanyRelationTree();
+
+
 if (isset($_GET['action'])) {
     if ($_GET['action'] == 'edit-details') {
 
@@ -186,25 +188,18 @@ foreach ($companiesTree as $c) {
     }
 </script>
 <hr />
-<div class="alert alert-success visually-hidden" role="alert" id="div-alert-success">
-    <center>
-        <h5 class="alert-heading fw-bold">Well done!</h5>
-        <hr />
-        <span id="alert-msg" class="fs-6">Some Word</span>
-    </center>
-</div>
-<div class="alert alert-danger visually-hidden" role="alert" id="div-alert-error">
-    <center>
-        <h5 class="alert-heading fw-bold">Error!</h5>
-        <hr />
-        <span id="alert-msg" class="fs-6">Some Word</span>
-    </center>
-</div>
+<span>
+    <?php 
+    
+    echo random_str(10);
+    ?>
+</span>
+<hr />
 <ul class="nav nav-tabs">
     <li class="nav-item">
         <a class="nav-link" data-toggle="tab" href="#home">User Details</a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item <?php echo  $SaveType === "update" ? "" : "disabled"  ?> ">
         <a class="nav-link" data-toggle="tab" href="#access">Profile</a>
     </li>
     <li class="nav-item <?php echo  $SaveType === "update" ? "" : "disabled"  ?> ">
@@ -212,244 +207,165 @@ foreach ($companiesTree as $c) {
     </li>
 </ul>
 
-<!-- set User Details Tab -->
 <div class="tab-content p-2 border border-top-0" id="myTabContent">
+    <!-- set User Details Tab -->
     <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
-        <form method="post" id="userDetails" action="?<?php echo $idUrl ?>&action=edit-details&tab=home">
-            <div class="form-row">
-                <div class="form-group col-md-6">
-                    <label for="inputEmail">Name</label>
-                    <input type="text" class="form-control" name="inputName" id="inputName" value="<?php echo $lUser->full_name ?>" required>
-                </div>
-                <div class="form-group col-md-6">
-                    <label for="inputUserName">User Name</label>
-                    <input type="text" class="form-control" name="inputUserName" id="inputUserName" value="<?php echo $lUser->user_name ?>" required>
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="inputAddress">Email</label>
-                <input type="email" class="form-control" name="inputEmail" id="inputEmail" value="<?php echo $lUser->email ?>" required>
-            </div>
-            <div class="form-row">
-                <fieldset class="form-group col-md-3">
-                    <label>User Type</label>
-                    <div class="card p-2">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="userType" id="rb_SuperAdmin" value="SuperAdmin">
-                            <label class="form-check-label" for="SuperAdmin">
-                                Super Admin
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="userType" id="rb_Admin" value="Admin">
-                            <label class="form-check-label" for="Admin">
-                                Admin
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="userType" id="rb_User" value="User">
-                            <label class="form-check-label" for="User">
-                                User
-                            </label>
-                        </div>
-                    </div>
-                </fieldset>
-                <fieldset class="form-group col-md-5">
-                    <label>Screen Type</label>
-                    <div class="card p-2">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="screenType" id="rb_ods" value="OrderDisplay">
-                            <label class="form-check-label" for="rb_ods">
-                                Order Display
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="screenType" id="rb_ids" value="ItemDisplay">
-                            <label class="form-check-label" for="rb_ids">
-                                Item Display
-                            </label>
-                        </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="screenType" id="rb_cds" value="CustomerDisplay">
-                            <label class="form-check-label" for="rb_cds">
-                                Customer Display
-                            </label>
-                        </div>
-                    </div>
-                </fieldset>
-                <div class="form-group col-md-4">
-                    <label for="inputProfile">Profile</label>
-                    <select id="inputProfile" name="inputProfile" class="form-control">
-
-                        <?php foreach ($profiles as $profile) {
-                            echo  "<option name='" . $profile->GetProfileType() . "' value='$profile->id'>$profile->name</option>";
-                        } ?>
-                        <!-- <option name="SuperAdmin" value="1">SA Profile1</option>
-                        <option name="SuperAdmin" value="2">SA Profile2</option>
-                        <option name="SuperAdmin" value="3">SA Profile3</option>
-                        <option name="Admin" value="4">A Profile1</option>
-                        <option name="Admin" value="5">A Profile2</option>
-                        <option name="Admin" value="6">A Profile3</option>
-                        <option name="User"value="7">Super Admin3</option>
-                        <option name="User" value="8">Admin3</option>
-                        <option name="User"value="9">User3</option> -->
-                    </select>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Save</button>
-        </form>
+        <?php include("user-details-pages/ud-info.php") ?>
     </div>
     <!-- End of User Details Tab -->
     <!-- set Profifle Tab -->
+    <!-- Make sure not to inlude files on new (usless if not used) -->
+
     <div class="tab-pane fade" id="access" role="tabpanel" aria-labelledby="profile-tab">
-        <form method="post" name="setAccess" action="?<?php echo $idUrl ?>&action=set-access&tab=access">
-            <?php
-            $allComapnies = (new CompanyGateway($dbConnection))->GetAllAdvanced();
-            $UserComanyRelation = $lUser->GetUserComanyRelationTree();
-            $UserComaniesRelationObj = array();
-            $UserRestaurantsIds = array();
-            foreach ($UserComanyRelation as $key => $value) {
-                # code...
-                $UserComanyRelationObj = $value->getJson();
-                $UserComanyRelationObj->restaurants = json_decode(GlobalFunctions::ClassObjArrToJsonStr($value->restaurants));
-                $UserComaniesRelationObj[] = $UserComanyRelationObj;
-                $UserRestaurantsIds =
-                    array_unique(array_merge($UserRestaurantsIds, array_column($value->restaurants, "id")), SORT_REGULAR);
-            }
-            // echo(GlobalFunctions::ClassObjArrToJsonStr($UserComanyRelation->restaurants));
-            //echo json_encode($UserComanyRelationObj);
-            ?>
+        <?php if ($SaveType === "update") { ?>
+            <form method="post" name="setAccess" action="?<?php echo $idUrl ?>&action=set-access&tab=access">
+                <?php
+                $allComapnies = (new CompanyGateway($dbConnection))->GetAllAdvanced();
+                $UserComanyRelation = $compTree;
+                $UserComaniesRelationObj = array();
+                $UserRestaurantsIds = array();
+                foreach ($UserComanyRelation as $key => $value) {
+                    # code...
+                    $UserComanyRelationObj = $value->getJson();
+                    $UserComanyRelationObj->restaurants = json_decode(GlobalFunctions::ClassObjArrToJsonStr($value->restaurants));
+                    $UserComaniesRelationObj[] = $UserComanyRelationObj;
+                    $UserRestaurantsIds =
+                        array_unique(array_merge($UserRestaurantsIds, array_column($value->restaurants, "id")), SORT_REGULAR);
+                }
+                // echo(GlobalFunctions::ClassObjArrToJsonStr($UserComanyRelation->restaurants));
+                //echo json_encode($UserComanyRelationObj);
+                ?>
 
-            <div class="table-responsive">
-                <table class="table table-info w-100" id="tblComanies">
-                    <thead>
-                        <tr>
-                            <th scope="col"></th>
-                            <th scope="col">Id</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Restaurants</th>
-                            <th scope="col"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($allComapnies as $key => $c) {
-
-                        ?>
+                <div class="table-responsive">
+                    <table class="table table-info w-100" id="tblComanies">
+                        <thead>
                             <tr>
-                                <td></td>
-                                <td><?php echo $c->id ?></td>
-                                <td><?php echo $c->name ?></td>
-                                <td><?php echo $c->restaurants ?></td>
-                                <td></td>
+                                <th scope="col"></th>
+                                <th scope="col">Id</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Restaurants</th>
+                                <th scope="col"></th>
                             </tr>
-                        <?php } ?>
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($allComapnies as $key => $c) {
 
-            <button type="submit" name="set-access" class="btn btn-primary">Save</button>
-        </form>
+                            ?>
+                                <tr>
+                                    <td></td>
+                                    <td><?php echo $c->id ?></td>
+                                    <td><?php echo $c->name ?></td>
+                                    <td><?php echo $c->restaurants ?></td>
+                                    <td></td>
+                                </tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button type="submit" name="set-access" class="btn btn-primary">Save</button>
+            </form>
 
 
 
-        <script>
-            let $UserComanyRelationObj = JSON.parse('<?php echo json_encode($UserComaniesRelationObj) ?>');
-            let $UserComanyIds = JSON.parse('<?php echo json_encode(array_column($UserComaniesRelationObj, "id")) ?>');
-            let $UserRestaurantsIds = JSON.parse('<?php echo json_encode($UserRestaurantsIds) ?>');
-            const tblComanies = new DataTable('#tblComanies', {
-                columns: [{
-                        className: 'dt-control',
-                        orderable: false,
-                        data: null,
-                        defaultContent: ''
-                    },
-                    {
-                        data: 'id'
-                    },
-                    {
-                        data: 'name'
-                    },
-                    {
-                        data: 'restaurants',
-                        visible: false
-                    },
-                    {
-                        orderable: false,
-                        data: null,
-                        render: function(data, type, row, meta) {
-                            return `<input class="form-check-input cb-cSelect" type="checkbox" value="${data.id}"/>`;
+            <script>
+                let $UserComanyRelationObj = JSON.parse('<?php echo json_encode($UserComaniesRelationObj) ?>');
+                let $UserComanyIds = JSON.parse('<?php echo json_encode(array_column($UserComaniesRelationObj, "id")) ?>');
+                let $UserRestaurantsIds = JSON.parse('<?php echo json_encode($UserRestaurantsIds) ?>');
+                const tblComanies = new DataTable('#tblComanies', {
+                    columns: [{
+                            className: 'dt-control',
+                            orderable: false,
+                            data: null,
+                            defaultContent: ''
+                        },
+                        {
+                            data: 'id'
+                        },
+                        {
+                            data: 'name'
+                        },
+                        {
+                            data: 'restaurants',
+                            visible: false
+                        },
+                        {
+                            orderable: false,
+                            data: null,
+                            render: function(data, type, row, meta) {
+                                return `<input class="form-check-input cb-cSelect" type="checkbox" value="${data.id}"/>`;
+                            }
+                        },
+                    ],
+                    "createdRow": function(row, data, dataIndex) {
+                        const exists = $UserComanyIds.includes(parseInt(data.id))
+                        if (exists) {
+                            $(row).addClass('selected');
+                            $(row).find(".cb-cSelect").prop("checked", true);
                         }
-                    },
-                ],
-                "createdRow": function(row, data, dataIndex) {
-                    const exists = $UserComanyIds.includes(parseInt(data.id))
+                    }
+                });
+
+                tblComanies.on('change', '.cb-cSelect', function(e) {
+                    $(this).parents('tr').toggleClass('selected');
+                    $UserComanyIds = addOrRemove($UserComanyIds, parseInt($(this).val()));
+                });
+                restaurantsSeleted = [];
+                const addOrRemove = (array, item) => {
+                    const exists = array.includes(item)
                     if (exists) {
-                        $(row).addClass('selected');
-                        $(row).find(".cb-cSelect").prop("checked", true);
+                        return array.filter((c) => {
+                            return c !== item
+                        })
+                    } else {
+                        const result = array
+                        result.push(item)
+                        return result
                     }
                 }
-            });
+                tblComanies.on('change', '.cb-rSelect', function(e) {
+                    $(this).parents('li').toggleClass('active');
+                    $UserRestaurantsIds = addOrRemove($UserRestaurantsIds, parseInt($(this).val()));
+                });
+                tblComanies.on('click', 'td.dt-control', function(e) {
+                    e.preventDefault();
+                    let tr = e.target.closest('tr');
+                    let row = tblComanies.row(tr);
 
-            tblComanies.on('change', '.cb-cSelect', function(e) {
-                $(this).parents('tr').toggleClass('selected');
-                $UserComanyIds = addOrRemove($UserComanyIds, parseInt($(this).val()));
-            });
-            restaurantsSeleted = [];
-            const addOrRemove = (array, item) => {
-                const exists = array.includes(item)
-                if (exists) {
-                    return array.filter((c) => {
-                        return c !== item
-                    })
-                } else {
-                    const result = array
-                    result.push(item)
-                    return result
-                }
-            }
-            tblComanies.on('change', '.cb-rSelect', function(e) {
-                $(this).parents('li').toggleClass('active');
-                $UserRestaurantsIds = addOrRemove($UserRestaurantsIds, parseInt($(this).val()));
-            });
-            tblComanies.on('click', 'td.dt-control', function(e) {
-                e.preventDefault();
-                let tr = e.target.closest('tr');
-                let row = tblComanies.row(tr);
+                    if (row.child.isShown()) {
+                        // This row is already open - close it
+                        row.child.hide();
+                    } else {
+                        // Open this row
+                        row.child(format(row.data().restaurants)).show();
+                    }
+                });
 
-                if (row.child.isShown()) {
-                    // This row is already open - close it
-                    row.child.hide();
-                } else {
-                    // Open this row
-                    row.child(format(row.data().restaurants)).show();
-                }
-            });
+                function format(d) {
+                    // `d` is the original data object for the row
+                    /*`<dl>
+                            <dt>Full name:</dt>
+                            <dd> ${d.name} </dd>
+                            <dt>Extension number:</dt>
+                            <dd>${d.extn} </dd>
+                            <dt>Extra info:</dt>
+                            <dd>And any further details here (images etc)...</dd>
+                        </dl>` 
+                        <ul class="list-group list-group-numbered">
+                            <li class="list-group-item active">Active item</li>
+                            <li class="list-group-item">Item</li>
+                            <li class="list-group-item disabled">Disabled item</li>
+                        </ul>
+                        
+                        */
+                    rests = JSON.parse(d);
+                    let liRests = [];
 
-            function format(d) {
-                // `d` is the original data object for the row
-                /*`<dl>
-                        <dt>Full name:</dt>
-                        <dd> ${d.name} </dd>
-                        <dt>Extension number:</dt>
-                        <dd>${d.extn} </dd>
-                        <dt>Extra info:</dt>
-                        <dd>And any further details here (images etc)...</dd>
-                    </dl>` 
-                    <ul class="list-group list-group-numbered">
-                        <li class="list-group-item active">Active item</li>
-                        <li class="list-group-item">Item</li>
-                        <li class="list-group-item disabled">Disabled item</li>
-                    </ul>
-                    
-                    */
-                rests = JSON.parse(d);
-                let liRests = [];
+                    rests.forEach((v) => {
+                        const exists = $UserRestaurantsIds.includes(parseInt(v.id))
 
-                rests.forEach((v) => {
-                    const exists = $UserRestaurantsIds.includes(parseInt(v.id))
-
-                    let lirest =
-                        `<li class="list-group-item ${exists?"active":""} ">
+                        let lirest =
+                            `<li class="list-group-item ${exists?"active":""} ">
                         <div class="row">
                             <div class="col"></div>
                             <div class="col">
@@ -463,41 +379,44 @@ foreach ($companiesTree as $c) {
                             </div>
                         </div>
                     </li>`;
-                    liRests.push(lirest);
-                });
-                return (`<ul class="list-group bg-light text-dark">${liRests.join("")}</ul>`);
-            }
-            //  document.querySelector('#button').addEventListener('click', function () {
-            //      alert(tblComanies.rows('.selected').data().length + ' row(s) selected');
-            //  });
-        </script>
-
+                        liRests.push(lirest);
+                    });
+                    return (`<ul class="list-group bg-light text-dark">${liRests.join("")}</ul>`);
+                }
+                //  document.querySelector('#button').addEventListener('click', function () {
+                //      alert(tblComanies.rows('.selected').data().length + ' row(s) selected');
+                //  });
+            </script>
+        <?php } ?>
     </div>
     <!-- End of Profifle Tab -->
     <!-- Change Password Tab -->
+    <!-- Make sure not to inlude files on new (usless if not used) -->
     <div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="contact-tab">
-        <div class="container">
-            <div class="row text-center">
-                <div class="col-12 p-2">
-                    <p class="text-center h5">Use the form below to change your password.</p>
+        <?php if ($SaveType === "update") { ?>
+            <div class="container">
+                <div class="row text-center">
+                    <div class="col-12 p-2">
+                        <p class="text-center h5">Use the form below to change your password.</p>
+                    </div>
                 </div>
-            </div>
-            <div class="row text-center">
-                <input type="submit" class="btn btn-info btn-load btn-lg" id="btn-resetPass" name="SendRestPaswordEmail" data-loading-text="Sending Email..." value="Send Reset Password Email">
-            </div>
-
-            <hr />
-            <div class="row text-center">
-                <div class="col-12 p-2">
-                    <p class="text-center h5">Or</p>
+                <div class="row text-center">
+                    <input type="submit" class="btn btn-info btn-load btn-lg" id="btn-resetPass" name="SendRestPaswordEmail" data-loading-text="Sending Email..." value="Send Reset Password Email">
                 </div>
-            </div>
-            <hr />
-            <form method="post" id="passwordForm" action="?<?php echo $idUrl ?>&action=change-password&tab=password" class="row g-3 needs-validation" novalidate>
-                <?php include "user-password.php" ?>
-            </form>
 
-        </div>
+                <hr />
+                <div class="row text-center">
+                    <div class="col-12 p-2">
+                        <p class="text-center h5">Or</p>
+                    </div>
+                </div>
+                <hr />
+                <form method="post" id="passwordForm" action="?<?php echo $idUrl ?>&action=change-password&tab=password" class="row g-3 needs-validation" novalidate>
+                    <?php include "user-password.php" ?>
+                </form>
+
+            </div>
+        <?php } ?>
     </div>
 </div>
 
@@ -572,11 +491,7 @@ foreach ($companiesTree as $c) {
                 "userId": <?php echo $lUser->id ?>
             }),
             "success": function(data) {
-                $("#div-alert-success").removeClass("visually-hidden");
-                $("#alert-msg").text("Email sent successfully");
-                setTimeout(function() {
-                    $("#div-alert-success").addClass("visually-hidden");
-                }, 5000);
+                showAlert("Email sent successfully");
             }
         };
 
@@ -605,13 +520,9 @@ foreach ($companiesTree as $c) {
             $.ajax(settings).done(function(response) {
                 $("#btn-change-1").removeAttr("disabled")
                 $("#btn-change-1").find(".spinner").addClass("visually-hidden");
-                $("#div-alert-success").removeClass("visually-hidden");
-                $("#alert-msg").text("Password changed successfully");
                 $("#password1").val('');
                 $("#password2").val('');
-                setTimeout(function() {
-                    $("#div-alert-success").addClass("visually-hidden");
-                }, 5000);
+                showAlert("Password changed successfully");
                 console.log(response);
             });
         }
@@ -645,11 +556,4 @@ foreach ($companiesTree as $c) {
     $("#rb_<?php echo $lUser->UserType()   ?>").prop("checked", true);
     $("#rb_<?php echo $lUser->GetScreenType()   ?>").prop("checked", true);
     $("#inputProfile").val("<?php echo $lUser->Profile->id   ?>");
-    $("#userDetails").validate({
-        rules: {
-            inputUserName: {
-                alphanumeric: true
-            }
-        }
-    });
 </script>

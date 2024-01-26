@@ -16,7 +16,7 @@ if (isset($_GET['id'])) {
 
     $integrationGateway = new IntegrationGateway($dbConnection);
     $paymentRelationGateway = new PaymentRelationGateway($dbConnection);
-    
+
     $integration = $integrationGateway->findById($id);
     if ($integration == null || !in_array($integration->RestaurantId, $ids)) {
         echo " <script> location.href = '/admin/integrations' </script> ";
@@ -66,28 +66,38 @@ function filterArrayByKeys(array $input, array $column_keys)
 <style>
     <?php include "integration-details-pages/css/style.min.css"; ?>
 </style>
-<br />
 <div class="container-fluid">
-    <center>
-        <div class="row">
-            <input type="hidden" id="hdfIntegrationId" value="<?php echo $id ?>" />
-            <h3>Integration with POS Systems</h3>
+    <div class="row">
+        <div class="col-1"></div>
+        <div class="col-10">
+            <center>
+                <input type="hidden" id="hdfIntegrationId" value="<?php echo $id ?>" />
+                <h3>Integration with POS Systems</h3>
+            </center>
         </div>
-    </center>
+        <div class="col-1">
+            <a class="float-end btn btn-warning" href="/admin/integrations/edit/<?php echo $id ?>">
+                <i class="bi bi-pen"></i>
+                Edit
+            </a>
+        </div>
+    </div>
     <hr />
-
+    <center>
+        <p class="fs-4 fw-bold"><?php echo $restaurant->name ?></p>
+    </center>
     <!-- integration Inf -->
     <div class="row justify-content-center align-items-center g-2 mb-2">
         <div class="col">
             <div class="input-group mb-3">
                 <span class="input-group-text">restaurant UID</span>
-                <input type="text" name="uid" id="txtUid" class="form-control" placeholder="placeholder" value="<?php echo $integration->gfUid ?>">
+                <input type="text" name="uid" id="txtUid" class="form-control" placeholder="placeholder" value="<?php echo $integration->gfUid ?>" readonly>
             </div>
         </div>
         <div class="col">
             <div class="input-group mb-3">
                 <span class="input-group-text">Loyverese Token</span>
-                <input type="text" name="uid" id="txtLid" class="form-control" placeholder="placeholder" value="<?php echo $integration->LoyverseToken ?>">
+                <input type="text" name="uid" id="txtLid" class="form-control" placeholder="placeholder" value="<?php echo $integration->LoyverseToken ?>" readonly>
             </div>
         </div>
     </div>
@@ -129,8 +139,8 @@ function filterArrayByKeys(array $input, array $column_keys)
         <!-- END Extras -->
         <!-- Payments -->
         <div class="tab-pane" id="payments" role="tabpanel" aria-labelledby="payments-tab">
-        <?php include "integration-details-pages/integration-details-Payments.php"; ?>
-        
+            <?php include "integration-details-pages/integration-details-Payments.php"; ?>
+
         </div>
         <!-- END Payments -->
         <!-- Orders -->

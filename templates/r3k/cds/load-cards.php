@@ -133,8 +133,23 @@
     </tfoot>
 </table>
 <script>
+    var refreshSn = function() {
+        var time = 600; // 10 mins
+        setTimeout(
+            function() {
+                $.ajax({
+                    url: 'refresh_session.php',
+                    cache: false,
+                    complete: function() {
+                        refreshSn();
+                    }
+                });
+            },
+            time
+        );
+    };
     $(document).ready(function() {
-
+        refreshSn();
 
         var table = $('#example').DataTable({
 

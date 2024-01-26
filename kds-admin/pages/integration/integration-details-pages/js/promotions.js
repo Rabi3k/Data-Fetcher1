@@ -57,11 +57,13 @@ function saveLDisounts()
             $("#dp-spinner").addClass('visually-hidden');
             discountLoyveresId = response.loyverse_id;
             loadLDisounts();
+            showAlert(`Discount Saved Successfully`);
         },
         error: function(x, e) {
             console.log(e);
             console.log(x);
             $("#dp-spinner").addClass('visually-hidden');
+            showAlert(`Discount Not Saved!`,true);
         }
       };
       

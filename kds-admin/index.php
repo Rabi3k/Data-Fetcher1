@@ -26,7 +26,7 @@ if (isset($_GET["page"]) && !empty($_GET["page"]) && file_exists("pages/" . $_GE
 }
 $str = "Visit microsoft!";
 $pattern = "/-/i";
-$pag= preg_replace($pattern, " ", $page);
+$pag = preg_replace($pattern, " ", $page);
 $pageTitle = ucfirst($pag);
 
 ?>
@@ -43,6 +43,20 @@ include "head.php"; ?>
                                 <?php include "sidebar.php"; ?>
                         </nav>
                         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+                                <div class="alert alert-success visually-hidden" role="alert" id="div-alert-success">
+                                        <center>
+                                                <h5 class="alert-heading fw-bold">Well done!</h5>
+                                                <hr />
+                                                <span class="alert-msg fs-6">Some Word</span>
+                                        </center>
+                                </div>
+                                <div class="alert alert-danger visually-hidden" role="alert" id="div-alert-error">
+                                        <center>
+                                                <h5 class="alert-heading fw-bold">Error!</h5>
+                                                <hr />
+                                                <span class="alert-msg fs-6">Some Word</span>
+                                        </center>
+                                </div>
                                 <?php include "pages/$page.php"; ?>
                         </main>
                 </div>
