@@ -188,13 +188,6 @@ foreach ($companiesTree as $c) {
     }
 </script>
 <hr />
-<span>
-    <?php 
-    
-    echo random_str(10);
-    ?>
-</span>
-<hr />
 <ul class="nav nav-tabs">
     <li class="nav-item">
         <a class="nav-link" data-toggle="tab" href="#home">User Details</a>
