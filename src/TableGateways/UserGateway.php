@@ -64,7 +64,7 @@ class UserGateway extends DbObject
             $statement = $this->getDbConnection()->query($statment);
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
             $statement->closeCursor();
-            
+
             if (count($result) < 1) {
                 return null;
             }
@@ -74,7 +74,7 @@ class UserGateway extends DbObject
             exit($e->getMessage());
         }
     }
-    public function FindById($id, $forceLoad=true): LoginUser|null
+    public function FindById($id, $forceLoad = true): LoginUser|null
     {
         $statment = 'SELECT 
         /* User */ 
@@ -136,9 +136,9 @@ class UserGateway extends DbObject
             LEFT JOIN `tbl_user_relations` ur on(u.id = ur.user_id)
             LEFT JOIN `tbl_restaurants` as r1 on (ur.restaurant_id = r1.id)
             LEFT JOIN `tbl_companies` as c on (IFNULL(ur.company_id ,r1.company_id)= c.id';
-             //OR (IFNULL(ur.company_id,0)=0 AND IFNULL(ur.restaurant_id,0)=0 AND u.isSuperAdmin = 1) )
-             $statment .= $forceLoad ? ' OR (IFNULL(ur.company_id,0)=0 AND IFNULL(ur.restaurant_id,0)=0 AND u.isSuperAdmin = 1))':')';
-            $statment .= 'LEFT JOIN `tbl_restaurants` as r on (case when r1.id is not null then r1.id = r.id else r.company_id = c.id end)
+        //OR (IFNULL(ur.company_id,0)=0 AND IFNULL(ur.restaurant_id,0)=0 AND u.isSuperAdmin = 1) )
+        $statment .= $forceLoad ? ' OR (IFNULL(ur.company_id,0)=0 AND IFNULL(ur.restaurant_id,0)=0 AND u.isSuperAdmin = 1))' : ')';
+        $statment .= 'LEFT JOIN `tbl_restaurants` as r on (case when r1.id is not null then r1.id = r.id else r.company_id = c.id end)
             where u.`id` = ' . $id . '
             group by u.id;';
         //echo "ID: $id <br/>statment: $statment<br/>";
@@ -147,7 +147,7 @@ class UserGateway extends DbObject
             $statement = $this->getDbConnection()->query($statment);
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
             $statement->closeCursor();
-            
+
             if (count($result) < 1) {
                 return null;
             }
@@ -163,7 +163,7 @@ class UserGateway extends DbObject
             exit("db connection not loaded properly");
         }
         $ul = new UserGateway($GLOBALS['dbConnection']);
-        $u = $ul->FindById($id,$foceRest);
+        $u = $ul->FindById($id, $foceRest);
         return $u;
     }
     function GetUserByUsernamePassword($username, $password)
@@ -299,12 +299,10 @@ class UserGateway extends DbObject
         } else {
             if (isset($this::$user) && $this::$user->id > 0) {
                 $loggedIn = true;
-            } 
-            else if (isset($_SESSION["User"]) && $_SESSION["User"]->id > 0) {
+            } else if (isset($_SESSION["User"]) && $_SESSION["User"]->id > 0) {
                 $this::$user = $_SESSION["User"];
                 $loggedIn = true;
-            } 
-            else {
+            } else {
                 $us = $this->FindById($_SESSION["UserId"]);
                 $_SESSION["User"] = $us;
                 $this::$user = $us;
@@ -313,7 +311,7 @@ class UserGateway extends DbObject
                 }
             }
         }
-        
+
         return $loggedIn;
     }
 
@@ -390,36 +388,58 @@ class UserGateway extends DbObject
         }
     }
 
-    public function updateUserRelations(array $userRelations)
+    public function updateUserRelations($userRelations)
     {
+        /*
+        $userRelations 
+        {
+            'userId':<int>,
+            'relations': <Array>
+                [{
+                    'companyId': <int>,
+                    'restaurantId': <Array (int) CAN BE NULL !>
+                }]
+        }
+        */
         //Password(:password), sha(:secret_key)
         $Dstatment = "DELETE FROM `tbl_user_relations`
 WHERE `user_id` = :user_id;";
 
-        $Istatement = "INSERT INTO `tbl_user_relations`
-(`user_id`,
-`company_id`,
-`restaurant_id`)
-VALUES
-";
         $secsStatment = array();
-        foreach ($userRelations as $i) {
-            $company_id = $i->company_id ?? 'null';
-            $restaurant_id = $i->restaurant_id ?? 'null';
-            $secStatment = "($i->user_id,$company_id,$restaurant_id)";
+        if (count($userRelations->relations) < 1) {
+            $secStatment = "(:user_id,NULL,NULL)";
             array_push($secsStatment, $secStatment);
         }
-        $Istatement .= implode(",", $secsStatment) . ";";
+        foreach ($userRelations->relations as $r) {
+            $company_id = $r->companyId ?? 'null';
+            if (count($r->restaurantId) < 1) {
+                $secStatment = "(:user_id,$company_id,NULL)";
+                array_push($secsStatment, $secStatment);
+            } else {
+                foreach ($r->restaurantId as $key => $restId) {
+                    $secStatment = "(:user_id,$company_id,$restId)";
+                    array_push($secsStatment, $secStatment);
+                }
+            }
+        }
+        $Istatement = "INSERT INTO `tbl_user_relations`
+        (`user_id`,
+        `company_id`,
+        `restaurant_id`)
+        VALUES
+        " . implode(",", $secsStatment) . ";";
         try {
             $statement = $this->getDbConnection()->prepare("$Dstatment");
             $this->getDbConnection()->beginTransaction();
             $statement->execute(array(
-                'user_id' => $i->user_id
+                'user_id' => $userRelations->userId
             ));
             $this->getDbConnection()->commit();
             $statement = $this->getDbConnection()->prepare("$Istatement");
             $this->getDbConnection()->beginTransaction();
-            $statement->execute(array());
+            $statement->execute(array(
+                'user_id' => $userRelations->userId
+            ));
             $this->getDbConnection()->commit();
 
             return true;
@@ -452,7 +472,7 @@ VALUES
             exit($e->getMessage());
         }
     }
-   
+
     function UpdateUserPassword(LoginUser $user, string $password)
     {
         //Password(:password), sha(:secret_key)

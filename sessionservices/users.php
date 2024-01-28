@@ -16,7 +16,7 @@ UsersProcessRequest();
 function UsersProcessRequest()
 {
     global $dbConnection, $requestMethod, $q;
-
+    $userGateway = new UserGateway($dbConnection);
     switch ($requestMethod) {
         case 'GET':
 
@@ -45,59 +45,18 @@ function UsersProcessRequest()
             //echo $body;
 
             $userPostBody = json_decode($body);
-            switch ($q) {
-                case 'change-password':
-                    break;
-                default:
-                    # code...
-                    break;
-            }
-            $retval = json_decode("{}");
-            echo json_encode($retval);
-            break;
-        case 'PUT':
-            $body = file_get_contents('php://input');
-            //echo $body;
-            $userGateway = new UserGateway($dbConnection);
-            $userPostBody = json_decode($body);
             $userId = $userPostBody->userId;
             $retval = json_decode("{}");
             if (isset($userId) && $userId > 0) {
                 $lUser = UserGateway::GetUserClass($userId, false);
             }
             switch ($q) {
-                case 'change-password':
-                    /*
-                    {
-                        userId:
-                        password:
-                    }
-                    */
-                    if (!isset($lUser) ||  empty($userPostBody->password)) {
-                        break;
-                    }
-                    $userGateway->UpdateUserPassword($lUser, $userPostBody->password);
-                    $retval = json_decode("{'message':password changed}");
-                    break;
-                case 'send-rest-pasword':
-                    /*
-                    {
-                        userId:
-                    }
-                    */
-                    if (!isset($lUser) ||  empty($userPostBody->password)) {
-                        break;
-                    }
-                    $userSecret = $userGateway->GetEncryptedKey($lUser->email);
-                    KMail::sendResetPasswordMail($lUser, $userSecret);
-                    $retval = json_decode("{'message':reset password sent}");
-                    break;
                 case 'edit-details':
-                    $newUser= false;
+                    $newUser = false;
                     if (!isset($userId) ||  $userId == 0) {
                         $lUser = LoginUser::NewUser();
-                        $newUser= true;
-                    } 
+                        $newUser = true;
+                    }
                     /*
                         {
                             userId:
@@ -146,19 +105,75 @@ function UsersProcessRequest()
                     if (isset($userPostBody->profileId) && !empty($userPostBody->profileId)) {
                         $lUser->profile_id = intval($userPostBody->profileId);
                     }
-                    
-                    if($newUser)
-                    {
+
+                    if ($newUser) {
                         $lUser->password = random_str(10);
                     }
-                   
+
                     $lUser = $userGateway->InsertOrUpdate($lUser);
-                    if($newUser)
-                    {
+                    if ($newUser) {
                         $userSecret = $userGateway->GetEncryptedKey($lUser->email);
                         KMail::sendResetPasswordMail($lUser, $userSecret);
                     }
                     $retval = $lUser->getJson();
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+            $retval = json_decode("{}");
+            echo json_encode($retval);
+            break;
+        case 'PUT':
+            $body = file_get_contents('php://input');
+            //echo $body;
+
+            $userPostBody = json_decode($body);
+            $userId = $userPostBody->userId;
+            $retval = json_decode("{}");
+            if (isset($userId) && $userId > 0) {
+                $lUser = UserGateway::GetUserClass($userId, false);
+            }
+            switch ($q) {
+                case 'change-password':
+                    /*
+                    {
+                        userId:
+                        password:
+                    }
+                    */
+                    if (!isset($lUser) ||  empty($userPostBody->password)) {
+                        break;
+                    }
+                    $userGateway->UpdateUserPassword($lUser, $userPostBody->password);
+                    $retval = json_decode("{'message':password changed}");
+                    break;
+                case 'send-rest-pasword':
+                    /*
+                    {
+                        userId:
+                    }
+                    */
+                    if (!isset($lUser)) {
+                        break;
+                    }
+                    $userSecret = $userGateway->GetEncryptedKey($lUser->email);
+                    KMail::sendResetPasswordMail($lUser, $userSecret);
+                    $retval = json_decode("{'message':reset password sent}");
+                    break;
+                case 'set-user-relations':
+                    /*
+                        {
+                            'userId':<int>,
+                            'relations': <Array>
+                                [{
+                                    'companyId': <int>,
+                                    'restaurantId': <Array (int) CAN BE NULL !>
+                                }]
+                        }
+                    */
+                    $userGateway->updateUserRelations($userPostBody);
+                    $retval = json_decode("{'message':user relations changed}");
                     break;
                 default:
                     # code...

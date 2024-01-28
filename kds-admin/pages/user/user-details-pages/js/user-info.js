@@ -20,7 +20,7 @@ $("#btn-SaveUserInfo").click(
         };
         var settings = {
             "url": "/sessionservices/users.php?q=edit-details",
-            "method": "PUT",
+            "method": "POST",
             "timeout": 0,
             "headers": {
                 "Content-Type": "application/json"
@@ -28,8 +28,8 @@ $("#btn-SaveUserInfo").click(
             "data": JSON.stringify($userinfo),
             "success": function (data) {
                 console.log(data);
-                if ($userinfo.userId === 0) { 
-                    window.location.href = `/admin/users/${data.id}` 
+                if ($userinfo.userId === 0) {
+                    window.location.href = `/admin/users/${data.id}`
                 }
                 else { showAlert("User-Info saved successfully"); }
             }
@@ -41,6 +41,21 @@ $("#btn-SaveUserInfo").click(
         });
     }
 );
+
+$('input:radio[name="userType"]').change(
+    function () {
+        $('#inputProfile option').hide();
+        if ($(this).is(':checked')) {
+            $('#inputProfile option[name=' + $(this).val() + ']').show();
+            $('#inputProfile').val($('#inputProfile option[name=' + $(this).val() + ']').first().val());
+            // append goes here
+        }
+    });
+$('#inputProfile option').hide();
+$('#inputProfile option[name=<?php echo $lUser->UserType() ?>]').show();
+$("#rb_<?php echo $lUser->UserType()   ?>").prop("checked", true);
+$("#rb_<?php echo $lUser->GetScreenType()   ?>").prop("checked", true);
+$("#inputProfile").val("<?php echo $lUser->Profile->id   ?>");
 // const validateEmail = (email) => {
 //     return String(email)
 //         .toLowerCase()

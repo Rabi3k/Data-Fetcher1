@@ -35,19 +35,19 @@
                             <div class="card p-2">
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="userType" id="rb_SuperAdmin" value="SuperAdmin">
-                                    <label class="form-check-label" for="SuperAdmin">
+                                    <label class="form-check-label" for="rb_SuperAdmin">
                                         Super Admin
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="userType" id="rb_Admin" value="Admin">
-                                    <label class="form-check-label" for="Admin">
+                                    <label class="form-check-label" for="rb_Admin">
                                         Admin
                                     </label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="userType" id="rb_User" value="User">
-                                    <label class="form-check-label" for="User">
+                                    <label class="form-check-label" for="rb_User">
                                         User
                                     </label>
                                 </div>
@@ -87,9 +87,7 @@
 
         </div>
         <div class="row">
-            <div class="col-1 float-end">
-                <button type="submit" class="btn btn-primary float-end">Save</button>
-            </div>
+           
             <div class="col float-end">
                 <button type="button" class="btn btn-info float-end" id="btn-SaveUserInfo">
                     <i class="bi bi-save"></i>

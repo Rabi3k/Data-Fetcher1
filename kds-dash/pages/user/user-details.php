@@ -83,7 +83,7 @@ if (isset($_POST['set-access'])) {
         $ur->branch_id = null;
         array_push($userRelations, $ur);
     }
-    $userGateway->updateUserRelations($userRelations);
+   // $userGateway->updateUserRelations($userRelations);
     $lUser = UserLoginGateway::GetUserClass($_GET['id'], false);
 }
 ?>
