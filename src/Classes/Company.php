@@ -66,7 +66,7 @@ class Company extends ClassObj
     public static function GetCompany($companyObj)
     {
         $company = new Company();
-        $company->LoadCompany($companyObj);
+        $company->setFromJsonStr($companyObj);
         return $company;
     }
     public static function GetCompanyList(array $companies)

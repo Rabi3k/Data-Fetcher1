@@ -26,7 +26,7 @@ $companies = (new CompanyGateway($dbConnection))->GetAll();
             <?php foreach ($companies as $company) {
 
             ?>
-                <tr class='clickable-row' data-href="companies/<?php echo $company->id ?>">
+                <tr class='clickable-row' data-href="/admin/companies/<?php echo $company->id ?>">
                     <th scope="row"><?php echo $company->id ?></th>
                     <td scope="row"><?php echo $company->name ?></td>
                     <td scope="row"><?php echo $company->cvr_nr ?></td>

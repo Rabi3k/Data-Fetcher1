@@ -7,10 +7,10 @@ use Src\TableGateways\CompanyGateway;
 
 $SaveType = "";
 $idUrl = "";
-$restaurantsGateway = new CompanyGateway($dbConnection);
+$companyGateway = new CompanyGateway($dbConnection);
 
 if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $lCompany = $restaurantsGateway->FindById(intval($_GET['id']));
+    $lCompany = $companyGateway->FindById(intval($_GET['id']));
     $SaveType = "update";
     $idUrl = "id=$lCompany->id";
 } else if (isset($_GET['new'])) {
@@ -21,43 +21,43 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     exit;
 }
 $companyId = $lCompany->id;
-if (isset($_GET['action'])) {
-    if ($_GET['action'] == 'edit-details') {
+// if (isset($_GET['action'])) {
+//     if ($_GET['action'] == 'edit-details') {
 
-        if (isset($_POST['inputName']) && !empty($_POST['inputName'])) {
-            $lCompany->name = $_POST['inputName'];
-        }
-        if (isset($_POST['inputEmail']) && !empty($_POST['inputEmail'])) {
-            $lCompany->email = $_POST['inputEmail'];
-        }
-        if (isset($_POST['inputCVR']) && !empty($_POST['inputCVR'])) {
-            $lCompany->cvr_nr = $_POST['inputCVR'];
-        }
-        if (isset($_POST['inputPhone']) && !empty($_POST['inputPhone'])) {
-            $lCompany->phone = $_POST['inputPhone'];
-        }
-        if (isset($_POST['inputStreet']) && !empty($_POST['inputStreet'])) {
-            $lCompany->address = $_POST['inputStreet'];
-        }
-        if (isset($_POST['inputCity']) && !empty($_POST['inputCity'])) {
-            $lCompany->city = $_POST['inputCity'];
-        }
-        if (isset($_POST['inputZip']) && !empty($_POST['inputZip'])) {
-            $lCompany->zip = $_POST['inputZip'];
-        }
-        if (isset($_POST['inputReferenceId']) && !empty($_POST['inputReferenceId'])) {
-            $lCompany->gf_refid = $_POST['inputReferenceId'];
-        }
-        if (isset($_FILES['fileToUpload'])) {
-            $nyPath =  UplaodImage(UploadType::Restaurant, $lCompany->name, $_FILES['fileToUpload']);
-            $lCompany->logo = (isset($nyPath) && !empty($nyPath)) ? $nyPath : $lCompany->logo;
-        }
+//         if (isset($_POST['inputName']) && !empty($_POST['inputName'])) {
+//             $lCompany->name = $_POST['inputName'];
+//         }
+//         if (isset($_POST['inputEmail']) && !empty($_POST['inputEmail'])) {
+//             $lCompany->email = $_POST['inputEmail'];
+//         }
+//         if (isset($_POST['inputCVR']) && !empty($_POST['inputCVR'])) {
+//             $lCompany->cvr_nr = $_POST['inputCVR'];
+//         }
+//         if (isset($_POST['inputPhone']) && !empty($_POST['inputPhone'])) {
+//             $lCompany->phone = $_POST['inputPhone'];
+//         }
+//         if (isset($_POST['inputStreet']) && !empty($_POST['inputStreet'])) {
+//             $lCompany->address = $_POST['inputStreet'];
+//         }
+//         if (isset($_POST['inputCity']) && !empty($_POST['inputCity'])) {
+//             $lCompany->city = $_POST['inputCity'];
+//         }
+//         if (isset($_POST['inputZip']) && !empty($_POST['inputZip'])) {
+//             $lCompany->zip = $_POST['inputZip'];
+//         }
+//         if (isset($_POST['inputReferenceId']) && !empty($_POST['inputReferenceId'])) {
+//             $lCompany->gf_refid = $_POST['inputReferenceId'];
+//         }
+//         if (isset($_FILES['fileToUpload'])) {
+//             $nyPath =  UplaodImage(UploadType::Restaurant, $lCompany->name, $_FILES['fileToUpload']);
+//             $lCompany->logo = (isset($nyPath) && !empty($nyPath)) ? $nyPath : $lCompany->logo;
+//         }
 
-        $lCompany = $restaurantsGateway->InsertOrUpdate($lCompany);
-        $idUrl = "id=$lCompany->id";
-        $SaveType = "update";
-    }
-}
+//         $lCompany = $restaurantsGateway->InsertOrUpdate($lCompany);
+//         $idUrl = "id=$lCompany->id";
+//         $SaveType = "update";
+//     }
+// }
 // $logoPath = (isset($lCompany->logo)
 //     && !empty($lCompany->logo)
 //     && file_exists($_SERVER['DOCUMENT_ROOT'] . $lCompany->logo))
@@ -146,15 +146,60 @@ if (isset($_GET['action'])) {
                         <label for="inputReferenceId">Reference Id</label>
                         <input type="text" class="form-control" name="inputReferenceId" id="inputReferenceId" value="<?php echo $lCompany->gf_refid ?>" required>
                     </div>
-                    <div class="form-group col-12 text-right float-right">
+                    <!-- <div class="form-group col-12 text-right float-end">
                         <button type="submit" class="btn btn-primary">Save</button>
+                    </div> -->
+                </div>
+                <div class="row my-3">
+                    <div class="col ">
+                        <button type="button" class="btn btn-info float-end" id="btn-save-company">
+                            <i class="bi bi-save"></i>
+                            save
+                        </button>
                     </div>
                 </div>
+                <script>
+                    $("#btn-save-company").click(function(e) {
+                        
+                        let $company = {
+                            "id": parseInt('<?php echo $companyId ?>'),
+                            "name": $("#inputName").val(),
+                            "cvr_nr": $("#inputCVR").val(),
+                            "address": $("#inputStreet").val(),
+                            "zip": $("#inputZip").val(),
+                            "city": $("#inputCity").val(),
+                            "email": $("#inputEmail").val(),
+                            "phone": $("#inputPhone").val(),
+                            "gf_refid": $("#inputReferenceId").val()
+                        };
+                        let $new = false;
+                        if($company.id<1)
+                        {
+                            $new = true;
+                        }
 
+                        var settings = {
+                            "url": "/sessionservices/company.php?q=edit-company",
+                            "method": "POST",
+                            "timeout": 0,
+                            "headers": {
+                                "Content-Type": "application/json"
+                            },
+                            "data": JSON.stringify($company),
+                        };
+
+                        $.ajax(settings).done(function(response) {
+                            console.log(response);
+                            showAlert("Comapny Saved Suessfully!");
+
+                        });
+                        //showAlert(JSON.stringify($company), true);
+                    });
+                </script>
 
             </div>
+        </form>
     </div>
-    </form>
     <!-- End of User Details Tab -->
     <!-- set Profifle Tab -->
     <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">

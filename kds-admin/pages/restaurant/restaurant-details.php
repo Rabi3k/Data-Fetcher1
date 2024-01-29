@@ -80,8 +80,7 @@ if (isset($_GET['action'])) {
         }
         if (isset($_FILES['fileToUpload'])) {
             $nyPath =  UplaodImage(UploadType::Restaurant, $lRestaurant->name, $_FILES['fileToUpload']);
-            if($nyPath["upload"] == 0)
-            {
+            if ($nyPath["upload"] == 0) {
                 $errorMsg = $nyPath["message"];
             }
             //$lRestaurant->logo = (isset($nyPath) && !empty($nyPath)) ? $nyPath : $lRestaurant->logo;
@@ -97,10 +96,10 @@ $logoPath = GetImagePath(UploadType::Restaurant, $lRestaurant->name);
 
 ?>
 <div class="alert alert-success" role="alert" hidden>
-  
+
 </div>
-<div class="alert alert-danger" role="alert" <?php echo (isset($errorMsg) &&!empty($errorMsg))?"":"hidden"  ?>>
- <?php echo $errorMsg ?>
+<div class="alert alert-danger" role="alert" <?php echo (isset($errorMsg) && !empty($errorMsg)) ? "" : "hidden"  ?>>
+    <?php echo $errorMsg ?? "" ?>
 </div>
 <div class="row">
     <div class="col-4">
@@ -198,7 +197,7 @@ $logoPath = GetImagePath(UploadType::Restaurant, $lRestaurant->name);
 	} -->
 <!-- set home Tab -->
 <form method="post" id="userDetails" action="?<?php echo $idUrl ?>&action=edit-details&tab=home" enctype="multipart/form-data">
-<div class="tab-content border border-top-0 p-2" id="myTabContent">
+    <div class="tab-content border border-top-0 p-2" id="myTabContent">
 
         <div class="tab-pane fade" id="home" role="tabpanel" aria-labelledby="home-tab">
             <div class="container">
@@ -308,10 +307,10 @@ $logoPath = GetImagePath(UploadType::Restaurant, $lRestaurant->name);
             </div>
         </div>
         <!-- End of reference Tab -->
-        
+
     </div>
-    <div class="form-group col-12 text-right float-right">
-        <button type="submit" class="btn btn-primary">Save</button>
+    <div class="form-group col-12 text-right ">
+        <button type="submit" class="btn btn-info float-end ">Save</button>
     </div>
 </form>
 

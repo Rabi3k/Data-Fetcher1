@@ -2,23 +2,23 @@
 
 use Src\TableGateways\RestaurantsGateway;
 
-if(isset($companyId))
-{
+if (isset($companyId)) {
     $restaurants = (new RestaurantsGateway($dbConnection))->FindByCompanyId($companyId);
-}
-else
-{
+} else {
     $restaurants = (new RestaurantsGateway($dbConnection))->GetAll();
 }
 ?>
-    <div class="row">
-        <div class="col-4"></div>
-        <div class="col-4"></div>
-        <div class="col-4">
-            <a class="btn btn-primary float-right <?php if(!isset($companyId) || empty($companyId)){echo "btn-disabled";}?>" href="/admin/restaurants/?new=&cid=<?php echo$companyId?>" role="button"><i data-feather='plus-circle'></i><span> Ny</span></a>
-        </div>
+<div class="row">
+    <div class="col-4"></div>
+    <div class="col-4"></div>
+    <div class="col-4">
+        <a class="btn btn-primary float-end <?php echo (!isset($companyId) || empty($companyId)) ? "btn-disabled" : ""; ?>" href="/admin/restaurants/?new=&cid=<?php echo (!isset($companyId) || empty($companyId)) ? "" : $companyId; ?>" role="button">
+            <i data-feather='plus-circle'></i>
+            <span>Ny</span>
+        </a>
     </div>
-<hr/>
+</div>
+<hr />
 <div class="table-responsive ">
     <table class="table table-bordered table-hover" id="tblRestaurants">
         <caption>List of users profiles</caption>
@@ -31,7 +31,7 @@ else
         </thead>
         <tbody>
             <?php foreach ($restaurants as $restaurant) {
-                
+
             ?>
                 <tr class='clickable-row' data-href="/admin/restaurants/?id=<?php echo $restaurant->id ?>">
                     <th scope="row"><?php echo $restaurant->id ?></th>
@@ -53,5 +53,4 @@ else
         //$(this).toggleClass('selected');
         window.location = $(this).data("href");
     });
-    
 </script>

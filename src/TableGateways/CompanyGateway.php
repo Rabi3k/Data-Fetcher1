@@ -25,28 +25,36 @@ class CompanyGateway extends DbObject
     public function FindById($id): Company|null
     {
         $tblname = $this->getTableName();
-        $statment = "SELECT c.*,
-        CONCAT('[',
-                GROUP_CONCAT(DISTINCT JSON_OBJECT(
-                    'id', r.`id`,
-                    'company_id', r.`company_id`,
-                    'name', r.`name`,
-                    'alias', r.`alias`,
-                    'p_nr', r.`p_nr`,
-                    'address', r.`address`,
-                    'city', r.`city`,
-                    'post_nr', r.`post_nr`,
-                    'country', r.`country`,
-                    'email', r.`email`,
-                    'phone', r.`phone`,
-                    'is_gf', r.`is_gf`,
-                    'is_managed', r.`is_managed`,
-                    'gf_refid', r.`gf_refid`,
-                    'gf_urid', r.`gf_urid`,
-                    'gf_cdn_base_path', r.`gf_cdn_base_path`)
-                SEPARATOR ','),
-                ']') AS 'restaurants',
-                count(r.id) as 'restaurants_count'
+        $statment = "SELECT json_object(
+            'id',c.`id`,
+            'name',    c.`name`,
+                'cvr_nr',c.`cvr_nr`,
+                'address',c.`address`,
+                'city',c.`city`,
+                'zip',c.`zip`,
+                'email',c.`email`,
+                'phone',c.`phone`,
+                'gf_refid',c.`gf_refid`,
+                    'restaurants',case when r.`id` is NULL THEN JSON_ARRAY()
+                     ELSE JSON_ARRAYAGG(DISTINCT 
+                     JSON_OBJECT( 'id', r.`id`, 
+                     'company_id', r.`company_id`, 
+                     'name', r.`name`, 
+                     'alias', r.`alias`, 
+                     'p_nr', r.`p_nr`, 
+                     'address', r.`address`, 
+                     'city', r.`city`, 
+                     'post_nr', r.`post_nr`, 
+                     'country', r.`country`,
+                     'email', r.`email`,
+                     'phone', r.`phone`, 
+                     'is_gf',  convert(r.`is_gf`,int), 
+                     'is_managed', convert(r.`is_managed`,int), 
+                     'gf_refid', r.`gf_refid`,
+                     'gf_urid', convert(r.`gf_urid`,varchar(64))
+                     
+                     ) ) END ,
+                            'restaurants_count',count(r.id))as 'company'
 
         FROM $tblname c
         left join tbl_restaurants r on (c.id = r.company_id) 
@@ -61,7 +69,8 @@ class CompanyGateway extends DbObject
             if (count($result) < 1) {
                 return null;
             }
-            return Company::GetCompany($result[0]);
+            //var_dump($result[0]["company"]);
+            return Company::GetCompany($result[0]["company"]);
         } catch (\PDOException $e) {
             (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
@@ -71,7 +80,8 @@ class CompanyGateway extends DbObject
     {
         $tblname = $this->getTableName();
         $statment = "SELECT c.*,
-                        JSON_ARRAYAGG(DISTINCT JSON_OBJECT(
+        case when r.`id` is NULL THEN JSON_ARRAY()
+         ELSE JSON_ARRAYAGG(DISTINCT JSON_OBJECT(
                                     'id', r.`id`,
                                     'company_id', r.`company_id`,
                                     'name', r.`name`,
@@ -88,7 +98,7 @@ class CompanyGateway extends DbObject
                                     'gf_refid', r.`gf_refid`,
                                     'gf_urid', r.`gf_urid`,
                                     'gf_cdn_base_path', r.`gf_cdn_base_path`)
-                                ) AS 'restaurants',
+                                )END  AS 'restaurants',
                                 count(r.id) as 'restaurants_count'
 
                         FROM $tblname c

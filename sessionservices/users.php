@@ -121,7 +121,7 @@ function UsersProcessRequest()
                     # code...
                     break;
             }
-            $retval = json_decode("{}");
+            //$retval = json_decode("{}");
             echo json_encode($retval);
             break;
         case 'PUT':

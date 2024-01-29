@@ -412,7 +412,7 @@ WHERE `user_id` = :user_id;";
         }
         foreach ($userRelations->relations as $r) {
             $company_id = $r->companyId ?? 'null';
-            if (count($r->restaurantId) < 1) {
+            if ($r->restaurantId ==null || count($r->restaurantId) < 1) {
                 $secStatment = "(:user_id,$company_id,NULL)";
                 array_push($secsStatment, $secStatment);
             } else {
@@ -422,6 +422,10 @@ WHERE `user_id` = :user_id;";
                 }
             }
         }
+        /**
+         * 
+         * 
+         */
         $Istatement = "INSERT INTO `tbl_user_relations`
         (`user_id`,
         `company_id`,
