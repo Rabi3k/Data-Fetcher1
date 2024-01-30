@@ -164,10 +164,12 @@ class Order extends ClassObj
             if ($item->type == "item") {
                 $itemsLIds = $integrationGateway->GetTypeByIntegrationAndGfId(intval($item->type_id), $integration->Id, "item")->parent_lid;
                 $modifier_options = array();
+                $price = floatval($item->price);
                 foreach ($item->options as $option) {
                     # code...
                     if ($option->type == "size") {
                         $itemsLIds = $integrationGateway->GetTypeByIntegrationAndGfId(intval($option->type_id), $integration->Id, "variant")->loyverse_id;
+                        $price += floatval($option->price);
                     } else if ($option->type == "option") {
 
                         $optionsLIds = $integrationGateway->GetTypeByIntegrationAndGfId(intval($option->type_id), $integration->Id, "option")->loyverse_id;
@@ -177,7 +179,7 @@ class Order extends ClassObj
                 $lineItems[] = (object)array(
                     "variant_id" => $itemsLIds,
                     "quantity" => intval($item->quantity),
-                    "price" => floatval($item->price),
+                    "price" => floatval($price),
                     "line_modifiers" => $modifier_options,
                     "line_note" => $item->instructions
                 );
