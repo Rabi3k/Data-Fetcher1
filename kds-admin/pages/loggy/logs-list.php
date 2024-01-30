@@ -13,7 +13,13 @@
         </div>
     </div>
     <div class="col-4 d-flex justify-content-end">
-        <button name="reload-btn" id="reload-btn" class="btn btn-primary" role="button"><i class="fa fa-refresh" aria-hidden="true"></i></button>
+        <button name="reload-btn" id="reload-btn" class="btn btn-primary" role="button">
+            <i class="fs-2 bi bi-arrow-repeat ">
+            </i>
+            <div class="spinner spinner-border text-light visually-hidden" role="status">
+
+            </div>
+        </button>
     </div>
 </div>
 <hr />
@@ -145,8 +151,15 @@
                 //$(this).toggleClass('selected');
                 window.location = $(this).data("href");
             });
-            $("#reload-btn").click(function(){table.ajax.reload();})
-            
+            $("#reload-btn").click(function() {
+                $("#reload-btn>.spinner").removeClass("visually-hidden");
+                $("#reload-btn>i.bi").addClass("visually-hidden");
+                table.ajax.reload(function(){
+                    $("#reload-btn>.spinner").addClass("visually-hidden");
+                    $("#reload-btn>i.bi").removeClass("visually-hidden");
+                });
+            })
+
         });
     </script>
 </div>

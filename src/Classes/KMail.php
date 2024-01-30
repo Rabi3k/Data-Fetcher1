@@ -81,7 +81,7 @@ class KMail
             $myMail = new MyMail();
 
             $s = imap_fetchstructure($inbox, $msg_number);
-            if (!$s->parts) // Simple message
+            if (!isset($s->parts)) // Simple message
             {
                 $myMail->getpart($inbox, $msg_number, $s, 0);
             } else // Multipart message: cycle through each part
@@ -153,14 +153,14 @@ class MyMail
                 $eparams[strtolower($x->attribute)] = $x->value;
             }
         }
-        if ($p->dparameters) {
+        if (isset($p->dparameters)) {
             foreach ($p->dparameters as $x) {
                 $eparams[strtolower($x->attribute)] = $x->value;
             }
         }
 
         // Attachments
-        if ($eparams['filename'] || $eparams['name']) {
+        if (isset($eparams['filename']) || isset($eparams['name'])) {
             $filename = ($eparams['filename']) ? $eparams['filename'] : $eparams['name'];
             $this->attachments[$filename] = $data;
         }
@@ -178,7 +178,7 @@ class MyMail
         }
 
         // Subparts Recursion
-        if ($p->parts) {
+        if (isset($p->parts)) {
             foreach ($p->parts as $part_n2 => $p2) {
                 self::getpart($mbox, $mid, $p2, $part_n . '.' . ($part_n2 + 1));
             }

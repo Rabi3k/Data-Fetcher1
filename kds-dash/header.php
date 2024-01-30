@@ -1,6 +1,6 @@
 <?php
 ?>
-<nav class="navbar navbar-dark sticky-top bg-secondary flex-md-nowrap p-0">
+<header class="navbar navbar-dark sticky-top bg-secondary flex-md-nowrap p-0 sticky-xl-top">
   <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="/">
     <img class="mb-1" src="/media/System/logo.svg" alt="" width="50" height="30">
     <span>Relax!</span>
@@ -23,6 +23,6 @@
       <a class="dropdown-item" href="#">Something else here</a>
     </div>
   </div>
-</nav>
+</header>
 
 <script src="//code.tidio.co/cf02wzadzvhfykn8u60bxpjnuw5niber.js" async></script>
