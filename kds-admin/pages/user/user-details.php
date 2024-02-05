@@ -31,53 +31,6 @@ $userSecret = $userGateway->GetEncryptedKey($lUser->email);
 $secretKey =  bin2hex($userSecret);
 
 
-
-if (isset($_GET['action'])) {
-    if ($_GET['action'] == 'edit-details') {
-
-        if (isset($_POST['inputName']) && !empty($_POST['inputName'])) {
-            $lUser->full_name = $_POST['inputName'];
-        }
-        if (isset($_POST['inputUserName']) && !empty($_POST['inputUserName'])) {
-            $lUser->user_name = $_POST['inputUserName'];
-        }
-        if (isset($_POST['inputEmail']) && !empty($_POST['inputEmail'])) {
-            $lUser->email = $_POST['inputEmail'];
-        }
-        // Activate user
-        if (isset($_POST['userType']) && !empty($_POST['userType'])) {
-            $lUser->SetUsertype(strval($_POST['userType']));
-        }
-        if (isset($_POST['screenType']) && !empty($_POST['screenType'])) {
-            //$lUser->SetUsertype(strval($_POST['userType']));
-            switch ($_POST['screenType']) {
-                case "OrderDisplay":
-                    $lUser->screen_type = 1;
-                    break;
-
-                case "ItemDisplay":
-                    $lUser->screen_type = 2;
-                    break;
-
-                case "CustomerDisplay":
-                    $lUser->screen_type = 3;
-                    break;
-
-                default:
-                    $lUser->screen_type = 1;
-                    break;
-            }
-        }
-        if (isset($_POST['inputProfile']) && !empty($_POST['inputProfile'])) {
-            $lUser->profile_id = intval($_POST['inputProfile']);
-        }
-        $lUser = $userGateway->InsertOrUpdate($lUser);
-        $idUrl = "id=$lUser->id";
-    }
-}
-
-
-
 ?>
 <style>
     .list-group-info .list-group-item {
@@ -108,7 +61,7 @@ if (isset($_GET['action'])) {
     <div class="col-5 pull-right">
         <div class="row">
             <div class="col btn-group-vertical pull-right" role="group" aria-label="Vertical button group">
-                <a class="btn btn-info pull-right" role="button" id="btnCopyUserLogin" onclick="CopyToClipboard();"><i class="fa fa-solid fa-sign-in"></i> Copy url</a>
+                <a class="btn btn-info pull-right" role="button" id="btnCopyUserLogin" onclick="CopyToClipboard(this);"><i class="bi bi-clipboard-check-fill"></i> Copy url</a>
             </div>
             <div class="col btn-group-vertical" role="group" aria-label="Vertical button group">
                 <a class="btn btn-warning" role="button" target="_blank" href="/login.php?secret=0x<?php echo $secretKey ?>" id="btnUserLogin"><i class="fa fa-solid fa-sign-in"></i> Login with user</a>
@@ -119,7 +72,7 @@ if (isset($_GET['action'])) {
     </div>
 </div>
 <script>
-    function CopyToClipboard() {
+    function CopyToClipboard(e) {
         // Get the text field
         var copyText = document.getElementById("btnUserLogin");
 
@@ -127,8 +80,20 @@ if (isset($_GET['action'])) {
 
         // Copy the text inside the text field
         try {
-            copyToClipboard(`${window.location.protocol}//${window.location.host}${$userUrlSecret}`).then(() =>
-                console.log('Text copied to the clipboard!'));
+            copyToClipboard(`${window.location.protocol}//${window.location.host}${$userUrlSecret}`)
+                .then(() => {
+                    console.log('Text copied to the clipboard!')
+                    $(e).addClass("bg-dark text-light disabled");
+                    let btTxt = $(e).html();
+                      $(e).text("URL Copied !");
+                        setTimeout(function() {
+                          $(e).removeClass("bg-dark text-light disabled");
+                          $(e).html(btTxt);
+                    }, 2000);
+
+                });
+
+
         } catch (error) {
             console.error(error);
         }
@@ -182,7 +147,7 @@ if (isset($_GET['action'])) {
     <!-- Make sure not to inlude files on new (usless if not used) -->
 
     <div class="tab-pane fade" id="access" role="tabpanel" aria-labelledby="profile-tab">
-        <?php if ($SaveType === "update") { 
+        <?php if ($SaveType === "update") {
             include("user-details-pages/ud-restaurants.php");
         } ?>
     </div>
@@ -197,8 +162,7 @@ if (isset($_GET['action'])) {
 </div>
 
 <script type="text/javascript">
-   
-   let $userId = parseInt("<?php echo $lUser->id ?>");
+    let $userId = parseInt("<?php echo $lUser->id ?>");
 
     var val = '<?php echo isset($_GET['tab']) ? $_GET['tab'] : "home" ?>';
     if (val != '') {
@@ -208,5 +172,4 @@ if (isset($_GET['action'])) {
             $('#' + val).addClass('show active');
         });
     }
-    
 </script>

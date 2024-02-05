@@ -3,32 +3,7 @@
 use Src\Classes\Options;
 use Src\TableGateways\OptionsGateway;
 
-if (isset($_POST['save-smtp'])) {
-    if (isset($_POST['inputHost']) && !empty($_POST['inputHost'])) {
-        $smtp['Host'] = $_POST['inputHost'];
-    }
-    if (isset($_POST['inputSMTPAuth']) && !empty($_POST['inputSMTPAuth'])) {
-        $smtp['SMTPAuth'] = 'true';
-    } else {
-        $smtp['SMTPAuth'] = 'false';
-    }
-    if (isset($_POST['SMTPSecure']) && !empty($_POST['SMTPSecure'])) {
-        $smtp['SecureType'] = $_POST['SMTPSecure'];
-    }
-    if (isset($_POST['inputPort']) && !empty($_POST['inputPort'])) {
-        $smtp['Port'] = $_POST['inputPort'];
-    }
-    if (isset($_POST['inputUsername']) && !empty($_POST['inputUsername'])) {
-        $smtp['Username'] = $_POST['inputUsername'];
-    }
-    if (isset($_POST['inputPassword']) && !empty($_POST['inputPassword'])) {
-        $smtp['Password'] = $_POST['inputPassword'];
-    }
 
-    $lOp = Options::arrayToClass($smtp, "SMTP");
-    //var_dump($lOp);
-    $lOp = (new OptionsGateway($dbConnection))->InsertOrUpdate($lOp);
-}
 ?>
 
 <body>
@@ -38,7 +13,7 @@ if (isset($_POST['save-smtp'])) {
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <form method="post" action="?action=save-smtp">
+                <form method="post" class="needs-validation" action="?action=save-smtp">
 
                     <div class="form-row">
                         <div class="form-group col-md-6">
@@ -79,17 +54,82 @@ if (isset($_POST['save-smtp'])) {
                             </div>
                         </div>
                     </div>
-                    <button type="submit" name="save-smtp" class="btn btn-primary">Save</button>
                 </form>
+                <button type="button" name="check-smtp" class="btn btn-info float-start" id="btn-check-smtp"><i class="bi bi-check-circle"></i> Check values</button>
+                <button type="button" name="save-smtp" class="btn btn-info float-end disabled" id="btn-save-smtp"><i class="bi bi-save"></i> Save</button>
             </div>
         </div>
     </div>
     <script>
-        $("#SMTPSecure").val('<?php echo $smtp['SecureType']; ?>')
-        $("#phs").click(function(){
+        $("#SMTPSecure").val('<?php echo $smtp['SecureType']; ?>');
+        let smtpVals = {
+            "host": $(inputHost).val(),
+            "smtp_auth": $(inputSMTPAuth).val(),
+            "username": $(inputUsername).val(),
+            "password": $(inputPassword).val(),
+            "smtp_secure_type": $(SMTPSecure).val(),
+            "smtp_port": $(inputPort).val()
+        };
+        $("#btn-save-smtp").click(function(e) {
+            smtpVals = {
+                "host": $(inputHost).val(),
+                "smtp_auth": $(inputSMTPAuth).val(),
+                "username": $(inputUsername).val(),
+                "password": $(inputPassword).val(),
+                "smtp_secure_type": $(SMTPSecure).val(),
+                "smtp_port": $(inputPort).val()
+            };
+            var settings = {
+                "url": "/sessionservices/emails.php?q=edit-smtp",
+                "method": "POST",
+                "timeout": 0,
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "data": JSON.stringify(smtpVals),
+                "error": function(response) {
+                    showAlert(response.responseJSON.message,true)
+                    console.log(response);
+                }
+            };
+
+            $.ajax(settings).done(function(response) {
+                showAlert("SMTP values saved!");
+            });
+        });
+        $("#btn-check-smtp").click(function(e) {
+            smtpVals = {
+                "host": $(inputHost).val(),
+                "smtp_auth": $(inputSMTPAuth).val(),
+                "username": $(inputUsername).val(),
+                "password": $(inputPassword).val(),
+                "smtp_secure_type": $(SMTPSecure).val(),
+                "smtp_port": $(inputPort).val()
+            };
+            var settings = {
+                "url": "/sessionservices/emails.php?q=check-smtp",
+                "method": "POST",
+                "timeout": 0,
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "data": JSON.stringify(smtpVals),
+                "error": function(response) {
+                    showAlert(response.responseJSON.message,true)
+                    console.log(response);
+                }
+            };
+
+            $.ajax(settings).done(function(response) {
+                showAlert("Values are valid");
+                $("#btn-save-smtp").removeClass("disabled");
+            });
+        });
+
+        $("#phs").click(function() {
             $(this).find("i").toggleClass("fa-eye fa-eye-slash");
-            var attr = $("#inputPassword").attr("type") == "password"? "text":"password";
-            $("#inputPassword").attr("type",attr);
+            var attr = $("#inputPassword").attr("type") == "password" ? "text" : "password";
+            $("#inputPassword").attr("type", attr);
         });
     </script>
 

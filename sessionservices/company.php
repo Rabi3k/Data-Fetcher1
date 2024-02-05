@@ -1,6 +1,5 @@
 
-
-            <?php
+<?php
 
 use Pinq\Analysis\Functions\Func;
 use Src\Classes\Company;
@@ -47,12 +46,12 @@ function UsersProcessRequest()
 
             $companyPostBody = json_decode($body);
             $retval = json_decode("{'message':'Nothing is here'}");
-           // $company = $userPostBody->userId;
-           // if (isset($userId) && $userId > 0) {
-               //     $lUser = UserGateway::GetUserClass($userId, false);
-               // }
-               switch ($q) {
-                   case 'edit-company':
+            // $company = $userPostBody->userId;
+            // if (isset($userId) && $userId > 0) {
+            //     $lUser = UserGateway::GetUserClass($userId, false);
+            // }
+            switch ($q) {
+                case 'edit-company':
                     $lCompany = Company::NewCompany();
                     $lCompany->setFromJsonStr($body);
                     $lCompany = $companyGateway->InsertOrUpdate($lCompany);

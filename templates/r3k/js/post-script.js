@@ -123,6 +123,10 @@ function closeBottomBar() {
 var navStatus = false;
 
 function toogleNav() {
+  if(document.getElementById("mySidebar")===null)
+  {
+    return;
+  }
   if (navStatus === false) {
     openNav();
   } else {
