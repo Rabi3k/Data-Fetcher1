@@ -33,6 +33,7 @@ class UsersController {
                     case FuncType::ByDate:
                         //pO3Mh9hwW01l
                         $password = str_Decrypt($this->params['p']);
+                        //echo $password;
                         $response = GeneralController::CreateResponser($this->getUser($this->params['u'],$password));
                         break;
                     case FuncType::ById:
@@ -96,12 +97,12 @@ class UsersController {
     private function getUser(string $username,string $password)
     {
         $users = $this->userGateway->GetUserByUsernamePassword($username,$password);
-        if (count($users) > 0) {
+        if (isset($users)) {
             //$user = $users[0];
-            $user  = UserGateway::GetUserClass($users[0]["id"]);
+            $user  = UserGateway::GetUserClass($users->id);
 
             if (strtolower($user->user_name) === strtolower($username) || strtolower($user->email) === strtolower($username)) {
-                return $user;
+                return $user->getJson();
             }
         }
         /*$response['status_code_header'] = 'HTTP/1.1 200 OK';

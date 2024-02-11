@@ -88,6 +88,9 @@ class UserGateway extends DbObject
         "IsAdmin", u.`IsAdmin`, 
         "isSuperAdmin", u.`isSuperAdmin`,
          "screen_type", u.`screen_type`, 
+         "passkey",u.`passkey`,
+		 "funneat_user",u.`funneat_user`,
+		 "funneat_pass",u.`funneat_pass`,
          "Restaurants_Id", Json_Array(group_concat(distinct r.`gf_refid`)), 
          "Profile",JSON_ARRAYAGG( 
          DISTINCT 
@@ -170,13 +173,34 @@ class UserGateway extends DbObject
     {
         $username = strtolower($username);
         /*$password = \mysql_escape_string($password);*/
-        $statement = "SELECT * FROM $this->tblName WHERE (LOWER(user_name)=:username AND `password` = SHA2(:password,224))
-
-        OR (LOWER(email)=:username AND `password` = SHA2(:password,224));";
+        $statement = "SELECT * FROM $this->tblName WHERE (LOWER(user_name)=LOWER(:username) OR LOWER(email)=LOWER(:username)) AND `password` = SHA2(:password,224);";
 
         try {
             $sth = $this->getDbConnection()->prepare($statement);
             $sth->execute(array('password' => $password, 'username' => $username));
+            $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
+            if (count($result) > 0) {
+                return (object)$result[0];
+            }
+            else
+            {
+                return null;
+            }
+            echo json_encode((object)$result[0]);
+        } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
+            exit($e->getMessage());
+        }
+    }
+    function GetUserByPasskey($username, $passkey)
+    {
+        $username = strtolower($username);
+        /*$password = \mysql_escape_string($password);*/
+        $statement = "SELECT * FROM $this->tblName WHERE passkey=;";
+
+        try {
+            $sth = $this->getDbConnection()->prepare($statement);
+            $sth->execute(array('passkey' => $passkey));
             $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
             return $result;
         } catch (\PDOException $e) {
@@ -412,7 +436,7 @@ WHERE `user_id` = :user_id;";
         }
         foreach ($userRelations->relations as $r) {
             $company_id = $r->companyId ?? 'null';
-            if ($r->restaurantId ==null || count($r->restaurantId) < 1) {
+            if ($r->restaurantId == null || count($r->restaurantId) < 1) {
                 $secStatment = "(:user_id,$company_id,NULL)";
                 array_push($secsStatment, $secStatment);
             } else {
@@ -492,6 +516,28 @@ WHERE `user_id` = :user_id;";
             $statement->execute(array(
                 'id' => (int)$user->id,
                 'secret_key' => strval($password),
+            ));
+            $this->getDbConnection()->commit();
+            return $user;
+        } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
+            exit($e->getMessage());
+        }
+    }
+    function UpdateUserPasskey(LoginUser $user, string $passkey)
+    {
+        //Password(:password), sha(:secret_key)
+        $statement = "UPDATE $this->tblName
+         SET 
+         `passkey` =  passkey
+         WHERE id   = :id;";
+
+        try {
+            $statement = $this->getDbConnection()->prepare($statement);
+            $this->getDbConnection()->beginTransaction();
+            $statement->execute(array(
+                'id' => (int)$user->id,
+                'passkey' => strval($passkey),
             ));
             $this->getDbConnection()->commit();
             return $user;

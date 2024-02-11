@@ -1,3 +1,7 @@
+<?php
+$passkey = GeneratePassKey();
+
+?>
 <div class="container">
     <div class="row text-center">
         <div class="col-12 p-2">
@@ -19,15 +23,17 @@
         <div class="row">
             <div class="col-9">
                 <div class="form-group p-2">
-                    <input type="password" class="input-lg form-control" name="password1" id="password1" placeholder="New Password" autocomplete="off" required>
-                    <div class="invalid-feedback"></div>
-                    <div class="valid-feedback">
-                        Looks good!
+                    <div class="input-group">
+                        <div class="input-group-text fs-6 bi bi-eye fs-5 togglePassword" for="password1"></div>
+                        <input type="password" class="input-lg form-control" name="password1" id="password1" placeholder="New Password" autocomplete="off" required>
                     </div>
+
                 </div>
                 <div class="form-group p-2">
-                    <input type="password" class="input-lg form-control" name="password2" id="password2" placeholder="Repeat Password" autocomplete="off">
-                    <div class="invalid-feedback"></div>
+                    <div class="input-group">
+                        <div class="input-group-text fs-6 bi bi-eye fs-5 togglePassword" for="password2"></div>
+                        <input type="password" class="input-lg form-control" name="password2" id="password2" placeholder="Repeat Password" autocomplete="off">
+                    </div>
                 </div>
                 <div class="row float-end">
                     <div class="col  p-2">
@@ -48,6 +54,13 @@
             </div>
         </div>
     </form>
+    <hr />
+    <div class="row">
+        <span class="fs-4">
+            PassKey: <?php echo $passkey; ?>
+        </span>
+    </div>
+    <hr />
 
 </div>
 <script>

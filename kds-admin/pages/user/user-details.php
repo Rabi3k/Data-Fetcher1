@@ -30,7 +30,37 @@ $companiesTree = Company::getAllCompaniesJsonTree();
 $userSecret = $userGateway->GetEncryptedKey($lUser->email);
 $secretKey =  bin2hex($userSecret);
 
+function digitalizeStr($str, int $len)
+{
+    // Ensure the last part has exactly 4 digits
+    if (strlen($str) > $len) {
+        return substr($str, 0, $len);
+    } elseif (strlen($str) < $len) {
+        return str_pad($str, $len, '0', STR_PAD_LEFT);
+    }
+    return $str;
+}
 
+function GeneratePassKey()
+{
+    global $lUser;
+    // Generate random hexadecimal values for the first and second parts
+    $hex1 = digitalizeStr(dechex(rand(0, 256)), 2); // Random hex between 00 and FF
+    $hex2 = digitalizeStr(dechex(rand(0, 256)), 2); // Random hex between 00 and FF
+
+    // Generate random hexadecimal values for the Company ID and User ID parts
+    //$companyID = str_pad(dechex(rand(0, 4095)), 3, '0', STR_PAD_LEFT); // Random hex between 000 and FFF
+    $userID = digitalizeStr(dechex($lUser->id),4);
+
+    // Generate random hexadecimal values for the last part
+    $randomPart = digitalizeStr(dechex(rand(0, 65535)), 4); // Random hex between 0000 and FFFF
+
+    // Concatenate the values to form the passkey
+    $passkey = $hex1 . $userID . $randomPart;
+
+    // Output the passkey
+    return  $passkey;
+}
 ?>
 <style>
     .list-group-info .list-group-item {
@@ -85,10 +115,10 @@ $secretKey =  bin2hex($userSecret);
                     console.log('Text copied to the clipboard!')
                     $(e).addClass("bg-dark text-light disabled");
                     let btTxt = $(e).html();
-                      $(e).text("URL Copied !");
-                        setTimeout(function() {
-                          $(e).removeClass("bg-dark text-light disabled");
-                          $(e).html(btTxt);
+                    $(e).text("URL Copied !");
+                    setTimeout(function() {
+                        $(e).removeClass("bg-dark text-light disabled");
+                        $(e).html(btTxt);
                     }, 2000);
 
                 });
@@ -135,6 +165,9 @@ $secretKey =  bin2hex($userSecret);
     <li class="nav-item <?php echo  $SaveType === "update" ? "" : "disabled"  ?> ">
         <a class="nav-link" data-toggle="tab" href="#password">Change Password</a>
     </li>
+    <li class="nav-item <?php echo  $SaveType === "update" ? "" : "disabled"  ?> ">
+        <a class="nav-link" data-toggle="tab" href="#email">Email setup</a>
+    </li>
 </ul>
 
 <div class="tab-content p-2 border border-top-0" id="myTabContent">
@@ -159,6 +192,15 @@ $secretKey =  bin2hex($userSecret);
             <?php include "user-details-pages/user-password.php" ?>
         <?php } ?>
     </div>
+    <!-- End of Change Password Tab -->
+    <!-- Setup Email Tab -->
+    <!-- Make sure not to inlude files on new (usless if not used) -->
+    <div class="tab-pane fade" id="email" role="tabpanel" aria-labelledby="contact-tab">
+        <?php if ($SaveType === "update") { ?>
+            <?php include "user-details-pages/ud-email.php" ?>
+        <?php } ?>
+    </div>
+    <!-- End of Change Password Tab -->
 </div>
 
 <script type="text/javascript">
@@ -172,4 +214,22 @@ $secretKey =  bin2hex($userSecret);
             $('#' + val).addClass('show active');
         });
     }
+    
+</script>
+
+<script>
+    const togglePassword = $(".togglePassword");
+    
+
+    togglePassword.on("click", function() {
+        passwordId = $(this).attr("for");
+        let password = $("#"+passwordId)
+        // toggle the type attribute
+        const type = password.attr("type") === "password" ? "text" : "password";
+        password.attr("type", type);
+
+        // toggle the eye icon
+        this.classList.toggle('bi-eye');
+        this.classList.toggle('bi-eye-slash');
+    });
 </script>
