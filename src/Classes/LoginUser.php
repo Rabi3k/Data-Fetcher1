@@ -75,10 +75,10 @@ class LoginUser extends ClassObj
                     return $r["company_id"] === $c["id"];
                 })->asArray();
                 $cRest = array();
-foreach ($cRestarr as $key => $value) {
-    # code...
-    $cRest[] = new Restaurant($value);
-}
+                foreach ($cRestarr as $key => $value) {
+                    # code...
+                    $cRest[] = new Restaurant($value);
+                }
                 $c["restaurants"] = ($cRest);
                 $retval[] = new Company($c);
             }
@@ -133,6 +133,9 @@ foreach ($cRestarr as $key => $value) {
             "password": "",
             "secret_key": "",
             "screen_type": 1,
+            "passkey":"",
+		    "funneat_user":"",
+		    "funneat_pass":"",
             "isSuperAdmin": 0,
             "IsAdmin": 0,
             "profile_id": 0,
@@ -152,7 +155,7 @@ foreach ($cRestarr as $key => $value) {
     }
     public static function GetUserFromArrayJsonStr(array $usersStrs)
     {
-        $users =array();
+        $users = array();
 
         foreach ($usersStrs as $key => $userObj) {
             $c = LoginUser::GetUserFromJsonStr($userObj["user"]);

@@ -249,7 +249,7 @@ function GetHostUrl(){
  * @param string $str
  * @return void
  */
-function str_Encrypt(string $str)
+function str_Encrypt(string $str):string
 {
     // Store a string into the variable which
     // need to be Encrypted
@@ -279,7 +279,7 @@ function str_Encrypt(string $str)
     return $encryption;
 }
 
-function str_Decrypt(string $encryption)
+function str_Decrypt(string $encryption):string
 {
     // Store the cipher method
     $ciphering = "AES-128-CTR";

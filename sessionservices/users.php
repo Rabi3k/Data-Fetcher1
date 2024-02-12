@@ -175,6 +175,11 @@ function UsersProcessRequest()
                     $userGateway->updateUserRelations($userPostBody);
                     $retval = json_decode("{'message':user relations changed}");
                     break;
+                case 'set-user-email':
+                    
+                    $userGateway->UpdateUserEmail($userPostBody);
+                    $retval = json_decode("{'message':user relations changed}");
+                    break;
                 default:
                     # code...
                     break;

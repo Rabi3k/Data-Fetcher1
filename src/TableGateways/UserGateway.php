@@ -154,7 +154,10 @@ class UserGateway extends DbObject
             if (count($result) < 1) {
                 return null;
             }
-            return LoginUser::GetUserFromJsonStr($result[0]["user"]);
+            $user = LoginUser::GetUserFromJsonStr($result[0]["user"]);
+            $user->passkey = isset($user->passkey) ? str_Encrypt($user->passkey) : "";
+            //$user->passkey = isset($user->passkey) ? str_Decrypt($user->passkey) : "";
+            return $user;
         } catch (\PDOException $e) {
             (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
             exit($e->getMessage());
@@ -181,9 +184,7 @@ class UserGateway extends DbObject
             $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
             if (count($result) > 0) {
                 return (object)$result[0];
-            }
-            else
-            {
+            } else {
                 return null;
             }
             echo json_encode((object)$result[0]);
@@ -277,13 +278,13 @@ class UserGateway extends DbObject
     function ValidateLogin($username, $password)
     {
         $users = $this->GetUserByUsernamePassword($username, $password);
-        if (count($users) > 0) {
-            $user = $users[0];
+        if (isset($users)) {
+            $user = $users;
 
-            if (strtolower($user['user_name']) === strtolower($username) || strtolower($user['email']) === strtolower($username)) {
+            if (strtolower($user->user_name) === strtolower($username) || strtolower($user->email) === strtolower($username)) {
                 $_SESSION["loggedin"] = true;
-                $_SESSION["UserId"] = $user['id'];
-                $_SESSION["username"] = $user['user_name'];
+                $_SESSION["UserId"] = $user->id;
+                $_SESSION["username"] = $user->user_name;
                 //$this->LoadUserClass($user['id']);
                 return true;
             }
@@ -297,7 +298,7 @@ class UserGateway extends DbObject
         $user = LoginUser::GetUser($this->GetUserByUsernameSecretKey($username, $secretKey)[0]);
 
         if ($user) {
-
+            echo $user->id;
             if (strtolower($user->user_name) === strtolower($username) || strtolower($user->email) === strtolower($username)) {
                 $_SESSION["loggedin"] = true;
                 $_SESSION["UserId"] = $user->id;
@@ -403,6 +404,31 @@ class UserGateway extends DbObject
                 'IsAdmin' => $input->isAdmin ?? false,
                 'isSuperAdmin' => $input->isSuperAdmin ?? false,
                 'screen_type' => $input->screen_type ?? 1,
+            ));
+            $this->getDbConnection()->commit();
+            return $input;
+        } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
+            exit($e->getMessage());
+        }
+    }
+    public function UpdateUserEmail(LoginUser $input)
+    {
+        //Password(:password), sha(:secret_key)
+        $statement = "UPDATE $this->tblName
+         SET 
+		 `funneat_user` = :funneat_user,
+		 `funneat_pass` = :funneat_pass,
+
+         WHERE id   = :id;";
+
+        try {
+            $statement = $this->getDbConnection()->prepare($statement);
+            $this->getDbConnection()->beginTransaction();
+            $statement->execute(array(
+                'passkey' => (int)$input->id,
+                'funneat_user' => $input->email,
+                'funneat_pass' => $input->user_name,
             ));
             $this->getDbConnection()->commit();
             return $input;
