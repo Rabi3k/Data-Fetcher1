@@ -1,6 +1,6 @@
 <?php
 $passkey = GeneratePassKey();
-
+var_dump($luser);
 ?>
 <div class="container">
     <div class="row text-center">
@@ -56,9 +56,33 @@ $passkey = GeneratePassKey();
     </form>
     <hr />
     <div class="row">
-        <span class="fs-4">
-            PassKey: <?php echo $passkey; ?>
-        </span>
+        <div class="col-9">
+            <div class="form-group p-2">
+                <div class="input-group">
+                    <div class="input-group-text fs-6 bi bi-eye fs-5 togglePassword" for="passkey"></div>
+                    <input type="password" class="input-lg form-control" name="passkey" id="passkey" placeholder="Passkey" autocomplete="off" value="<?php echo str_Decrypt($lUser->passkey) ?>">
+                </div>
+            </div>
+        </div>
+        <div class="col">
+        <div class="form-group p-2">
+            <div class="input-group">
+                <?php
+                $uri = str_Decrypt($lUser->passkey);
+                $pattern = '{\w{2}(?<id>\w{4})\w{4}}';
+
+                if (preg_match($pattern, $uri, $matches)) {
+                    echo ("User id: " . hexdec($matches['id']));
+                }
+                else
+                {
+                    echo ("User id: " . dechex(1984));
+                }
+                ?>
+            </div>
+        </div>
+        </div>
+        
     </div>
     <hr />
 
