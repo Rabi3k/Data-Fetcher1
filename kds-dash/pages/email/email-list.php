@@ -2,7 +2,7 @@
 
 use Src\Classes\KMail;
 
-$mailHeaders = KMail::getMessages($mailbox, "$loggedUser->funneat_user@funneat.dk", $loggedUser->funneat_pass);
+$mailHeaders = KMail::getMessages($mailbox, $username, $password);
 
 ?>
 <div class="container-fluid">

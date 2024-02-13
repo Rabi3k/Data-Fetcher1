@@ -13,8 +13,8 @@
 
 
 $mailbox = "{mail.funneat.dk:993/imap/ssl/novalidate-cert}INBOX"; //{mail.funneat.dk:143}INBOX
-$username = "rko@funneat.dk"; //"abv@funneat.dk";
-$password = "Rabih1984";
+$username = "$loggedUser->funneat_user@funneat.dk" ; //"abv@funneat.dk";
+$password = $loggedUser->funneat_pass;
 
 if (isset($_GET['id'])) {
     $msgId=intval($_GET['id']);
