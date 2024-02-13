@@ -135,6 +135,22 @@ function UsersProcessRequest()
                 $lUser = UserGateway::GetUserClass($userId, false);
             }
             switch ($q) {
+                case 'change-femail':
+                    /*
+                    {
+                        userId:
+                        f_email:
+                        f_password:
+                    }
+                    */
+                    if (!isset($lUser) ||  empty($userPostBody->f_email)||  empty($userPostBody->f_password)) {
+                        break;
+                    }
+                    $lUser->funneat_user = $userPostBody->f_email;
+                    $lUser->funneat_pass =$userPostBody->f_password;
+                    $userGateway->UpdateUserEmail($lUser);
+                    $retval = (object)array('message'=>"funneat account saved");
+                    break;
                 case 'change-password':
                     /*
                     {
@@ -146,7 +162,7 @@ function UsersProcessRequest()
                         break;
                     }
                     $userGateway->UpdateUserPassword($lUser, $userPostBody->password);
-                    $retval = json_decode("{'message':password changed}");
+                    $retval = json_decode("{'message':'password changed'}");
                     break;
                 case 'send-rest-pasword':
                     /*

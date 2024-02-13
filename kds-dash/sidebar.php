@@ -72,22 +72,25 @@
               </a>
             </h6>
 
-            <h6>
-              <a class="nav-link mx-3" data-bs-toggle="collapse" href="#contentId" aria-expanded="false" aria-controls="contentId">
-                <i class="bi bi-envelope-at"></i>
-                Emails
-              </a>
-            </h6>
-            <div class="collapse" id="contentId">
-              <ul class="nav flex-column mb-2">
-                <li class="nav-item">
-                  <a class="nav-link" href="/dash/email-setup">
-                    <i class="bi-send"></i>
-                    Email Setup
-                  </a>
-                </li>
-              </ul>
-            </div>
-
+            <?php 
+            if (isset($loggedUser->funneat_user) && isset($loggedUser->funneat_pass)) {
+              ?>
+              <h6>
+                <a class="nav-link mx-3" data-bs-toggle="collapse" href="#contentId" aria-expanded="false" aria-controls="contentId">
+                  <i class="bi bi-envelope-at"></i>
+                  Emails
+                </a>
+              </h6>
+              <div class="collapse" id="contentId">
+                <ul class="nav flex-column mb-2">
+                  <li class="nav-item">
+                    <a class="nav-link" href="/dash/email-setup">
+                      <i class="bi-send"></i>
+                      Email Setup
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            <?php } ?>
 
           </div>

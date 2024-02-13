@@ -64,8 +64,14 @@ $(document).ready(function () {
 
         });
     });
-
-
+    $("#btn-save-passkey").click(function()
+    {
+        let $data = JSON.stringify({
+            "userId": $userId,
+            "password": $("#passkey").val()
+        });
+        showAlert($data);
+    });
     $("#btn-change-1").click(function (e) {
         if ($("#passwordForm").valid()) {
             $("#btn-change-1").find(".spinner").removeClass("visually-hidden");

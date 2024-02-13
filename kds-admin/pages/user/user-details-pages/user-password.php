@@ -1,6 +1,6 @@
 <?php
 $passkey = GeneratePassKey();
-var_dump($luser);
+
 ?>
 <div class="container">
     <div class="row text-center">
@@ -65,24 +65,31 @@ var_dump($luser);
             </div>
         </div>
         <div class="col">
-        <div class="form-group p-2">
-            <div class="input-group">
-                <?php
-                $uri = str_Decrypt($lUser->passkey);
-                $pattern = '{\w{2}(?<id>\w{4})\w{4}}';
+            <div class="form-group p-2">
+                <div class="input-group">
+                    <?php
+                    $uri = str_Decrypt($lUser->passkey);
+                    $pattern = '{\w{2}(?<id>\w{4})\w{4}}';
 
-                if (preg_match($pattern, $uri, $matches)) {
-                    echo ("User id: " . hexdec($matches['id']));
-                }
-                else
-                {
-                    echo ("User id: " . dechex(1984));
-                }
-                ?>
+                    if (preg_match($pattern, $uri, $matches)) {
+                        echo ("User id: " . hexdec($matches['id']));
+                    } else {
+                        //echo ("User id: " . dechex(1984));
+                    }
+                    ?>
+                </div>
             </div>
         </div>
+        <div class="col-9">
+            <div class="row float-end">
+                <div class="col  p-2">
+                    <button class="btn btn-info" type="button" id="btn-save-passkey">
+                        <span class="spinner spinner-border spinner-border-sm visually-hidden" role="status" aria-hidden="true"></span>
+                        Save
+                    </button>
+                </div>
+            </div>
         </div>
-        
     </div>
     <hr />
 

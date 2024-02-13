@@ -30,22 +30,26 @@ class UsersController {
             case 'GET':
                 switch($this->getFunc())
                 {
-                    case FuncType::ByDate:
+                    case ProcessType::UserPassword:
                         //pO3Mh9hwW01l
                         $password = str_Decrypt($this->params['p']);
                         //echo $password;
                         $response = GeneralController::CreateResponser($this->getUser($this->params['u'],$password));
                         break;
-                    case FuncType::ById:
+                    case ProcessType::ByID:
                         $response = GeneralController::CreateResponser($this->getUserById($this->params['id']));
                         //$response = $this->getOrderById($this->params['id']);
                         break;
-                    case FuncType::All:
+                    case ProcessType::Passkey:
+                        $response = GeneralController::CreateResponser($this->getUserByPasskey($this->params['p']));
+                        break;
+                    case ProcessType::All:
                         
                          $response['status_code_header'] = 'HTTP/1.1 200 OK';
                          $response['body'] = json_encode("[{'all_good':true}]");
                         break;
-                    case FuncType::None:
+                    case ProcessType::None:
+                        default:
                         $response = $this->notFoundResponse();
                         break;
                 }
@@ -68,30 +72,40 @@ class UsersController {
             echo $response['body'];
         }
     }
-    private function getFunc():FuncType
+    
+    private function getFunc():ProcessType
     {
        if(!isset($this->params) || count($this->params)<1)
        {
-            return FuncType::None;
+            return ProcessType::None;
        }
        if(isset($this->params["id"]))
        {
-        return FuncType::ById;
+        return ProcessType::ByID;
        }
        if(isset($this->params["TypeId"]))
        {
-        return FuncType::ById;
+        return ProcessType::ByID;
        }
        if(isset($this->params['u']) && isset($this->params['p']))
        {
-        return FuncType::ByDate;
+        return ProcessType::UserPassword;
        }
-       return FuncType::All;
+       if(!isset($this->params['u']) && isset($this->params['p']))
+       {
+        return ProcessType::Passkey;
+       }
+       return ProcessType::All;
     }
 
     private function getUserById($id)
     {
         $u= $this->userGateway->FindById($id);
+        return $u->getJson();
+    }
+    private function getUserByPasskey($passkey)
+    {
+        $u= $this->userGateway->getUserByPasskey(urldecode($passkey));
         return $u->getJson();
     }
     private function getUser(string $username,string $password)
@@ -126,4 +140,12 @@ class UsersController {
         return $response;
     }
 #endregion
+}
+
+enum ProcessType {
+    case ByID;
+    case UserPassword;
+    case Passkey;
+    case None;
+    case All;
 }

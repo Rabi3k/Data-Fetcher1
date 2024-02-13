@@ -193,21 +193,32 @@ class UserGateway extends DbObject
             exit($e->getMessage());
         }
     }
-    function GetUserByPasskey($username, $passkey)
+    function GetUserByPasskey($passkey): LoginUser|null
     {
-        $username = strtolower($username);
-        /*$password = \mysql_escape_string($password);*/
-        $statement = "SELECT * FROM $this->tblName WHERE passkey=;";
+            $uri = str_Decrypt($passkey);
 
-        try {
-            $sth = $this->getDbConnection()->prepare($statement);
-            $sth->execute(array('passkey' => $passkey));
-            $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
-            return $result;
-        } catch (\PDOException $e) {
-            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
-            exit($e->getMessage());
+        $pattern = '{\w{2}(?<id>\w{4})\w{4}}';
+        if (preg_match($pattern, $uri, $matches)) {
+            //echo ("User id: " . hexdec($matches['id']));
+            $userId = hexdec($matches['id']);
+            /*$password = \mysql_escape_string($password);*/
+            $statement = "SELECT id FROM $this->tblName WHERE id=:userId AND  passkey=:passkey;";
+            //echo "$statement => $uri";
+            try {
+                $sth = $this->getDbConnection()->prepare($statement);
+                $sth->execute(array('userId' => $userId, 'passkey' => $uri));
+                $result = $sth->fetchAll(\PDO::FETCH_ASSOC);
+                if (count($result) > 0) {
+                    return $this->FindById($result[0]["id"]);
+                } else {
+                    return (new LoginUser());
+                }
+            } catch (\PDOException $e) {
+                (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
+                exit($e->getMessage());
+            }
         }
+        return new LoginUser();
     }
     function GetEncryptedKey($userEmail)
     {
@@ -418,17 +429,17 @@ class UserGateway extends DbObject
         $statement = "UPDATE $this->tblName
          SET 
 		 `funneat_user` = :funneat_user,
-		 `funneat_pass` = :funneat_pass,
+		 `funneat_pass` = :funneat_pass
 
-         WHERE id   = :id;";
+         WHERE `id`   = :id;";
 
         try {
             $statement = $this->getDbConnection()->prepare($statement);
             $this->getDbConnection()->beginTransaction();
             $statement->execute(array(
-                'passkey' => (int)$input->id,
-                'funneat_user' => $input->email,
-                'funneat_pass' => $input->user_name,
+                'id' => (int)$input->id,
+                'funneat_user' => $input->funneat_user,
+                'funneat_pass' => $input->funneat_pass,
             ));
             $this->getDbConnection()->commit();
             return $input;
