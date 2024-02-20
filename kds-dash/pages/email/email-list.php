@@ -18,8 +18,6 @@ $mailHeaders = KMail::getMessages($mailbox, $username, $password);
         <tbody class="table-group-divider">
             <?php foreach ($mailHeaders->headers as $key => $head) { 
                 //echo json_encode($head);
-
-
                 ?>
 
                 <tr class='table-info' href="<?php echo "/dash/email-setup/" . trim($head->Msgno) ?>">
