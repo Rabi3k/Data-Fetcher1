@@ -28,8 +28,8 @@ msgid "welcome"
 msgstr "velkomen"
 
 #: kds-dash/pages/email/email-list.php:12
-msgid "From"
-msgstr ""
+msgid "from"
+msgstr "Fra"
 
 #: kds-dash/pages/email/email-list.php:13
 msgid "email"

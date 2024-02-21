@@ -1,7 +1,6 @@
 <?php
 
 use PHPMailer\PHPMailer\PHPMailer;
-use Pinq\Analysis\Functions\Func;
 use Src\Classes\Options;
 use Src\TableGateways\OptionsGateway;
 

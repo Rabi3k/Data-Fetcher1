@@ -1,6 +1,5 @@
 <?php
 
-use Pinq\Analysis\Functions\Func;
 use Src\Classes\PaymentRelation;
 use Src\Classes\Payments;
 use Src\Controller\GeneralController;

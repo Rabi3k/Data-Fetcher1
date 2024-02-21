@@ -1,7 +1,6 @@
 
 <?php
 
-use Pinq\Analysis\Functions\Func;
 use Src\Classes\Company;
 use Src\TableGateways\CompanyGateway;
 

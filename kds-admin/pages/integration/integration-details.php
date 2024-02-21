@@ -1,6 +1,5 @@
 <?php
 
-use Pinq\Traversable;
 use Src\Controller\GeneralController;
 use Src\Controller\IntegrationController;
 use Src\TableGateways\IntegrationGateway;

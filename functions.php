@@ -304,3 +304,50 @@ function str_Decrypt(string $encryption):string
 
     return $decryption;
 }
+
+//if (isset($_GET["locale"])) $locale = $_GET["locale"];
+
+// read directly .po files
+
+
+function T_($contenido) {
+
+    global $locale,$localDirectory;
+    $language = $locale;
+
+    $translation_file = "$localDirectory/$locale.po"; 
+
+    if (file_exists("$translation_file")) {
+        $IDIOMA_CONTENT = file("$translation_file");
+        $num_lineas = count($IDIOMA_CONTENT);
+    } else {
+        return $contenido;
+    }
+
+    for ($i = 0; $i <= $num_lineas; $i++) {
+        $linea1 = $IDIOMA_CONTENT[$i];
+        $linea1 = rtrim($linea1);
+        $string6 = substr($linea1, 0, 6);
+
+        if ($string6 == "msgid ") {
+            $orig = str_replace($string6, "", $linea1);
+            $orig = str_replace("\"", "", $orig);
+            
+            if ("$orig" == "$contenido") {
+                $linea2 = $IDIOMA_CONTENT[$i + 1];
+                $linea2 = rtrim($linea2);
+                $string7 = substr($linea2, 0, 7);
+
+                if ($string7 == "msgstr ") {
+                    $trad = str_replace($string7, "", $linea2);
+                    $trad = str_replace("\"", "", $trad);
+                    return("$trad");
+                }
+            } else {
+                $i = $i + 3;
+            }
+        }
+    }
+
+    return("$contenido");
+}

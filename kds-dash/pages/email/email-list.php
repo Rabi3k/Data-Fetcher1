@@ -9,8 +9,8 @@ $mailHeaders = KMail::getMessages($mailbox, $username, $password);
     <table class="table table-striped table-hover table-borderless table-info align-middle" id="table-mail">
         <thead class="table-light">
             <tr>
-                <th><?php _("From")?></th>
-                <th><?php _("email")?></th>
+                <th><?php echo T_("from")?></th>
+                <th><?php echo _("email")?></th>
                 <th><?php _("Subject")?></th>
                 <th><?php _("Date")?></th>
             </tr>

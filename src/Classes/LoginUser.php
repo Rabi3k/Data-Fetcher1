@@ -59,10 +59,10 @@ class LoginUser extends ClassObj
                 return "Order Panel";
         }
     }
-    public function LoadUser($companyObj)
+    public function LoadUser($userObj)
     {
 
-        $this->LoadDataObject($companyObj);
+        $this->LoadDataObject($userObj);
     }
     public function GetUserComanyRelationTree(): array|null
     {

@@ -25,7 +25,7 @@ if (isset($_GET['id'])) {
 }
 $profiles = (new UserProfilesGateway($dbConnection))->GetAllProfiles();
 $restaurants = (new RestaurantsGateway($dbConnection))->GetAll();
-$companiesTree = Company::getAllCompaniesJsonTree();
+//$companiesTree = Company::getAllCompaniesJsonTree();
 
 $userSecret = $userGateway->GetEncryptedKey($lUser->email);
 $secretKey =  bin2hex($userSecret);

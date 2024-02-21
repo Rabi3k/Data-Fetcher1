@@ -1,6 +1,5 @@
 <?php
 
-use Pinq\Analysis\Functions\Func;
 use Src\Classes\KMail;
 use Src\Classes\LoginUser;
 use Src\Classes\User;
