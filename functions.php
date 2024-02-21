@@ -309,13 +309,16 @@ function str_Decrypt(string $encryption):string
 
 // read directly .po files
 
+function _e($contenido,$local=null)
+{
+    echo __($contenido,$local);
+}
+function __($contenido,$local=null) {
 
-function T_($contenido) {
+    global $defaultLocale,$localDirectory;
+    $language = isset($local) && $local!=null?$local:$defaultLocale;
 
-    global $locale,$localDirectory;
-    $language = $locale;
-
-    $translation_file = "$localDirectory/$locale.po"; 
+    $translation_file = "$localDirectory/$language.po"; 
 
     if (file_exists("$translation_file")) {
         $IDIOMA_CONTENT = file("$translation_file");
@@ -341,7 +344,9 @@ function T_($contenido) {
                 if ($string7 == "msgstr ") {
                     $trad = str_replace($string7, "", $linea2);
                     $trad = str_replace("\"", "", $trad);
-                    return("$trad");
+                    $retval = empty($trad) || $trad ==""?$contenido:$trad;
+                    return($retval);
+
                 }
             } else {
                 $i = $i + 3;

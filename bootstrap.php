@@ -45,12 +45,12 @@ if (session_status() === PHP_SESSION_NONE) {
     }
 
 
-    $localDirectory = dirname(__FILE__) . '/locale';
-
+    
     $template = getenv('Template_Name');
     $rootpath = getenv('ROOT_PATH');
     $rootpath = getenv('ROOT_PATH');
-    $locale = getenv('LOCAL') ? getenv('LOCAL') : 'da_DK';
+    $defaultLocale = getenv('LOCAL') ? getenv('LOCAL') : 'da_DK';
+    $localDirectory = dirname(__FILE__) . '/locale';
     $dbConnection = (new DatabaseConnector())->getConnection();
 
     $smtpA = (new OptionsGateway($dbConnection))->findByType('SMTP');
