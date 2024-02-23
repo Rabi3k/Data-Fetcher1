@@ -335,7 +335,7 @@ function __($contenido, $defaultText, $local = null)
                     )
                 ];
                 // Insert the data.
-                $textObj = (object)$textsStore->insert($text);
+                $textObj = (object)$textsStore->updateOrInsert($text);
                 //var_dump($textObj);
             } else {
                 $textObj = (object) $result[0];
@@ -347,47 +347,4 @@ function __($contenido, $defaultText, $local = null)
             }
 
     return $textStr;
-}
-function T__($contenido, $local = null)
-{
-
-    global $defaultLocale, $localDirectory;
-    $language = isset($local) && $local != null ? $local : $defaultLocale;
-
-    $translation_file = "$localDirectory/$language.po";
-
-    if (file_exists("$translation_file")) {
-        $IDIOMA_CONTENT = file("$translation_file");
-        $num_lineas = count($IDIOMA_CONTENT);
-    } else {
-        return $contenido;
-    }
-
-    for ($i = 0; $i <= $num_lineas; $i++) {
-        $linea1 = $IDIOMA_CONTENT[$i];
-        $linea1 = rtrim($linea1);
-        $string6 = substr($linea1, 0, 6);
-
-        if ($string6 == "msgid ") {
-            $orig = str_replace($string6, "", $linea1);
-            $orig = str_replace("\"", "", $orig);
-
-            if ("$orig" == "$contenido") {
-                $linea2 = $IDIOMA_CONTENT[$i + 1];
-                $linea2 = rtrim($linea2);
-                $string7 = substr($linea2, 0, 7);
-
-                if ($string7 == "msgstr ") {
-                    $trad = str_replace($string7, "", $linea2);
-                    $trad = str_replace("\"", "", $trad);
-                    $retval = empty($trad) || $trad == "" ? $contenido : $trad;
-                    return ($retval);
-                }
-            } else {
-                $i = $i + 3;
-            }
-        }
-    }
-
-    return ("$contenido");
 }
