@@ -77,6 +77,14 @@ class Company extends ClassObj
         }
         return $retval;
     }
+    public static function GetCompaniesJsonList(array $companies)
+    {
+        $retval = array();
+        foreach ($companies as $c) {
+            $retval[] = Company::GetCompany($c);
+        }
+        return $retval;
+    }
     public static function getAllCompaniesTree()
     {
         global $dbConnection;
@@ -97,29 +105,6 @@ class Company extends ClassObj
         return $retval;
 
     }
-    public static function getAllCompaniesJsonTree()
-    {
-        global $dbConnection;
-        
-        $restaurants = (new RestaurantsGateway($dbConnection))->GetAll();
-        $companies = (new CompanyGateway($dbConnection))->GetAll();
-
-        $retval = array();
-            foreach ($companies as $c) {
-
-                $cRest =  (Traversable::from($restaurants))->where(function ($r) use ($c) {
-                    return $r->company_id === $c->id;
-                })->asArray();
-                $cRests= array();
-                foreach ($cRest as $r) {
-                    $cRests[]=$r->getJson();
-                }
-                $c->restaurants =  $cRests;
-                $retval[] = $c->getJson();
-            }
-
-        return $retval;
-
-    }
+    
     #endregion
 }

@@ -100,14 +100,14 @@ function UplaodImage(UploadType $type, string $fileName, $fileToUpload)
         $uploadOk = 1;
     } else {
         //echo "File is not an image.";
-        return array("upload"=>0,"message"=>"File is not an image!");
+        return array("upload" => 0, "message" => "File is not an image!");
     }
     //}
 
 
     // Check file size
     if ($fileToUpload["size"] > 500000) { //$_FILES["fileToUpload"]
-        return array("upload"=>0,"message"=>"Sorry, your file is too large!");
+        return array("upload" => 0, "message" => "Sorry, your file is too large!");
     }
 
     // Allow certain file formats
@@ -116,7 +116,7 @@ function UplaodImage(UploadType $type, string $fileName, $fileToUpload)
         && $imageFileType != "svg"
     ) {
         //echo "Sorry, only JPG, JPEG, PNG & SVG files are allowed.";
-        return array("upload"=>0,"message"=>"Sorry, only JPG, JPEG, PNG & SVG files are allowed!");
+        return array("upload" => 0, "message" => "Sorry, only JPG, JPEG, PNG & SVG files are allowed!");
     }
 
     // Check if file already exists
@@ -127,7 +127,7 @@ function UplaodImage(UploadType $type, string $fileName, $fileToUpload)
     }
     // Check if $uploadOk is set to 0 by an error
     if ($uploadOk == 0) {
-        return array("upload"=>0,"message"=>"Sorry, your file was not uploaded!");
+        return array("upload" => 0, "message" => "Sorry, your file was not uploaded!");
         // if everything is ok, try to upload file
     } else {
         if (move_uploaded_file($fileToUpload["tmp_name"], $_SERVER['DOCUMENT_ROOT'] . $target_file)) {
@@ -135,12 +135,11 @@ function UplaodImage(UploadType $type, string $fileName, $fileToUpload)
             if (file_exists($_SERVER['DOCUMENT_ROOT'] . "$target_file.old")) {
                 unlink($_SERVER['DOCUMENT_ROOT'] . "$target_file.old"); //remove the file
             }
-            return array("upload"=>1,"target_file"=>$target_file,"message"=>"");
+            return array("upload" => 1, "target_file" => $target_file, "message" => "");
         } else {
-            return array("upload"=>0,"message"=>"Sorry, there was an error uploading your file!");
+            return array("upload" => 0, "message" => "Sorry, there was an error uploading your file!");
         }
     }
-    
 }
 
 /**
@@ -233,11 +232,11 @@ function GUID()
  *
  * @return void
  */
-function GetHostUrl(){
-    if(isset($_SERVER['HTTPS'])){
+function GetHostUrl()
+{
+    if (isset($_SERVER['HTTPS'])) {
         $protocol = ($_SERVER['HTTPS'] && $_SERVER['HTTPS'] != "off") ? "https" : "http";
-    }
-    else{
+    } else {
         $protocol = 'http';
     }
     return $protocol . "://" . $_SERVER['HTTP_HOST'];
@@ -249,7 +248,7 @@ function GetHostUrl(){
  * @param string $str
  * @return void
  */
-function str_Encrypt(string $str):string
+function str_Encrypt(string $str): string
 {
     // Store a string into the variable which
     // need to be Encrypted
@@ -279,7 +278,7 @@ function str_Encrypt(string $str):string
     return $encryption;
 }
 
-function str_Decrypt(string $encryption):string
+function str_Decrypt(string $encryption): string
 {
     // Store the cipher method
     $ciphering = "AES-128-CTR";
@@ -309,16 +308,53 @@ function str_Decrypt(string $encryption):string
 
 // read directly .po files
 
-function _e($contenido,$local=null)
+function _e($contenido, $defaultText, $local = null)
 {
-    echo __($contenido,$local);
+    echo __($contenido, $defaultText, $local);
 }
-function __($contenido,$local=null) {
+function __($contenido, $defaultText, $local = null)
+{
+    global $defaultLocale, $textsStore;
+    $language = isset($local) && $local != null ? $local : $defaultLocale;
+    // Find documents.
+    $result = $textsStore
+        ->findBy(
+            [
+                ["text_key", "=", "$contenido"],
+                [["text_lang", "=", "$language"], "OR", ["text_lang", "=", "default"]]
+            ],
+            ["_id" => "desc"]
+        );
+        if (!isset($result) || count($result) < 1) {
+            $text = [
+                'text_key' => "$contenido",
+                'text_lang' => "default",
+                'text' => "$defaultText",
+                'languages' => array(
+                    "$language" => (object)array("text" => "", "updated" => new DateTime())
+                    )
+                ];
+                // Insert the data.
+                $textObj = (object)$textsStore->insert($text);
+                //var_dump($textObj);
+            } else {
+                $textObj = (object) $result[0];
+            }
+            $textStr = $textObj->text;
+            if (isset($textObj->languages) && ($textObj->languages[$language])) {
+                $langTO = (object)($textObj->languages[$language]);
+                $textStr = !empty($langTO->text)? $langTO->text:$textObj->text;
+            }
 
-    global $defaultLocale,$localDirectory;
-    $language = isset($local) && $local!=null?$local:$defaultLocale;
+    return $textStr;
+}
+function T__($contenido, $local = null)
+{
 
-    $translation_file = "$localDirectory/$language.po"; 
+    global $defaultLocale, $localDirectory;
+    $language = isset($local) && $local != null ? $local : $defaultLocale;
+
+    $translation_file = "$localDirectory/$language.po";
 
     if (file_exists("$translation_file")) {
         $IDIOMA_CONTENT = file("$translation_file");
@@ -335,7 +371,7 @@ function __($contenido,$local=null) {
         if ($string6 == "msgid ") {
             $orig = str_replace($string6, "", $linea1);
             $orig = str_replace("\"", "", $orig);
-            
+
             if ("$orig" == "$contenido") {
                 $linea2 = $IDIOMA_CONTENT[$i + 1];
                 $linea2 = rtrim($linea2);
@@ -344,9 +380,8 @@ function __($contenido,$local=null) {
                 if ($string7 == "msgstr ") {
                     $trad = str_replace($string7, "", $linea2);
                     $trad = str_replace("\"", "", $trad);
-                    $retval = empty($trad) || $trad ==""?$contenido:$trad;
-                    return($retval);
-
+                    $retval = empty($trad) || $trad == "" ? $contenido : $trad;
+                    return ($retval);
                 }
             } else {
                 $i = $i + 3;
@@ -354,5 +389,5 @@ function __($contenido,$local=null) {
         }
     }
 
-    return("$contenido");
+    return ("$contenido");
 }

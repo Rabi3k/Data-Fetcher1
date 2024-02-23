@@ -76,6 +76,106 @@ class CompanyGateway extends DbObject
             exit($e->getMessage());
         }
     }
+    public function GetJsonCompanyTreeByCompanyIDs(array $companyIds): array
+    {
+        $tblname = $this->getTableName();
+        $statment = 'SELECT json_object(
+            "id",c.`id`,
+            "name",    c.`name`,
+                "cvr_nr",c.`cvr_nr`,
+                "address",c.`address`,
+                "city",c.`city`,
+                "zip",c.`zip`,
+                "email",c.`email`,
+                "phone",c.`phone`,
+                "gf_refid",c.`gf_refid`,
+                    "restaurants",case when r.`id` is NULL THEN JSON_ARRAY()
+                     ELSE JSON_ARRAYAGG(DISTINCT 
+                     JSON_OBJECT( "id", r.`id`, 
+                     "company_id", r.`company_id`, 
+                     "name", r.`name`, 
+                     "alias", r.`alias`, 
+                     "p_nr", r.`p_nr`, 
+                     "address", r.`address`, 
+                     "city", r.`city`, 
+                     "post_nr", r.`post_nr`, 
+                     "country", r.`country`,
+                     "email", r.`email`,
+                     "phone", r.`phone`, 
+                     "is_gf",  convert(r.`is_gf`,int), 
+                     "is_managed", convert(r.`is_managed`,int), 
+                     "gf_refid", r.`gf_refid`,
+                     "gf_urid", convert(r.`gf_urid`,varchar(64))
+                     
+                     ) ) END ,
+                            "restaurants_count",count(r.id))as "company"
+                    FROM tbl_companies c
+                    left join tbl_restaurants r on (c.id = r.company_id) 
+                    where c.id in(:ids)
+                    group by c.id,r.company_id;';
+        try {
+            $statement = $this->getDbConnection()->query($statment);
+            $statement->execute(array("ids" => implode(",", $companyIds)));
+            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $statement->closeCursor();
+            if (count($result) < 1) {
+                return null;
+            }
+            return Company::GetCompaniesJsonList($result);
+        } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
+            exit($e->getMessage());
+        }
+    }
+    public function GetJsonCompanyTree(): array
+    {
+        $tblname = $this->getTableName();
+        $statment = 'SELECT json_object(
+            "id",c.`id`,
+            "name",    c.`name`,
+                "cvr_nr",c.`cvr_nr`,
+                "address",c.`address`,
+                "city",c.`city`,
+                "zip",c.`zip`,
+                "email",c.`email`,
+                "phone",c.`phone`,
+                "gf_refid",c.`gf_refid`,
+                    "restaurants",case when r.`id` is NULL THEN JSON_ARRAY()
+                     ELSE JSON_ARRAYAGG(DISTINCT 
+                     JSON_OBJECT( "id", r.`id`, 
+                     "company_id", r.`company_id`, 
+                     "name", r.`name`, 
+                     "alias", r.`alias`, 
+                     "p_nr", r.`p_nr`, 
+                     "address", r.`address`, 
+                     "city", r.`city`, 
+                     "post_nr", r.`post_nr`, 
+                     "country", r.`country`,
+                     "email", r.`email`,
+                     "phone", r.`phone`, 
+                     "is_gf",  convert(r.`is_gf`,int), 
+                     "is_managed", convert(r.`is_managed`,int), 
+                     "gf_refid", r.`gf_refid`,
+                     "gf_urid", convert(r.`gf_urid`,varchar(64))
+                     
+                     ) ) END ,
+                            "restaurants_count",count(r.id))as "company"
+                    FROM tbl_companies c
+                    left join tbl_restaurants r on (c.id = r.company_id) 
+                    group by c.id,r.company_id;';
+        try {
+            $statement = $this->getDbConnection()->query($statment);
+            $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
+            $statement->closeCursor();
+            if (count($result) < 1) {
+                return null;
+            }
+            return Company::GetCompaniesJsonList($result);
+        } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
+            exit($e->getMessage());
+        }
+    }
     public function GetAllAdvanced(): array|null
     {
         $tblname = $this->getTableName();
@@ -107,6 +207,7 @@ class CompanyGateway extends DbObject
         //echo "ID: $id <br/>statment: $statment<br/>";
         try {
             $statement = $this->getDbConnection()->query($statment);
+
             $result = $statement->fetchAll(\PDO::FETCH_ASSOC);
             $statement->closeCursor();
             if (count($result) < 1) {
@@ -239,7 +340,7 @@ class CompanyGateway extends DbObject
             if ($insertid > 0) {
                 $input->id = $insertid;
             }
-            
+
             $this->getDbConnection()->commit();
 
             return $input;

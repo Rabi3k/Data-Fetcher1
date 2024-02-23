@@ -50,7 +50,7 @@ include  $templatePath . '/head.php';
 
       <form class="form-signin" method="post">
         <img class="mb-4" src="/media/System/logo.svg" alt="logo" width="150" height="150">
-        <p class="h3 mb-3 font-weight-normal">Please sign in</span>
+        <p class="h3 mb-3 font-weight-normal"><?php _e("signin","Please sign in")?></span>
         <div class="form-group">
           <label for="inputEmail" class="sr-only">UserName / Email address</label>
           <input type="text" id="inputEmail" class="form-control" name="uname" placeholder="Username / Email address" required autofocus>

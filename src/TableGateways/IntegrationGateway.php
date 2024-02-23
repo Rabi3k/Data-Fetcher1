@@ -2,12 +2,9 @@
 
 namespace Src\TableGateways;
 
-use Pinq\Caching\NullCache;
 use Src\Classes\Integration;
 use Src\Classes\Loggy;
-use Src\Classes\Restaurant;
 use Src\System\DbObject;
-use stdClass;
 
 class IntegrationGateway extends DbObject
 {
@@ -22,6 +19,11 @@ class IntegrationGateway extends DbObject
         $this->tblName = "`tbl_integrations`";
     }
     #endregion
+    /**
+     * get restaurant by id
+     * @CodeScene(disable:"Code Duplication")
+     */
+    
     public function findById(int $id): Integration|Null
     {
         $statment = "  $this->selectStatment Where i.id = $id";
@@ -38,6 +40,10 @@ class IntegrationGateway extends DbObject
             exit($e->getMessage());
         }
     }
+    /**
+     * get All restaurants in db
+     * @CodeScene(disable:"Code Duplication")
+     */
     public function findAll(): array
     {
         $statment = " $this->selectStatment ;";
@@ -54,6 +60,10 @@ class IntegrationGateway extends DbObject
             exit($e->getMessage());
         }
     }
+    /**
+     * Get restaurants by restaurants GF refrence ID
+     * @CodeScene(disable:"Code Duplication")
+     */
     public function findAllByRestaurantIds(array $restaurantIds): array
     {
         $RestaurantIds = implode(",", $restaurantIds);
@@ -145,6 +155,9 @@ class IntegrationGateway extends DbObject
             exit($e->getMessage());
         }
     }
+    /**
+     * @CodeScene(disable:"Code Duplication")
+     */
     public function GetGfMenuByRestaurantId(int $restaurantId)
     {
         $statment = "  select * from `tbl_gf_menu` Where restaurant_id = $restaurantId";
@@ -276,6 +289,9 @@ class IntegrationGateway extends DbObject
             exit($e->getMessage() . ", $categoryName");
         }
     }
+    /**
+     * @CodeScene(disable:"Code Duplication")
+     */
     public function GetBatchTypeByIntegrationAndGfId(
         array $gf_id,
         int $integration_id,
@@ -402,17 +418,16 @@ class IntegrationGateway extends DbObject
             exit($e->getMessage());
         }
     }
-
+/**
+ * @CodeScene(disable:"Excess Number of Function Arguments")
+ */
     public function InsertOrUpdateBatchPostedType(
-        //int $gf_id,
         string $type,
         int $integration_id,
         int $gf_menu_id,
         array $name_loyverseId,
         int $parent_gf_id = null,
         string $parent_l_id = null
-        /*string $loyverse_id,
-    string $categoryName*/
     ) {
 
 

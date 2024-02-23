@@ -8,6 +8,7 @@ $baseDir = dirname($vendorDir);
 return array(
     'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
     'Src\\' => array($baseDir . '/src'),
+    'SleekDB\\' => array($vendorDir . '/rakibtg/sleekdb/src'),
     'Psr\\Log\\' => array($vendorDir . '/psr/log/src'),
     'Pinq\\' => array($vendorDir . '/timetoogo/pinq/Source'),
     'PhpParser\\' => array($vendorDir . '/nikic/php-parser/lib/PhpParser'),

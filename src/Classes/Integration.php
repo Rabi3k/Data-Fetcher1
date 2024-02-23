@@ -2,7 +2,6 @@
 namespace Src\Classes;
 
 use DateTime;
-use Pinq\Queries\Requests\Values;
 
 class Integration
 {

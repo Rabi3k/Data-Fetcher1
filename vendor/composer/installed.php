@@ -3,7 +3,7 @@
         'name' => '__root__',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => '014b0ac5fe07ab69cb49d344486f341f216e281b',
+        'reference' => '21b9fa2cddbd64796449493d29cdd175b020abf9',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         '__root__' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => '014b0ac5fe07ab69cb49d344486f341f216e281b',
+            'reference' => '21b9fa2cddbd64796449493d29cdd175b020abf9',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -60,6 +60,15 @@
             'provided' => array(
                 0 => '3.0.0',
             ),
+        ),
+        'rakibtg/sleekdb' => array(
+            'pretty_version' => '2.15',
+            'version' => '2.15.0.0',
+            'reference' => '957468be56bfc5d23f8f5fa7438e90ede17f9d05',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../rakibtg/sleekdb',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'symfony/polyfill-ctype' => array(
             'pretty_version' => 'v1.29.0',

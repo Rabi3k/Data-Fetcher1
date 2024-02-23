@@ -15,6 +15,7 @@ class ComposerStaticInit066f79285e7902e26079783eeea82b75
         array (
             'Symfony\\Polyfill\\Ctype\\' => 23,
             'Src\\' => 4,
+            'SleekDB\\' => 8,
         ),
         'P' => 
         array (
@@ -41,6 +42,10 @@ class ComposerStaticInit066f79285e7902e26079783eeea82b75
         'Src\\' => 
         array (
             0 => __DIR__ . '/../..' . '/src',
+        ),
+        'SleekDB\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/rakibtg/sleekdb/src',
         ),
         'Psr\\Log\\' => 
         array (

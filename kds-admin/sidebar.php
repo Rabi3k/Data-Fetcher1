@@ -3,49 +3,49 @@
               <li class="nav-item">
                 <a class="nav-link" href="/admin">
                   <span data-feather="home"></span>
-                  Dashboard <span class="sr-only">(current)</span>
+                  <?php _e("dashboard","Dashboard")?> <span class="sr-only">(<?php _e("current","current")?>)</span>
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="/admin/users">
                   <span data-feather="users"></span>
-                  Users
+                  <?php _e("users","Users")?>
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="/admin/user-profiles">
                   <span data-feather="user-x"></span>
-                  User Profiles
+                  <?php _e("user_profiles","User Profiles")?>
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="/admin/companies">
                   <span data-feather="codesandbox"></span>
-                  Companies
+                  <?php _e("companies","Companies")?>
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="/admin/restaurants">
                   <span data-feather="coffee"></span>
-                  Restaurants
+                  <?php _e("restaurants","Restaurants")?>
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">
                   <span data-feather="bar-chart-2"></span>
-                  Reports
+                  <?php _e("reports","Reports")?>
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="/admin/integrations">
                   <span data-feather="layers"></span>
-                  Integrations
+                  <?php _e("integrations","Integrations")?>
                 </a>
               </li>
             </ul>
 
             <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-              <span>Saved reports</span>
+              <span><?php _e("saved_reports","Saved reports")?></span>
               <a class="d-flex align-items-center text-muted" href="#">
                 <span data-feather="plus-circle"></span>
               </a>
@@ -54,31 +54,31 @@
               <li class="nav-item">
                 <a class="nav-link" href="#">
                   <span data-feather="file-text"></span>
-                  Current month
+                  <?php _e("current_month","Current month")?>
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">
                   <span data-feather="file-text"></span>
-                  Last quarter
+                  <?php _e("last_quarter","Last quarter")?>
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">
                   <span data-feather="file-text"></span>
-                  Social engagement
+                  <?php _e("social_engagement","Social engagement")?>
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="#">
                   <span data-feather="file-text"></span>
-                  Year-end sale
+                  <?php _e("year_end_sale","Year-end sale")?>
                 </a>
               </li>
             </ul>
 
             <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
-              <span>Settings</span>
+              <span><?php _e("settings","Settings")?></span>
               <a class="d-flex align-items-center text-muted" href="#">
                 <span data-feather="settings"></span>
               </a>
@@ -87,25 +87,25 @@
               <li class="nav-item">
                 <a class="nav-link" href="/admin/database-setup">
                   <span data-feather="database"></span>
-                  Database Connections
+                  <?php _e("database_connections","Database Connections")?>
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="/admin/email-setup">
                   <span data-feather="send"></span>
-                  smtp settings
+                  <?php _e("smtp_settings","Smtp Settings")?>
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="/admin/update">
                   <span data-feather="download-cloud"></span>
-                  Check updates
+                  <?php _e("check_updates","Check Updates")?>
                 </a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" href="/admin/loggy">
                   <span data-feather="cpu"></span>
-                  Loggy
+                  <?php _e("loggy","Loggy")?>
                 </a>
               </li>
             </ul>
