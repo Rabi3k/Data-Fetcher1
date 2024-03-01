@@ -83,7 +83,7 @@ function GeneratePassKey()
 <div class="row">
     <div class="col">
         <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
-            <a class="btn btn-danger" role="button" href="/admin/users"><i class="fa-solid fa-circle-chevron-left"></i> Back</a>
+            <a class="btn btn-danger" role="button" href="/admin/users"><i class="fa-solid fa-circle-chevron-left"></i> <?php _e("back","Back")?></a>
         </div>
     </div>
     <div class="col"></div>

@@ -21,55 +21,12 @@ if (isset($_GET['id']) && !empty($_GET['id'])) {
     exit;
 }
 $companyId = $lCompany->id;
-// if (isset($_GET['action'])) {
-//     if ($_GET['action'] == 'edit-details') {
-
-//         if (isset($_POST['inputName']) && !empty($_POST['inputName'])) {
-//             $lCompany->name = $_POST['inputName'];
-//         }
-//         if (isset($_POST['inputEmail']) && !empty($_POST['inputEmail'])) {
-//             $lCompany->email = $_POST['inputEmail'];
-//         }
-//         if (isset($_POST['inputCVR']) && !empty($_POST['inputCVR'])) {
-//             $lCompany->cvr_nr = $_POST['inputCVR'];
-//         }
-//         if (isset($_POST['inputPhone']) && !empty($_POST['inputPhone'])) {
-//             $lCompany->phone = $_POST['inputPhone'];
-//         }
-//         if (isset($_POST['inputStreet']) && !empty($_POST['inputStreet'])) {
-//             $lCompany->address = $_POST['inputStreet'];
-//         }
-//         if (isset($_POST['inputCity']) && !empty($_POST['inputCity'])) {
-//             $lCompany->city = $_POST['inputCity'];
-//         }
-//         if (isset($_POST['inputZip']) && !empty($_POST['inputZip'])) {
-//             $lCompany->zip = $_POST['inputZip'];
-//         }
-//         if (isset($_POST['inputReferenceId']) && !empty($_POST['inputReferenceId'])) {
-//             $lCompany->gf_refid = $_POST['inputReferenceId'];
-//         }
-//         if (isset($_FILES['fileToUpload'])) {
-//             $nyPath =  UplaodImage(UploadType::Restaurant, $lCompany->name, $_FILES['fileToUpload']);
-//             $lCompany->logo = (isset($nyPath) && !empty($nyPath)) ? $nyPath : $lCompany->logo;
-//         }
-
-//         $lCompany = $restaurantsGateway->InsertOrUpdate($lCompany);
-//         $idUrl = "id=$lCompany->id";
-//         $SaveType = "update";
-//     }
-// }
-// $logoPath = (isset($lCompany->logo)
-//     && !empty($lCompany->logo)
-//     && file_exists($_SERVER['DOCUMENT_ROOT'] . $lCompany->logo))
-//     ? $lCompany->logo
-//     : "/media/restaurant/no-image.png";
-
 ?>
 
 <div class="row">
     <div class="col-4">
         <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
-            <a class="btn btn-primary" role="button" href="/admin/companies"><i class="fa-solid fa-circle-chevron-left"></i> Back</a>
+            <a class="btn btn-primary" role="button" href="/admin/companies"><i class="fa-solid fa-circle-chevron-left"></i> <?php _e("back","Back")?></a>
         </div>
     </div>
     <div class="col-4"></div>

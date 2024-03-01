@@ -17,18 +17,18 @@ use Src\TableGateways\OptionsGateway;
 
                     <div class="form-row">
                         <div class="form-group col-md-6">
-                            <label for="inputHost">Host</label>
+                            <label for="inputHost"><?php _e("email_host","Host")?></label>
                             <input type="text" class="form-control" name="inputHost" id="inputHost" value="<?php echo $smtp['Host']; ?>" required>
                         </div>
                         <div class="form-group col-md-2 pt-5">
                             <div class="form-check form-switch ">
                                 <input class="form-check-input" type="checkbox" role="switch" id="inputSMTPAuth" name="inputSMTPAuth" <?php echo $smtp['SMTPAuth'] === 'true' ? 'checked' : ''; ?>>
-                                <label class="form-check-label" for="inputSMTPAuth">SMTPAuth</label>
+                                <label class="form-check-label" for="inputSMTPAuth"><?php _e("email_SMTPAuth","SMTPAuth")?></label>
                             </div>
 
                         </div>
                         <div class="form-group col-2">
-                            <label for="SMTPSecure">SMTPSecure Type</label>
+                            <label for="SMTPSecure"><?php _e("email_smtp_secure_type","SMTP Secure Type")?></label>
                             <select id="SMTPSecure" name="SMTPSecure" class="form-select">
                                 <option value='ENCRYPTION_SMTPS'>ssl</option>
                                 <option value='ENCRYPTION_STARTTLS'>tls</option>

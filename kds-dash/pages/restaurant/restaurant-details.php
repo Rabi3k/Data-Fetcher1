@@ -10,7 +10,7 @@ $idUrl = "";
 $restaurantsGateway = new RestaurantsGateway($dbConnection);
 
 if (isset($_GET['id']) && !empty($_GET['id'])) {
-    $lRestaurant = $restaurantsGateway->GetRestaurant(intval($_GET['id']))[0];
+    $lRestaurant = $restaurantsGateway->FindById(intval($_GET['id']))[0];
     $SaveType = "update";
     $idUrl = "id=$lRestaurant->id";
 } else if (isset($_GET['new'])) {
@@ -58,7 +58,7 @@ $logoPath = (isset($lRestaurant->logo)
 <div class="row">
     <div class="col-4">
         <div class="btn-group-vertical" role="group" aria-label="Vertical button group">
-            <a class="btn btn-primary" role="button" href="/admin/restaurants"><i class="fa-solid fa-circle-chevron-left"></i> Back</a>
+            <a class="btn btn-primary" role="button" href="/admin/restaurants"><i class="fa-solid fa-circle-chevron-left"></i> <?php _e("back","Back")?></a>
         </div>
     </div>
     <div class="col-4"></div>

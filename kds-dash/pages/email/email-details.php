@@ -9,7 +9,7 @@ $mailDetail = KMail::getMessage($mailbox, $username, $password, $msgId);
 <header class="row g-0">
     <div class="col-1">
         <a name="" id="" class="btn btn-primary" href="/dash/email-setup" role="button">
-            <i class="bi bi-arrow-left-circle"></i> back
+            <i class="bi bi-arrow-left-circle"></i> <?php _e("back","Back")?>
         </a>
     </div>
     <div class="col text-center">

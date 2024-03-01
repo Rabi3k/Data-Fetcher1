@@ -69,7 +69,8 @@ if (preg_match($pattern, $lang, $matches)) {
         },
         //data: jsonfile,
         columns: [{
-                data: '_id'
+                data: '_id',
+                visible:false
             },
             {
                 data: 'text_key'

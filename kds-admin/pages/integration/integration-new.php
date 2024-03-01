@@ -37,7 +37,7 @@ if (isset($_POST['submit'])) {
     <div class="row">
         <div class="col-2">
             <a class="btn btn-danger" role="button" href="/admin/integrations/<?php echo $id ?>">
-                <i class="fa-solid fa-circle-chevron-left"></i> Back
+                <i class="fa-solid fa-circle-chevron-left"></i> <?php _e("back","Back")?>
             </a>
         </div>
         <div class="col-8">
