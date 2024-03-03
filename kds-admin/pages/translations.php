@@ -58,7 +58,7 @@ if (preg_match($pattern, $lang, $matches)) {
 
 <hr />
 
-<button role="button" class="btn btn-info float-end" id="btn-save-texts"><i class="bi bi-save"></i> Save</button>
+<button role="button" class="btn btn-info float-end" id="btn-save-texts"><i class="bi bi-save"></i> <?php _e("save_all", "Save All") ?></button>
 <script>
     let tblTranslation = $('#tbl-translation').DataTable({
         responsive: true,
@@ -70,7 +70,7 @@ if (preg_match($pattern, $lang, $matches)) {
         //data: jsonfile,
         columns: [{
                 data: '_id',
-                visible:false
+                visible: false
             },
             {
                 data: 'text_key'
@@ -91,19 +91,92 @@ if (preg_match($pattern, $lang, $matches)) {
                     return '<input type="text" class="lang-value" value="' + txt + '">';
                 }
             },
+            {
+                render: function(data, type, row, meta) {
+                    let btnDelete = '<button class="btn btn-outline-danger btn-delete"><i class="bi bi-trash"></i></button>';
+                    let btnSave = '<button class="btn btn-outline-success btn-save"><i class="bi bi-save"></i></button>';
+                    let spinner = '<span class="spinner spinner-border visually-hidden"></span>';
+                    return `${btnDelete}${btnSave}${spinner}`;
+                }
+            }
 
         ],
-        columnDefs: [{
-            targets: 4,
-            render: function(data, type, row, meta) {
-                return '<span class="spinner spinner-border visually-hidden"></span>';
-            }
-        }],
     });
     $(document).ready(function() {
+        $("table").on("click", ".btn-delete", function() {
+            var parentTr = $(this).parents("tr");
+            var trNode = tblTranslation.rows(parentTr).data()[0]
+            var deleteTxt = `<?php _e("post_confirm_delete", "you are about to delete record") ?> '${trNode.text_key}'.\n<?php _e("confirm_delete", "Are you sure want to delete?") ?>`;
+            if (confirm(deleteTxt)) {
+                let spinner = $(parentTr).find(".spinner");
+                $(spinner).removeClass("visually-hidden");
+
+                let textData = {
+                    "id": trNode._id,
+                    "text": $(parentTr).find(".default-value").val(),
+                    "language": "<?php echo $lang ?>",
+                    "language_text": $(parentTr).find(".lang-value").val()
+                };
 
 
+                var settings = {
+                    "url": "/sessionservices/texts.php?q=delete-text",
+                    "method": "POST",
+                    "timeout": 0,
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    "data": JSON.stringify(textData),
+                    "success": function(data) {
+                        $(spinner).addClass("visually-hidden");
+                        $("body").scrollTop(0)
+                        showAlert("text deleted successfully");
+                        tblTranslation.ajax.reload();
+                        tblTranslation.draw(false);
+                    }
+                }
+
+                $.ajax(settings).done(function(response) {});
+                
+            }
+
+        });
+        $("table").on("click", ".btn-save", function() {
+
+
+            var parentTr = $(this).parents("tr");
+            var trNode = tblTranslation.rows(parentTr).data()[0]
+
+            let spinner = $(parentTr).find(".spinner");
+            $(spinner).removeClass("visually-hidden");
+
+            let textData = {
+                "id": trNode._id,
+                "text": $(parentTr).find(".default-value").val(),
+                "language": "<?php echo $lang ?>",
+                "language_text": $(parentTr).find(".lang-value").val()
+            };
+
+
+            var settings = {
+                "url": "/sessionservices/texts.php?q=edit-text",
+                "method": "POST",
+                "timeout": 0,
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "data": JSON.stringify(textData),
+                "success": function(data) {
+                    $(spinner).addClass("visually-hidden");
+                    $("body").scrollTop(0)
+                    showAlert("text saved successfully");
+                }
+            }
+
+            $.ajax(settings).done(function(response) {});
+        });
     });
+
     $("#btn-save-texts").click(function() {
 
         showAlert("hi");
@@ -116,7 +189,7 @@ if (preg_match($pattern, $lang, $matches)) {
                 "language": "<?php echo $lang ?>",
                 "language_text": $(this).find(".lang-value").val()
             };
-            console.log(JSON.stringify(textData));
+
             var settings = {
                 "url": "/sessionservices/texts.php?q=edit-text",
                 "method": "POST",
@@ -126,17 +199,13 @@ if (preg_match($pattern, $lang, $matches)) {
                 },
                 "data": JSON.stringify(textData),
                 "success": function(data) {
-                    console.log(data);
                     $(spinner).addClass("visually-hidden");
                     $("body").scrollTop(0)
                     showAlert("text saved successfully");
                 }
             }
 
-            $.ajax(settings).done(function(response) {
-                console.log(response);
-
-            });
+            $.ajax(settings).done(function(response) {});
         })
 
 

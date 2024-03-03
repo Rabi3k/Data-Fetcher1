@@ -278,8 +278,8 @@ switch ($OrderClass->type) {
                         <p class="legal"><strong>Tak for dit køb!</strong></p>
                         <h3> <?php echo strtoupper($OrderClass->restaurant_name); ?></h3>
                         <p>
-                            Adresse : torvet 2, 6580 Vamdrup</br>
-                            Mobil nr. : +45 22 18 53 35</br>
+                            <?php echo __("adresse","Adresse")." : $OrderClass->restaurant_street, $OrderClass->restaurant_zipcode $OrderClass->restaurant_city"?></br>
+                            <?php echo __("mobile_no","Mobile No")." : $OrderClass->restaurant_phone"?></br>
                         </p>
                     </div>
                 </center>

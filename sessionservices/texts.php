@@ -2,6 +2,7 @@
 
 
 $validator = true;
+$LoggedInUsers = true;
 include "index.php";
 
 if (isset($_GET['q']) && $_GET['q'] != null) {
@@ -19,10 +20,13 @@ function TextsProcessRequest()
     global $textsStore, $requestMethod, $q, $byId, $id;
     switch ($requestMethod) {
         case 'GET':
+            $textQueryBuilder = $textsStore->createQueryBuilder();
             if ($byId == true) {
                 $allTexts = array($textsStore->findById($id));
             } else {
-                $allTexts = $textsStore->findAll(["_id" => "asc"]);
+                // creating the QueryBuilder
+                
+                $allTexts = $textQueryBuilder->orderBy(["_id" => "asc"])->disableCache()->getQuery()->fetch();
             }
 
             $retval = (object)array(
@@ -73,6 +77,15 @@ function TextsProcessRequest()
                     }
                     $retval = $text;
 
+                    break;
+                case 'delete-text':
+                    if ($text == null) {
+                        $retval = json_decode("{}");
+                        break;
+                    }
+
+                    $deleted = $textsStore->deleteById($textPostBody->id);
+                    $retval = (object)array("Deleted" => $deleted);
                     break;
                 default:
                     $retval = json_decode("{}");

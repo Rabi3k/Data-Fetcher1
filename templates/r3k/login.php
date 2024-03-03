@@ -52,19 +52,14 @@ include  $templatePath . '/head.php';
         <img class="mb-4" src="/media/System/logo.svg" alt="logo" width="150" height="150">
         <p class="h3 mb-3 font-weight-normal"><?php _e("signin","Please sign in")?></span>
         <div class="form-group">
-          <label for="inputEmail" class="sr-only">UserName / Email address</label>
-          <input type="text" id="inputEmail" class="form-control" name="uname" placeholder="Username / Email address" required autofocus>
+          <label for="inputEmail" class="sr-only"><?php _e("login_username","UserName / Email address") ?></label>
+          <input type="text" id="inputEmail" class="form-control" name="uname" placeholder="<?php _e("login_username","UserName / Email address") ?>" required autofocus>
         </div>
         <div class="form-group">
-          <label for="inputPassword" class="sr-only">Password</label>
-          <input type="password" id="inputPassword" name="password" class="form-control" placeholder="Password" required>
+          <label for="inputPassword" class="sr-only"><?php _e("login_password","Password") ?></label>
+          <input type="password" id="inputPassword" name="password" class="form-control" placeholder="<?php _e("login_password","Password") ?>" required>
         </div>
-        <div class="checkbox mb-3">
-          <label>
-            <input type="checkbox" value="remember-me"> Remember me
-          </label>
-        </div>
-        <button class="btn btn-lg btn-custom btn-block" type="submit">Sign in</button>
+        <button class="btn btn-lg btn-custom btn-block" type="submit"><?php _e("login_signin","Sign in") ?></button>
       </form>
 
     </div>

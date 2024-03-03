@@ -320,8 +320,7 @@ function __($contenido, $defaultText, $local = null)
     $result = $textsStore
         ->findBy(
             [
-                ["text_key", "=", "$contenido"],
-                [["text_lang", "=", "$language"], "OR", ["text_lang", "=", "default"]]
+                ["text_key", "=", "$contenido"]
             ],
             ["_id" => "desc"]
         );

@@ -12,8 +12,13 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 $requestMethod = $_SERVER["REQUEST_METHOD"];
 
-if(!isset($validator) || $validator != true)
-{
+if (!isset($validator) || $validator != true) {
     echo GeneralController::CreateResponserBody("The world is yours!");
 }
 
+if (isset($LoggedInUsers) && $LoggedInUsers == true) {
+    if (!$userGateway->checkLogin()) {
+        echo GeneralController::CreateResponserBody("The world is yours!");
+        exit;
+    }
+}
