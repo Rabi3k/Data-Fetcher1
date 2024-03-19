@@ -3,7 +3,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>
-        Relax! Super Dash | <?php echo $pageTitle ?>
+        Relax! <?php _e("super_dash","Super Dash")?> | <?php echo $pageTitle ?>
     </title>
 
     <!-- ============================================================================== Css Style Sheet Files ================================================================ -->

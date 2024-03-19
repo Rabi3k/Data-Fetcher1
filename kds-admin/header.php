@@ -5,7 +5,7 @@
     <img class="mb-1" src="/media/System/logo.svg" alt="" width="50" height="30">
     <span>Relax!</span>
   </a>
-  <span class="text-light h4"><b>Super Dash!</b></span>
+  <span class="text-light h4"><b><?php _e("super_dash","Super Dash")?></b></span>
   <!-- <ul class="navbar-nav px-3">
     <li class="nav-item text-nowrap">
       <a class="nav-link" href="/logout.php">Sign out</a>
