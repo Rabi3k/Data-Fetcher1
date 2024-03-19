@@ -13,11 +13,16 @@ if (isset($_GET['id']) && $_GET['id'] != null) {
     $id = intval($_GET['id']);
     $byId = true;
 }
+if (isset($_GET['k']) && $_GET['k'] != null) {
+    $textKey = $_GET['k'];
+    $byKey = true;
+    
+}
 TextsProcessRequest();
 
 function TextsProcessRequest()
 {
-    global $textsStore, $requestMethod, $q, $byId, $id;
+    global $textsStore, $requestMethod, $q, $byId, $id,$byKey,$textKey;
     switch ($requestMethod) {
         case 'GET':
             $textQueryBuilder = $textsStore->createQueryBuilder();
@@ -27,7 +32,15 @@ function TextsProcessRequest()
                 ->getQuery()
                 ->fetch();
                 //$allTexts = array($textsStore->findById($id));
-            } else {
+            }
+            else if ($byKey == true) {
+                $allTexts=  $textQueryBuilder->where( [ "text_key", "=", $textKey ] )
+                ->disableCache()
+                ->getQuery()
+                ->fetch();
+                //$allTexts = array($textsStore->findById($id));
+            }
+             else {
                 // creating the QueryBuilder
                 
                 $allTexts = $textQueryBuilder->orderBy(["_id" => "asc"])->disableCache()->getQuery()->fetch();
