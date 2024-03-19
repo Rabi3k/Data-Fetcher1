@@ -22,7 +22,11 @@ function TextsProcessRequest()
         case 'GET':
             $textQueryBuilder = $textsStore->createQueryBuilder();
             if ($byId == true) {
-                $allTexts = array($textsStore->findById($id));
+                $allTexts=  $textQueryBuilder->where( [ "_id", "=", $id ] )
+                ->disableCache()
+                ->getQuery()
+                ->fetch();
+                //$allTexts = array($textsStore->findById($id));
             } else {
                 // creating the QueryBuilder
                 

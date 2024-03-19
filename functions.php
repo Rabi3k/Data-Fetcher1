@@ -317,33 +317,49 @@ function __($contenido, $defaultText, $local = null)
     global $defaultLocale, $textsStore;
     $language = isset($local) && $local != null ? $local : $defaultLocale;
     // Find documents.
-    $result = $textsStore
-        ->findBy(
+    $textQueryBuilder = $textsStore->createQueryBuilder();
+
+    $result = $textQueryBuilder
+        ->where(
             [
                 ["text_key", "=", "$contenido"]
-            ],
-            ["_id" => "desc"]
-        );
-        if (!isset($result) || count($result) < 1) {
-            $text = [
-                'text_key' => "$contenido",
-                'text_lang' => "default",
-                'text' => "$defaultText",
-                'languages' => array(
-                    "$language" => (object)array("text" => "", "updated" => new DateTime())
-                    )
-                ];
-                // Insert the data.
-                $textObj = (object)$textsStore->updateOrInsert($text);
-                //var_dump($textObj);
-            } else {
-                $textObj = (object) $result[0];
-            }
-            $textStr = $textObj->text;
-            if (isset($textObj->languages) && ($textObj->languages[$language])) {
-                $langTO = (object)($textObj->languages[$language]);
-                $textStr = !empty($langTO->text)? $langTO->text:$textObj->text;
-            }
+            ]
+        )
+        ->orderBy(["_id" => "desc"])
+        ->getQuery()
+        ->fetch();
+    if (!isset($result) || count($result) < 1) {
+        $result = $textQueryBuilder
+            ->where(
+                [
+                    ["text_key", "=", "$contenido"]
+                ]
+            )
+            ->orderBy(["_id" => "desc"])
+            ->disableCache()
+            ->getQuery()
+            ->fetch();
+    }
+    if (!isset($result) || count($result) < 1) {
+        $text = [
+            'text_key' => "$contenido",
+            'text_lang' => "default",
+            'text' => "$defaultText",
+            'languages' => array(
+                "$language" => (object)array("text" => "", "updated" => new DateTime())
+            )
+        ];
+        // Insert the data.
+        $textObj = (object)$textsStore->updateOrInsert($text);
+        //var_dump($textObj);
+    } else {
+        $textObj = (object) $result[0];
+    }
+    $textStr = $textObj->text;
+    if (isset($textObj->languages) && ($textObj->languages[$language])) {
+        $langTO = (object)($textObj->languages[$language]);
+        $textStr = !empty($langTO->text) ? $langTO->text : $textObj->text;
+    }
 
     return $textStr;
 }

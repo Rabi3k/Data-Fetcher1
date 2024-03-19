@@ -131,8 +131,8 @@ if (preg_match($pattern, $lang, $matches)) {
                         $(spinner).addClass("visually-hidden");
                         $("body").scrollTop(0)
                         showAlert("text deleted successfully");
-                        tblTranslation.ajax.reload();
-                        tblTranslation.draw(true);
+                        tblTranslation.ajax.reload(null, false);
+                        tblTranslation.draw(false);
                     }
                 }
 
