@@ -70,7 +70,7 @@ function TextsProcessRequest()
             $textQueryBuilder = $textsStore->createQueryBuilder();
             $text = $textsStore->findById($textPostBody->id);
             $textCache = $textQueryBuilder->where( [ "_id", "=", $textPostBody->id ] )->getQuery()->getCache();
-            $textCache->delete();
+            
             switch ($q) {
                 case 'edit-text':
                     if ($text == null) {
@@ -92,6 +92,7 @@ function TextsProcessRequest()
                     }
                     if ($mustUpdate) {
                         $textsStore->update($text);
+                        $textCache->deleteAll();
                     }
                     $retval = $text;
 
