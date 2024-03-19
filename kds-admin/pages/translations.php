@@ -132,7 +132,7 @@ if (preg_match($pattern, $lang, $matches)) {
                         $("body").scrollTop(0)
                         showAlert("text deleted successfully");
                         tblTranslation.ajax.reload();
-                        tblTranslation.draw(false);
+                        tblTranslation.draw(true);
                     }
                 }
 
