@@ -55,8 +55,10 @@ function TextsProcessRequest()
              }
              */
             //echo $body;
-
+            $textQueryBuilder = $textsStore->createQueryBuilder();
             $text = $textsStore->findById($textPostBody->id);
+            $textCache = $textQueryBuilder->where( [ "_id", "=", $textPostBody->id ] )->getQuery()->getCache();
+            $textCache->delete();
             switch ($q) {
                 case 'edit-text':
                     if ($text == null) {
