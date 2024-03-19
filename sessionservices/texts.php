@@ -35,7 +35,6 @@ function TextsProcessRequest()
             }
             else if ($byKey == true) {
                 $allTexts=  $textQueryBuilder->where( [ "text_key", "=", $textKey ] )
-                ->disableCache()
                 ->getQuery()
                 ->fetch();
                 //$allTexts = array($textsStore->findById($id));
