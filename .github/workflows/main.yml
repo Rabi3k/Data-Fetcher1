@@ -11,8 +11,8 @@ jobs:
     - name: 📂 Sync files
       uses: SamKirkland/FTP-Deploy-Action@4.3.2
       with:
-        server: funandeat.dk
-        username: relax-b@funneat.dk
+        server: 213.130.146.181
+        username: relax-b
         password: ${{ secrets.ftp_password }}
         exclude: |
           **/.git*
