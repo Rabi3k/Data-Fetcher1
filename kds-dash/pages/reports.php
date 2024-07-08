@@ -69,29 +69,44 @@ use Src\TableGateways\UserGateway;
 
   function refreshChart() {
     var jsonfile = [];
-    $.getJSON("/api/orders/" + moment.utc(minDate).local().format("DDMMYYYY") + "-" + moment.utc(maxDate).local().format("DDMMYYYY") + "?all&userRefIds=" + userRefIds, function(json) {
+    $.getJSON("/api/orders/" + moment.utc(minDate).local().format("DDMMYYYY") + "-" + moment.utc(maxDate).local().format("DDMMYYYY") + "?all&byDay&userRefIds=" + userRefIds, function(json) {
       jsonfile = json.data;
-      console.log(jsonfile);
+      //console.log(jsonfile);
     }).then(x => {
       var labels = jsonfile.map(
         function(e) {
-          console.log(e);
-          return e.id;
+          //console.log(e);
+          return e.Date;
         });
-      console.log(labels);
-      var chartdata = jsonfile.map(function(e) {
-        return e.total_price;
+      //console.log(labels);
+      var chartdata1 = jsonfile.map(function(e) {
+        return e.orders;
+      });
+      var chartdata2 = jsonfile.map(function(e) {
+        return e.total;
       });
       let data = {
         labels: labels,
         datasets: [{
-          label: 'Orders',
-          data: chartdata,
+          label: 'Orders count',
+          type: 'line',
+          data: chartdata1,
           backgroundColor: [
             'rgba(0, 0, 255, 0.45)'
           ],
           borderColor: [
             'rgb(0, 0, 200)'
+          ],
+          borderWidth: 1
+        },
+        {
+          label: 'Orders amount',
+          data: chartdata2,
+          backgroundColor: [
+            'rgba(0, 255, 0, 0.45)'
+          ],
+          borderColor: [
+            'rgb(0, 200,)'
           ],
           borderWidth: 1
         }]
