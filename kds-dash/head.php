@@ -23,7 +23,7 @@
     <!-- Jquery UI Theme -->
     <link rel="stylesheet" href="//code.jquery.com/ui/1.14.0-beta.2/themes/smoothness/jquery-ui.css">
 
-    <link rel="stylesheet" href="/kds-admin/src/css/style.min.css">
+    <link rel="stylesheet" href="/kds-dash/src/css/style.min.css">
     
  <!-- ============================================================================== Js Scripts Files ======================================================================= -->
     
