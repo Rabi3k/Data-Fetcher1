@@ -182,7 +182,7 @@ function filterArrayByKeys(array $input, array $column_keys)
                             <tbody class="orders">
                                 <?php foreach ($Orders as $key => $order) {
                                     //$fmt = numfmt_create('da_DK', NumberFormatter::CURRENCY);
-                                    $fmt = new NumberFormatter('de_DE', NumberFormatter::CURRENCY);
+                                    $fmt = new NumberFormatter('da_DK', NumberFormatter::CURRENCY);
 
                                     // $amount = numfmt_format_currency($fmt, $order->total_price, $order->currency);
                                     // $deliveryFee = numfmt_format_currency($fmt, $order->deliveryFee, $order->currency);
@@ -240,6 +240,8 @@ function filterArrayByKeys(array $input, array $column_keys)
 
     var tblOrders = $('#tblOrders').DataTable({
         columnDefs: [{
+                name:'id',
+                title:"IDs",
                 target: 0,
                 visible: true
             },
