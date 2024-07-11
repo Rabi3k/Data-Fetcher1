@@ -36,7 +36,7 @@ use Src\TableGateways\UserGateway;
     </div>
     <hr />
     <div class="row">
-      <table class="table table-bordered table-striped table-hover" id="order-tbl">
+      <table class="table table-borderless table-striped table-hover" id="order-tbl">
         <thead class=" table-dark">
           <tr>
             <th scope="col">Id</th>
@@ -50,8 +50,20 @@ use Src\TableGateways\UserGateway;
           </tr>
         </thead>
         <tbody class=" table-light">
-          
+
         </tbody>
+        <tfoot class="border border-0">
+          <tr>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+            <th scope="col"></th>
+          </tr>
+        </tfoot>
       </table>
     </div>
   </div>
@@ -88,28 +100,29 @@ use Src\TableGateways\UserGateway;
       let data = {
         labels: labels,
         datasets: [{
-          label: 'Orders count',
-          type: 'line',
-          data: chartdata1,
-          backgroundColor: [
-            'rgba(0, 0, 255, 0.45)'
-          ],
-          borderColor: [
-            'rgb(0, 0, 200)'
-          ],
-          borderWidth: 1
-        },
-        {
-          label: 'Orders amount',
-          data: chartdata2,
-          backgroundColor: [
-            'rgba(0, 255, 0, 0.45)'
-          ],
-          borderColor: [
-            'rgb(0, 200,)'
-          ],
-          borderWidth: 1
-        }]
+            label: 'Orders count',
+            type: 'line',
+            data: chartdata1,
+            backgroundColor: [
+              'rgba(0, 0, 255, 0.45)'
+            ],
+            borderColor: [
+              'rgb(0, 0, 200)'
+            ],
+            borderWidth: 1
+          },
+          {
+            label: 'Orders amount',
+            data: chartdata2,
+            backgroundColor: [
+              'rgba(0, 255, 0, 0.45)'
+            ],
+            borderColor: [
+              'rgb(0, 200,)'
+            ],
+            borderWidth: 1
+          }
+        ]
       };
       config = {
         responsive: true,
@@ -159,10 +172,10 @@ use Src\TableGateways\UserGateway;
             <th scope="col">Total</th>
             <th scope="col">Date</th>
        */
-      dom: '<"container-fluid"<"row"<"col"l><"col align-middle"B><"col"f>>>rtip',//'Bfrtip',
-        buttons: [
-            'copy', 'csv', 'excel', 'pdf', 'print'
-        ],
+      dom: '<"container-fluid"<"row"<"col"l><"col align-middle"B><"col"f>>>rtip', //'Bfrtip',
+      buttons: [
+        'copy', 'csv', 'excel', 'pdf', 'print'
+      ],
       ajax: {
         url: "/api/orders/" + moment.utc(minDate).local().format("DDMMYYYY") + "-" + moment.utc(maxDate).local().format("DDMMYYYY") + "?all&userRefIds=" + userRefIds,
         dataType: 'json',
@@ -222,6 +235,90 @@ use Src\TableGateways\UserGateway;
           }
         },
       ],
+      drawCallback: function() {
+        this.api()
+          .columns(3)
+          .every(function() {
+            let column = this;
+
+            // Create select element
+            let select = document.createElement('select');
+            let span = document.createElement('div');
+            span.classList="w-100 text-center";
+            select.classList="w-100";
+            span.append("Payment Type    ");
+            select.add(new Option(''));
+            select.add(new Option('all'));
+            column.footer().replaceChildren(span);
+            column.footer().append(select);
+
+            // Apply listener for user change in value
+            select.addEventListener('change', function() {
+              var val = DataTable.util.escapeRegex(select.value);
+              if (val === "all") {
+                column
+                  .search(val ? '.*' : '', true, false)
+                  .draw();
+              } else {
+                column
+                  .search(val ? '^' + val + '$' : '', true, false)
+                  .draw();
+              }
+            });
+
+            // Add list of options
+            column
+              .data()
+              .unique()
+              .sort()
+              .each(function(d, j) {
+                if (d) {
+                  select.add(new Option(d));
+                }
+              });
+          });
+          this.api()
+          .columns(2)
+          .every(function() {
+            let column = this;
+
+            // Create select element
+            let select = document.createElement('select');
+            let span = document.createElement('div');
+            span.classList="w-100 text-center";
+            select.classList="w-100";
+            span.append("Type    ");
+            select.add(new Option(''));
+            select.add(new Option('all'));
+            column.footer().replaceChildren(span);
+            column.footer().append(select);
+
+            // Apply listener for user change in value
+            select.addEventListener('change', function() {
+              var val = DataTable.util.escapeRegex(select.value);
+              if (val === "all") {
+                column
+                  .search(val ? '.*' : '', true, false)
+                  .draw();
+              } else {
+                column
+                  .search(val ? '^' + val + '$' : '', true, false)
+                  .draw();
+              }
+            });
+
+            // Add list of options
+            column
+              .data()
+              .unique()
+              .sort()
+              .each(function(d, j) {
+                if (d) {
+                  select.add(new Option(d));
+                }
+              });
+          })
+      },
       // columnDefs: [{
       //   targets: 6,
       //   render: $.fn.dataTable.render.moment('YYYY-MM-DDTHH:mm:ss.SSSSZ', 'YYYY-MM-DD h:mm:ss a')
