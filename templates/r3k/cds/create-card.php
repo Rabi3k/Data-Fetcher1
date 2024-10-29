@@ -30,7 +30,7 @@ foreach ($data as $order) {
     if ($order->is_done) {
         $timeToEndTxt = "Nu";
     } else {
-            $timeToEndTxt = $timeToEnd->format("%H:%I:%S");
+            $timeToEndTxt = $timeToEnd->format("%H:%I");
         if ($timeToEnd->invert > 0) { {
                 $timeToEndTxt = "Om et øjeblik";
             }
