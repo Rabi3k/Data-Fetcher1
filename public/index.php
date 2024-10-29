@@ -30,6 +30,7 @@ $history = $_GET["history"] ?? null;
 $secrets = $_GET["secrets"] ?? null;
 $userRefIds = $_GET["userRefIds"] ?? null;
 $all = $_GET["all"] ?? null;
+$byDay = $_GET["byDay"] ?? null;
 $categories = $_GET["categories"] ?? null;
 $secrets = isset($secrets) ? json_decode($secrets) : array();
 $userRefIds = isset($userRefIds) ? explode(",",$userRefIds) : array();
@@ -82,6 +83,7 @@ switch ($oper) {
             'endDate'   =>  $endDate,
             'history'   =>  $history,
             'all'   =>  $all,
+            'byDay'   =>  $byDay,
         ]);
         $controller = new ActiveOrderController($dbConnection, $requestMethod, $params, $secrets,$userRefIds);
         $controller->processRequest();

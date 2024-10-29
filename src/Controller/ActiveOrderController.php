@@ -51,7 +51,11 @@ class ActiveOrderController
                         $response = $this->getOrderById($this->params['id']);
                         break;
                     case FuncType::All:
-                        $response =  $this->getDoneOrderByDate($this->params['startDate'], $this->params['endDate'], $this->userRefIds);
+                        if (isset($this->params['byDay'])) {
+                            $response =  $this->getDoneOrderByDateGrouped($this->params['startDate'], $this->params['endDate'], $this->userRefIds);
+                        } else {
+                            $response =  $this->getDoneOrderByDate($this->params['startDate'], $this->params['endDate'], $this->userRefIds);
+                        }
                         break;
                     case FuncType::History:
                         $response = $this->getCompletedOrder($this->userRefIds);
@@ -127,9 +131,21 @@ class ActiveOrderController
         $data = $this->orderGateway->FindDoneByRestaurantRefIdAndDate($sDate, $eDate, $secrets);
         return GeneralController::CreateResponser($data);
     }
+    private function getDoneOrderByDateGrouped(string $startDate, string $endDate, array $secrets)
+    {
+        if ($sDate = \DateTime::createFromFormat('dmY', strval($startDate), new \DateTimeZone('Europe/Copenhagen'))) {
+            $sDate->setTime(0, 0);
+        }
+        if ($eDate = \DateTime::createFromFormat('dmY', strval($endDate), new \DateTimeZone('Europe/Copenhagen'))) {
+            $eDate->setTime(23, 59, 59, 999999);
+        }
+        //$data = $this->orderGateway->FindActiveIdsByDate($sDate,$eDate,$secrets);
+        $data = $this->orderGateway->FindDoneByRestaurantRefIdAndDateGroupByDay($sDate, $eDate, $secrets);
+        return GeneralController::CreateResponser($data);
+    }
     private function getCompletedOrder(array $secrets)
     {
-        
+
         $data = $this->orderGateway->FindCompletedByRestaurantRefId($secrets);
         return GeneralController::CreateResponser($data);
     }

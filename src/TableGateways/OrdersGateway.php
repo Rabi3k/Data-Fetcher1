@@ -323,6 +323,39 @@ class OrdersGateway extends DbObject
             exit($e->getMessage());
         }
     }
+    public function FindDoneByRestaurantRefIdAndDateGroupByDay($startDate, $endDate, array $refIds)
+    {
+        $tblname = $this->getTableName();
+        $StrRefIds = implode(",", $refIds);
+
+
+        $sDate = $startDate->format('Y-m-d H:i:s');
+        $eDate = $endDate->format('Y-m-d H:i:s');
+        $statment = "SELECT 
+        	count(oh.id)*100 as 'orders',
+            sum(oh.total_price) 'total',
+            DATE_FORMAT(max(oh.`fulfill_at`), '%d-%m-%Y') as 'Date' 
+            FROM `tbl_order_head` oh 
+            WHERE
+                oh.`ready` = 1
+                AND oh.`status` = 'accepted'
+                AND oh.`fulfill_at` BETWEEN CAST('$sDate' as DateTime) and CAST('$eDate' as DateTime) 
+                And oh.`restaurant_id` IN ($StrRefIds)   
+            Group by Day(CAST(oh.`fulfill_at` as DateTime)),Month(CAST(oh.`fulfill_at` as DateTime)),Year(CAST(oh.`fulfill_at` as DateTime))
+            ORDER BY oh.`fulfill_at`";
+        try {
+            $query = $this->getDbConnection()->query($statment);
+
+            $result = $query->fetchAll(\PDO::FETCH_ASSOC);
+
+            $query->closeCursor();
+
+            return $result;
+        } catch (\PDOException $e) {
+            (new Loggy())->logy($e->getMessage(), $e->getTraceAsString(), $e);
+            exit($e->getMessage());
+        }
+    }
     public function FindActiveByDate($startDate, $endDate, array $secrets)
     {
 

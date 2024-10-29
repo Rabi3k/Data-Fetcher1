@@ -57,7 +57,7 @@ include "head.php"; ?>
                                                 <span class="alert-msg fs-6">Some Word</span>
                                         </center>
                                 </div>
-                                <?php include "pages/$page.php"; ?>
+                                <?php include "pages/$page.php"; ?> 
                         </main>
                 </div>
         </div>
